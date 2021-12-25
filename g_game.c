@@ -382,7 +382,7 @@ void G_DoLoadLevel (void)
 
 	if (commercial)
 	{
-		skyflatnum = R_TextureNumForName ("SKY3");
+		skytexture = R_TextureNumForName ("SKY3");
 		if (gamemap < 12)
 			skytexture = R_TextureNumForName ("SKY1");
 		else
