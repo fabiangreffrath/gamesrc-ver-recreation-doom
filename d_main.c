@@ -672,7 +672,7 @@ void IdentifyVersion (void)
 	if ( !access ("tnt.wad", R_OK ) )
 	{
 		commercial = true;
-		plutonia = true;
+		tnt = true;
 		D_AddFile ("tnt.wad");
 		return;
 	}
