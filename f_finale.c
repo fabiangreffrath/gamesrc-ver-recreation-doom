@@ -741,7 +741,7 @@ void F_Drawer (void)
 		switch (gameepisode)
 		{
 			case 1:
-				V_DrawPatch(0,0,0,W_CacheLumpName("HELP2",PU_CACHE));
+				V_DrawPatch(0,0,0,W_CacheLumpName("CREDIT",PU_CACHE));
 				break;
 			case 2:
 				V_DrawPatch(0,0,0,W_CacheLumpName("VICTORY2",PU_CACHE));

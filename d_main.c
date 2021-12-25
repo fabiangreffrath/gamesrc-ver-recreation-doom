@@ -593,7 +593,7 @@ void CheckBetaTest(void)
 }
 
 
-#define DEVMAPS "f:/doom/"
+#define DEVMAPS "f:/doom/data_se/"
 #define DEVDATA "c:/localid/"
 
 /*
@@ -608,8 +608,16 @@ void CheckBetaTest(void)
 */
 void IdentifyVersion (void)
 {
-	strcpy(basedefault,"default.cfg");
 
+	char	*doom1wad, *doomwad, *doom2wad;
+	char	*doom2fwad, *plutoniawad, *tntwad;
+	strcpy(basedefault,"default.cfg");
+	doom1wad = "doom1.wad";
+	doom2fwad = "doom2f.wad";
+	doom2wad = "doom2.wad";
+	plutoniawad = "plutonia.wad";
+	tntwad = "tnt.wad";
+	doomwad = "doom.wad";
 	if (M_CheckParm ("-shdev"))
 	{
 		registered = false;
@@ -651,51 +659,51 @@ void IdentifyVersion (void)
 		return;
 	}
 	
-	if ( !access ("doom2f.wad",R_OK) )
+	if ( !access (doom2fwad,R_OK) )
 	{
 		commercial = true;
 		// C'est ridicule!
 		// Let's handle languages in config files, okay?
 		french = true;
 		printf("French version\n");
-		D_AddFile ("doom2f.wad");
+		D_AddFile (doom2fwad);
 		return;
 	}
 	
-	if ( !access ("doom2.wad",R_OK) )
+	if ( !access (doom2wad,R_OK) )
 	{
 		commercial = true;
-		D_AddFile ("doom2.wad");
+		D_AddFile (doom2wad);
 		return;
 	}
 	
-	if ( !access ("plutonia.wad", R_OK ) )
+	if ( !access (plutoniawad, R_OK ) )
 	{
 		commercial = true;
 		plutonia = true;
-		D_AddFile ("plutonia.wad");
+		D_AddFile (plutoniawad);
 		return;
 	}
 	
-	if ( !access ("tnt.wad", R_OK ) )
+	if ( !access (tntwad, R_OK ) )
 	{
 		commercial = true;
 		tnt = true;
-		D_AddFile ("tnt.wad");
+		D_AddFile (tntwad);
 		return;
 	}
 	
-	if ( !access ("doom.wad", R_OK ) )
+	if ( !access (doomwad, R_OK ) )
 	{
 		registered = true;
-		D_AddFile ("doom.wad");
+		D_AddFile (doomwad);
 		return;
 	}
 	
-	if ( !access ("doom1.wad", R_OK ) )
+	if ( !access (doom1wad, R_OK ) )
 	{
 		shareware = true;
-		D_AddFile ("doom1.wad");
+		D_AddFile (doom1wad);
 		return;
 	}
 	
