@@ -516,8 +516,8 @@ int sub_2DAE0(void)
 void sub_2DB10(int a1, int a2)
 {
 	union REGS regs;
-	regs.h.dh = a1;
-	regs.h.dl = a2;
+	regs.h.dh = a2;
+	regs.h.dl = a1;
 	regs.h.ah = 2;
 	regs.h.bh = 0;
 	int386(0x10, &regs, &regs);
@@ -558,7 +558,7 @@ void mprintf(char *a1)
 	vc = sub_2DAB0();
 	vsi = sub_2DAE0();
 
-	sub_2DB10(vc, vsi);
+	sub_2DB10(0, 0);
 
 	sub_2DB40(title, FGCOLOR, BGCOLOR);
 
