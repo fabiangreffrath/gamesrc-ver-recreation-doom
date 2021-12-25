@@ -221,7 +221,7 @@ PUBLIC	R_DrawSpan_
 	shl		ebx,10
 	and		ebx,0ffff0000h
 	mov		eax,[_ds_yfrac]
-	mov		eax,6
+	shr		eax,6
 	and		eax,0ffffh
 	or		ebx,eax
 
