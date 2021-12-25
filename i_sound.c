@@ -15,7 +15,7 @@
 ===============
 */
 
-int tsm_ID = -1;
+int tsm_ID;
 
 void I_StartupTimer (void)
 {
