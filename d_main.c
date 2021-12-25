@@ -200,6 +200,9 @@ void D_Display(void)
 	else
 		wipe = false;
 
+	if (gamestate == GS_LEVEL && gametic)
+		HU_Erase();
+
 //
 // do buffered drawing
 //
