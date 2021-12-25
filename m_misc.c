@@ -251,7 +251,7 @@ extern  int     viewwidth, viewheight;
 extern int mouseSensitivity;
 extern int showMessages;
 
-extern int detaillevel;
+extern int detailLevel;
 
 extern int sfxVolume;
 extern int musicVolume;
@@ -343,7 +343,7 @@ default_t defaults[] =
 	{ "joyb_speed", &joybspeed, 2 },
 
 	{ "screenblocks", &screenblocks, 10 },
-	{ "detaillevel", &detaillevel, 0 },
+	{ "detaillevel", &detailLevel, 0 },
 
 #ifndef __NeXT__
 	{ "snd_channels", &numChannels, 3 },
