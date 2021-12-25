@@ -60,10 +60,9 @@ PUBLIC   R_DrawColumnLow_
 	out		dx,al
 	jmp		cdraw
 ENDP
-
+ALIGN 16
 PROC   R_DrawColumn_
 PUBLIC   R_DrawColumn_
-ALIGN 16
 	PUSHR
 	mov		ebp,[_dc_yl]
 	cmp		ebp,[_dc_yh]
@@ -356,7 +355,7 @@ hdone:
 	POPR
 	ret
 ENDP
-	
+ALIGN 16
 PROC   R_DrawSpanLow_
 PUBLIC	R_DrawSpanLow_
 	PUSHR
