@@ -683,22 +683,19 @@ void G_Ticker (void)
 //
 // do main actions
 //
-//
-// do main actions
-//
 	switch (gamestate)
 	{
 		case GS_LEVEL:
 			P_Ticker ();
 			ST_Ticker ();
 			AM_Ticker ();
-			HU_Ticker();
+			HU_Ticker ();
 			break;
 		case GS_INTERMISSION:
 			WI_Ticker ();
 			break;
 		case GS_FINALE:
-			F_Ticker();
+			F_Ticker ();
 			break;
 		case GS_DEMOSCREEN:
 			D_PageTicker ();

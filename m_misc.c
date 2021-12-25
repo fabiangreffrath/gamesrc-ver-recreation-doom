@@ -285,13 +285,13 @@ extern int     snd_Mport;                              // midi variables
 
 default_t defaults[] =
 {
-	{ "mouse_sensitivity", &mouseSensitivity, 5 },
+	{"mouse_sensitivity", &mouseSensitivity, 5},
 
 #ifndef __NeXT__
-	{ "sfx_volume", &sfxVolume, 8 },
-	{ "music_volume", &musicVolume, 8 },
+	{"sfx_volume", &sfxVolume, 8},
+	{"music_volume", &musicVolume, 8},
 #endif
-
+	{"show_messages",&showMessages, 1},
 #ifdef __WATCOMC__
 #define SC_UPARROW              0x48
 #define SC_DOWNARROW            0x50
@@ -304,69 +304,69 @@ default_t defaults[] =
 #define SC_COMMA                0x33
 #define SC_PERIOD               0x34
 
-	{ "key_right", &key_right, SC_RIGHTARROW, 1 },
-	{ "key_left", &key_left, SC_LEFTARROW, 1 },
-	{ "key_up", &key_up, SC_UPARROW, 1 },
-	{ "key_down", &key_down, SC_DOWNARROW, 1 },
-	{ "key_strafeleft", &key_strafeleft, SC_COMMA, 1 },
-	{ "key_straferight", &key_straferight, SC_PERIOD, 1 },
+	{"key_right", &key_right, SC_RIGHTARROW, 1},
+	{"key_left", &key_left, SC_LEFTARROW, 1},
+	{"key_up", &key_up, SC_UPARROW, 1},
+	{"key_down", &key_down, SC_DOWNARROW, 1},
+	{"key_strafeleft", &key_strafeleft, SC_COMMA, 1},
+	{"key_straferight", &key_straferight, SC_PERIOD, 1},
 
-	{ "key_fire", &key_fire, SC_RCTRL, 1 },
-	{ "key_use", &key_use, SC_SPACE, 1 },
-	{ "key_strafe", &key_strafe, SC_RALT, 1 },
-	{ "key_speed", &key_speed, SC_RSHIFT, 1 },
+	{"key_fire", &key_fire, SC_RCTRL, 1},
+	{"key_use", &key_use, SC_SPACE, 1},
+	{"key_strafe", &key_strafe, SC_RALT, 1},
+	{"key_speed", &key_speed, SC_RSHIFT, 1},
 #endif
 
 #ifdef __NeXT__
-	{ "key_right", &key_right, KEY_RIGHTARROW },
-	{ "key_left", &key_left, KEY_LEFTARROW },
-	{ "key_up", &key_up, KEY_UPARROW },
-	{ "key_down", &key_down, KEY_DOWNARROW },
-	{ "key_strafeleft", &key_strafeleft, ',' },
-	{ "key_straferight", &key_straferight, '.' },
+	{"key_right", &key_right, KEY_RIGHTARROW},
+	{"key_left", &key_left, KEY_LEFTARROW},
+	{"key_up", &key_up, KEY_UPARROW},
+	{"key_down", &key_down, KEY_DOWNARROW},
+	{"key_strafeleft", &key_strafeleft, ','},
+	{"key_straferight", &key_straferight, '.'},
 
-	{ "key_fire", &key_fire, ' ', 1 },
-	{ "key_use", &key_use, 'x', 1 },
-	{ "key_strafe", &key_strafe, 'c', 1 },
-	{ "key_speed", &key_speed, 'z', 1 },
+	{"key_fire", &key_fire, ' ', 1},
+	{"key_use", &key_use, 'x', 1 },
+	{"key_strafe", &key_strafe, 'c', 1},
+	{"key_speed", &key_speed, 'z', 1},
 #endif
 
-	{ "use_mouse", &usemouse, 1 },
-	{ "mouseb_fire", &mousebfire, 0 },
-	{ "mouseb_strafe", &mousebstrafe, 1 },
-	{ "mouseb_forward", &mousebforward, 2 },
+	{"use_mouse", &usemouse, 1},
+	{"mouseb_fire", &mousebfire, 0},
+	{"mouseb_strafe", &mousebstrafe, 1},
+	{"mouseb_forward", &mousebforward, 2},
 
-	{ "use_joystick", &usejoystick, 0 },
-	{ "joyb_fire", &joybfire, 0 },
-	{ "joyb_strafe", &joybstrafe, 1 },
-	{ "joyb_use", &joybuse, 3 },
-	{ "joyb_speed", &joybspeed, 2 },
+	{"use_joystick", &usejoystick, 0},
+	{"joyb_fire", &joybfire, 0},
+	{"joyb_strafe", &joybstrafe, 1},
+	{"joyb_use", &joybuse, 3},
+	{"joyb_speed", &joybspeed, 2},
 
-	{ "screenblocks", &screenblocks, 10 },
-	{ "detaillevel", &detailLevel, 0 },
+	{"screenblocks", &screenblocks, 9},
+	{"detaillevel", &detailLevel, 0},
 
 #ifndef __NeXT__
-	{ "snd_channels", &numChannels, 3 },
-	{ "snd_musicdevice", &snd_DesiredMusicDevice, 0 },
-	{ "snd_sfxdevice", &snd_DesiredSfxDevice, 0 },
-	{ "snd_sbport", &snd_SBport, 544 },
-	{ "snd_sbirq", &snd_SBirq, 5 },
-	{ "snd_sbdma", &snd_SBdma, 1 },
-	{ "snd_mport", &snd_Mport, 816 },
+	{"snd_channels", &numChannels, 3},
+	{"snd_musicdevice", &snd_DesiredMusicDevice, 0},
+	{"snd_sfxdevice", &snd_DesiredSfxDevice, 0},
+	{"snd_sbport", &snd_SBport, 544},
+	{"snd_sbirq", &snd_SBirq, 5},
+	{"snd_sbdma", &snd_SBdma, 1},
+	{"snd_mport", &snd_Mport, 816},
 #endif
 
-	{ "usegamma", &usegamma, 0 },
+	{"usegamma",&usegamma, 0},
 
-	{ "chatmacro0", (int *) &chat_macros[0], (int) HUSTR_CHATMACRO0 },
-	{ "chatmacro1", (int *) &chat_macros[1], (int) HUSTR_CHATMACRO1 },
-	{ "chatmacro2", (int *) &chat_macros[2], (int) HUSTR_CHATMACRO2 },
-	{ "chatmacro3", (int *) &chat_macros[3], (int) HUSTR_CHATMACRO3 },
-	{ "chatmacro4", (int *) &chat_macros[4], (int) HUSTR_CHATMACRO4 },
-	{ "chatmacro5", (int *) &chat_macros[5], (int) HUSTR_CHATMACRO5 },
-	{ "chatmacro6", (int *) &chat_macros[6], (int) HUSTR_CHATMACRO6 },
-	{ "chatmacro7", (int *) &chat_macros[7], (int) HUSTR_CHATMACRO7 },
-	{ "chatmacro8", (int *) &chat_macros[8], (int) HUSTR_CHATMACRO8 },
-	{ "chatmacro9", (int *) &chat_macros[9], (int) HUSTR_CHATMACRO9 }
+	{"chatmacro0", (int *) &chat_macros[0], (int) HUSTR_CHATMACRO0 },
+	{"chatmacro1", (int *) &chat_macros[1], (int) HUSTR_CHATMACRO1 },
+	{"chatmacro2", (int *) &chat_macros[2], (int) HUSTR_CHATMACRO2 },
+	{"chatmacro3", (int *) &chat_macros[3], (int) HUSTR_CHATMACRO3 },
+	{"chatmacro4", (int *) &chat_macros[4], (int) HUSTR_CHATMACRO4 },
+	{"chatmacro5", (int *) &chat_macros[5], (int) HUSTR_CHATMACRO5 },
+	{"chatmacro6", (int *) &chat_macros[6], (int) HUSTR_CHATMACRO6 },
+	{"chatmacro7", (int *) &chat_macros[7], (int) HUSTR_CHATMACRO7 },
+	{"chatmacro8", (int *) &chat_macros[8], (int) HUSTR_CHATMACRO8 },
+	{"chatmacro9", (int *) &chat_macros[9], (int) HUSTR_CHATMACRO9 }
 };
 
 int numdefaults;
