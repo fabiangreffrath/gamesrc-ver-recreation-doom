@@ -214,7 +214,7 @@ menuitem_t MainMenu[]=
 	{1,"M_LOADG", M_LoadGame,'l'},
 	{1,"M_SAVEG", M_SaveGame,'s'},
 	// Another hickup with Special edition.
-	{1,"M_RDTHIS",M_ReadThis,'r'},
+	{1,"M_RDTHIS",M_ReadThis2,'r'},
 	{1,"M_QUITG", M_QuitDOOM,'q'}
 };
 
@@ -369,9 +369,9 @@ menuitem_t ReadMenu2[]=
 menu_t  ReadDef2 =
 {
 	read2_end,
-	&ReadDef1,
+	NULL,
 	ReadMenu2,
-	M_DrawReadThis2,
+	M_DrawReadThisRetail,
 	330,175,
 	0
 };
