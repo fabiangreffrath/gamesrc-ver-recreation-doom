@@ -713,7 +713,7 @@ void A_FireShotgun2 (player_t *player, pspdef_t *psp)
 	angle_t		angle;
 	int			damage;
 	
-	S_StartSound (player->mo, sfx_shotgn);
+	S_StartSound (player->mo, sfx_dshtgn);
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
 	player->ammo[weaponinfo[player->readyweapon].ammo]-=2;
