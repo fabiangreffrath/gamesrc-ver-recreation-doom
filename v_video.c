@@ -205,7 +205,7 @@ void V_DrawPatchDirect (int x, int y, int scrn, patch_t *patch)
 	desttop = destscreen + y*SCREENWIDTH/4 + (x>>2);
 	
 	w = SHORT(patch->width);
-	for ( ; col<w ; x++, col++, desttop++)
+	for ( col = 0 ; col<w ; col++)
 	{
 		outp (SC_INDEX+1,1<<(x&3));
 		column = (column_t *)((byte *)patch + LONG(patch->columnofs[col]));
