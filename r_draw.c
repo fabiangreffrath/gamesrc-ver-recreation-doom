@@ -4,8 +4,10 @@
 #include "R_local.h"
 
 #define SC_INDEX			0x3c4
+#define SC_MAPMASK			2
 #define GC_INDEX			0x3ce
 #define GC_READMAP			4
+#define GC_MODE				5
 
 /*
 
@@ -401,6 +403,7 @@ void R_InitBuffer (int width, int height)
 void R_FillBackScreen (void)
 {
 	byte		*src, *dest;
+	int			i, j;
 	int			x, y;
 	patch_t		*patch;
 	char		name1[] = "FLOOR7_2";
@@ -453,6 +456,18 @@ void R_FillBackScreen (void)
 		W_CacheLumpName ("brdr_bl",PU_CACHE));
 	V_DrawPatch (viewwindowx+scaledviewwidth, viewwindowy+viewheight, 1,
 		W_CacheLumpName ("brdr_br",PU_CACHE));
+
+#ifdef __WATCOMC__
+	dest = (byte*)0xac000;
+	src = screens[1];
+	for (i = 0; i < 4; i++, src++)
+	{
+		outp (SC_INDEX, 2);
+		outp (SC_INDEX+1, 1<<i);
+		for (j = 0; j < (SCREENHEIGHT-SBARHEIGHT)*SCREENWIDTH/4; j++)
+			dest[j] = src[j*4];
+	}
+#endif
 }
 
 
@@ -460,9 +475,9 @@ void R_VideoErase (unsigned ofs, int count)
 { 
 #ifdef __WATCOMC__
 	byte	*src, *dest;
-	outp (SC_INDEX, 2);
+	outp (SC_INDEX, SC_MAPMASK);
 	outp (SC_INDEX+1, 15);
-	outp (GC_INDEX, 5);
+	outp (GC_INDEX, GC_MODE);
 	outp (GC_INDEX+1, inp (GC_INDEX+1)|1);
 	src = (byte*)0xac000+(ofs>>2);
 	dest = destscreen+(ofs>>2);
@@ -471,7 +486,7 @@ void R_VideoErase (unsigned ofs, int count)
 	{
 		dest[count] = src[count];
 	}
-	outp (GC_INDEX, 5);
+	outp (GC_INDEX, GC_MODE);
 	outp (GC_INDEX+1, inp (GC_INDEX+1)&~1);
 #else
 	memcpy (screens[0]+ofs, screens[1]+ofs, count);
