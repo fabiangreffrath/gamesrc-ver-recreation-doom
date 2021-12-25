@@ -205,6 +205,7 @@ void P_PlayerThink (player_t *player)
 //
 // chain saw run forward
 //
+	cmd = &player->cmd;
 	if (player->mo->flags & MF_JUSTATTACKED)
 	{
 		cmd->angleturn = 0;
