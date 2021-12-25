@@ -844,7 +844,7 @@ void P_SpawnPlayerMissile (mobj_t *source, mobjtype_t type)
 	
 	th = P_SpawnMobj (x,y,z, type);
 	if (th->info->seesound)
-		S_StartSound (source, th->info->seesound);
+		S_StartSound (th, th->info->seesound);
 	th->target = source;
 	th->angle = an;
 	th->momx = FixedMul( th->info->speed, finecosine[an>>ANGLETOFINESHIFT]);
