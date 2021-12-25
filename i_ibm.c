@@ -1392,7 +1392,10 @@ void I_InitDiskFlash (void)
 	void    *pic;
 	byte    *temp;
 
-	pic = W_CacheLumpName ("STDISK",PU_CACHE);
+	if (M_CheckParm ("-cdrom"))
+		pic = W_CacheLumpName ("STCDROM",PU_CACHE);
+	else
+		pic = W_CacheLumpName ("STDISK",PU_CACHE);
 	temp = destscreen;
 	destscreen = (byte *)0xac000;
 	V_DrawPatchDirect (SCREENWIDTH-16,SCREENHEIGHT-16,0,pic);
