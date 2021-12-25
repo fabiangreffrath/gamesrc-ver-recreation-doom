@@ -475,7 +475,7 @@ void P_UnArchiveSpecials (void)
 				memcpy (ceiling, save_p, sizeof(*ceiling));
 				save_p += sizeof(*ceiling);
 				ceiling->sector = &sectors[(int)ceiling->sector];
-				ceiling->sector->specialdata = T_MoveCeiling;
+				ceiling->sector->specialdata = ceiling;
 				if (ceiling->thinker.function)
 					ceiling->thinker.function = T_MoveCeiling;
 				P_AddThinker (&ceiling->thinker);
@@ -499,7 +499,7 @@ void P_UnArchiveSpecials (void)
 				memcpy (floor, save_p, sizeof(*floor));
 				save_p += sizeof(*floor);
 				floor->sector = &sectors[(int)floor->sector];
-				floor->sector->specialdata = T_MoveFloor;
+				floor->sector->specialdata = floor;
 				floor->thinker.function = T_MoveFloor;
 				P_AddThinker (&floor->thinker);
 				break;
@@ -510,7 +510,7 @@ void P_UnArchiveSpecials (void)
 				memcpy (plat, save_p, sizeof(*plat));
 				save_p += sizeof(*plat);
 				plat->sector = &sectors[(int)plat->sector];
-				plat->sector->specialdata = T_PlatRaise;
+				plat->sector->specialdata = plat;
 				if (plat->thinker.function)
 					plat->thinker.function = T_PlatRaise;
 				P_AddThinker (&plat->thinker);
