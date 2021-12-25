@@ -31,6 +31,7 @@ void P_ArchivePlayers (void)
 	{
 		if (!playeringame[i])
 			continue;
+		PADSAVEP();
 		dest = (player_t *)save_p;
 		memcpy (dest,&players[i],sizeof(player_t));
 		save_p += sizeof(player_t);
@@ -57,6 +58,7 @@ void P_UnArchivePlayers (void)
 	{
 		if (!playeringame[i])
 			continue;
+		PADSAVEP();
 		memcpy (&players[i],save_p, sizeof(player_t));
 		save_p += sizeof(player_t);
 		players[i].mo = NULL;		// will be set when unarc thinker
