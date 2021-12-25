@@ -538,13 +538,12 @@ void P_GroupLines (void)
 
 void P_SetupLevel (int episode, int map, int playermask, skill_t skill)
 {
-	int i;
-	int parm;
+	int		i;
 	char	lumpname[9];
 	int		lumpnum;
-	mobj_t	*mobj;
 	
-	totalkills = totalitems = totalsecret = 0;
+	totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
+	wminfo.partime = 180;
 	for (i=0 ; i<MAXPLAYERS ; i++)
 	{
 		players[i].killcount = players[i].secretcount 
@@ -620,7 +619,7 @@ else
 		for (i=0 ; i<MAXPLAYERS ; i++)
 			if (playeringame[i])
 			{
-				mobj = NULL;
+				players[i].mo = NULL;
 				G_DeathMatchSpawnPlayer (i);
 			}
 	}

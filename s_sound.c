@@ -15,7 +15,6 @@ int S_getChannel (void *origin, sfxinfo_t *sfxinfo);
 int S_AdjustSoundParams ( mobj_t *listener, mobj_t *source, int *vol, int *sep, int *pitch);
 void S_StopChannel(int cnum);
 
-
 void S_SetMusicVolume(int volume)
 {
   if (volume < 0 || volume > 127)
@@ -25,7 +24,6 @@ void S_SetMusicVolume(int volume)
   I_SetMusicVolume(volume);
   snd_MusicVolume = volume;
 }
-
 
 void S_StopMusic(void)
 {
@@ -48,7 +46,9 @@ void S_ChangeMusic (int musicnum, int looping)
 {
   musicinfo_t *music;
   char namebuf[9];
-
+  extern int snd_MusicDevice;
+  if (snd_MusicDevice == 2 && musicnum == mus_intro)
+    musicnum = mus_introa;
   if ( (musicnum <= mus_None) || (musicnum >= NUMMUSIC) )
     I_Error("Bad music number %d", musicnum);
   else

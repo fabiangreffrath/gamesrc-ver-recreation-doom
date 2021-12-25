@@ -122,6 +122,11 @@ void P_InitSwitchList(void)
 void P_StartButton(line_t *line,bwhere_e w,int texture,int time)
 {
 	int		i;
+
+// See if button is already pressed
+	for (i = 0; i < MAXBUTTONS; i++)
+		if (buttonlist[i].btimer && buttonlist[i].line == line)
+			return;
 	
 	for (i = 0;i < MAXBUTTONS;i++)
 		if (!buttonlist[i].btimer)

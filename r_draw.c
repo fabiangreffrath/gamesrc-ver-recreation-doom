@@ -474,6 +474,7 @@ void R_FillBackScreen (void)
 void R_VideoErase (unsigned ofs, int count)
 { 
 #ifdef __WATCOMC__
+	int		i;
 	byte	*src, *dest;
 	outp (SC_INDEX, SC_MAPMASK);
 	outp (SC_INDEX+1, 15);
@@ -481,10 +482,9 @@ void R_VideoErase (unsigned ofs, int count)
 	outp (GC_INDEX+1, inp (GC_INDEX+1)|1);
 	src = (byte*)0xac000+(ofs>>2);
 	dest = destscreen+(ofs>>2);
-	count >>= 2;
-	while (--count >= 0)
+	for (i = (count>>2)-1; i >= 0; i--)
 	{
-		dest[count] = src[count];
+		dest[i] = src[i];
 	}
 	outp (GC_INDEX, GC_MODE);
 	outp (GC_INDEX+1, inp (GC_INDEX+1)&~1);

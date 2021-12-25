@@ -439,13 +439,13 @@ boolean P_TryMove (mobj_t *thing, fixed_t x, fixed_t y)
 		if (tmceilingz - tmfloorz < thing->height)
 			return false;	// doesn't fit
 		floatok = true;
-		if ( !(tmthing->flags&MF_TELEPORT)
-			&&tmceilingz - tmthing->z < tmthing->height)
+		if ( !(thing->flags&MF_TELEPORT)
+			&&tmceilingz - thing->z < thing->height)
 			return false;	// mobj must lower itself to fit
-		if ( !(tmthing->flags&MF_TELEPORT)
-			&& tmfloorz - tmthing->z > 24*FRACUNIT )
+		if ( !(thing->flags&MF_TELEPORT)
+			&& tmfloorz - thing->z > 24*FRACUNIT )
 			return false;	// too big a step up
-		if ( !(tmthing->flags&(MF_DROPOFF|MF_FLOAT))
+		if ( !(thing->flags&(MF_DROPOFF|MF_FLOAT))
 			&& tmfloorz - tmdropoffz > 24*FRACUNIT )
 			return false;	// don't stand over a dropoff
 	}
@@ -1191,7 +1191,8 @@ boolean PIT_ChangeSector (mobj_t *thing)
 	// crunch bodies to giblets
 	if (thing->health <= 0)
 	{
-		//P_SetMobjState (thing, S_GIBS);
+		P_SetMobjState (thing, S_GIBS);
+		thing->flags &= ~MF_SOLID;
 		thing->height = 0;
 		thing->radius = 0;
 		return true;		// keep checking

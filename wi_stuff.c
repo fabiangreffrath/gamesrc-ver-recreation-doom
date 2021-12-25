@@ -1134,9 +1134,9 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
   if (!commercial)
   {
     RNGCHECK(wbs->epsd, 0, 3);
-  }
-  else
-  {
+
+
+
     RNGCHECK(wbs->last, 0, 8);
     RNGCHECK(wbs->next, 0, 8);
   }

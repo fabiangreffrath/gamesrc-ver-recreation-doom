@@ -180,7 +180,6 @@ typedef struct vissprite_s
 	int			patch;
 	lighttable_t	*colormap;
 	int			mobjflags;		// for color translation and shadow draw
-	boolean		psprite;		// true if psprite
 } vissprite_t;
 
 

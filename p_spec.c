@@ -212,6 +212,8 @@ fixed_t	P_FindNextHighestFloor(sector_t *sec,int currentheight)
 	//
 	// Find lowest height in list
 	//
+	if (!h)
+		return currentheight;
 	min = heightlist[0];
 	for (i = 1;i < h;i++)
 		if (heightlist[i] < min)
@@ -472,7 +474,6 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 			break;
 		case 52:		// EXIT!
 			G_ExitLevel ();
-			line->special = 0;
 			break;
 		case 53:		// Perpetual Platform Raise
 			EV_DoPlat(line,perpetualRaise,0);
@@ -541,7 +542,7 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 			line->special = 0;
 			break;
 		case 141:		// Silent Ceiling Crush & Raise
-			EV_DoFloor(line,silentCrushAndRaise);
+			EV_DoCeiling(line,silentCrushAndRaise);
 			line->special = 0;
 			break;
 

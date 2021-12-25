@@ -199,7 +199,7 @@ void W_AddFile (char *filename)
 	storehandle = reloadname ? -1 : handle;
 	for (i=startlump ; i<numlumps ; i++,lump_p++, fileinfo++)
 	{
-		lump_p->handle = handle;
+		lump_p->handle = storehandle;
 		lump_p->position = LONG(fileinfo->filepos);
 		lump_p->size = LONG(fileinfo->size);
 		strncpy (lump_p->name, fileinfo->name, 8);

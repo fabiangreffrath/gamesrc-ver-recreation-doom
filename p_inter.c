@@ -566,7 +566,7 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 	P_RemoveMobj (special);
 	player->bonuscount += BONUSADD;
 	if (player == &players[consoleplayer])
-		S_StartSound (toucher, sound);
+		S_StartSound (NULL, sound);
 }
 
 /*

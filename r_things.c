@@ -4,6 +4,8 @@
 #include "DoomDef.h"
 #include "R_local.h"
 
+extern boolean modifiedgame;
+
 void R_DrawColumn (void);
 void R_DrawFuzzColumn (void);
 
@@ -127,6 +129,7 @@ void R_InitSpriteDefs (char **namelist)
 	char		**check;
 	int		i, l, intname, frame, rotation;
 	int		start, end;
+	int		patched;
 
 // count the number of sprite names
 	check = namelist;
@@ -161,7 +164,13 @@ void R_InitSpriteDefs (char **namelist)
 			{
 				frame = lumpinfo[l].name[4] - 'A';
 				rotation = lumpinfo[l].name[5] - '0';
-				R_InstallSpriteLump (l, frame, rotation, false);
+
+				if (modifiedgame)
+					patched = W_GetNumForName (lumpinfo[l].name);
+				else
+					patched = l;
+
+				R_InstallSpriteLump (patched, frame, rotation, false);
 				if (lumpinfo[l].name[6])
 				{
 					frame = lumpinfo[l].name[6] - 'A';
@@ -474,7 +483,6 @@ void R_ProjectSprite (mobj_t *thing)
 //
 	vis = R_NewVisSprite ();
 	vis->mobjflags = thing->flags;
-	vis->psprite = false;
 	vis->scale = xscale<<detailshift;
 	vis->gx = thing->x;
 	vis->gy = thing->y;
@@ -608,7 +616,6 @@ void R_DrawPSprite (pspdef_t *psp)
 //
 	vis = &avis;
 	vis->mobjflags = 0;
-	vis->psprite = true;
 	vis->texturemid = (BASEYCENTER<<FRACBITS)+FRACUNIT/2-(psp->sy-spritetopoffset[lump]);
 	vis->x1 = x1 < 0 ? 0 : x1;
 	vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;

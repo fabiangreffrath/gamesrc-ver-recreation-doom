@@ -146,6 +146,12 @@ void P_XYMovement (mobj_t *mo)
 //
 // slow down
 //
+	if (player && player->cheats & CF_NOMOMENTUM)
+	{	// debug option for no sliding at all
+		mo->momx = mo->momy = 0;
+		return;
+	}
+
 	if (mo->flags & (MF_MISSILE | MF_SKULLFLY ) )
 		return; 	// no friction for missiles ever
 

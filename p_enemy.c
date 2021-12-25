@@ -156,12 +156,13 @@ boolean P_CheckMissileRange(mobj_t *actor)
 
 
 	if (actor->type == MT_CYBORG || actor->type == MT_SPIDER || actor->type == MT_SKULL)
-	{
 		dist >>= 1;
-	}
 
 	if (dist > 200)
 		dist = 200;
+
+	if (actor->type == MT_CYBORG && dist > 160)
+		dist = 160;
 
 	if (P_Random() < dist)
 		return false;
@@ -366,7 +367,7 @@ void P_NewChaseDir (mobj_t *actor)
 	}
 	else
 	{
-		for (tdir=DI_SOUTHEAST ; tdir >= DI_EAST;tdir--)
+		for (tdir=DI_SOUTHEAST ; tdir != (DI_EAST-1);tdir--)
 		{
 			if (tdir!=turnaround)
 			{

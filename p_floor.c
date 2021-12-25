@@ -192,6 +192,7 @@ void T_MoveFloor(floormove_t *floor)
 					break;
 			}
 		P_RemoveThinker(&floor->thinker);
+		S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
 	}
 
 }
@@ -249,7 +250,7 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 				floor->direction = -1;
 				floor->sector = sec;
 				floor->speed = FLOORSPEED * 4;
-				floor->floordestheight = (8*FRACUNIT) + 
+				floor->floordestheight =
 						P_FindHighestFloorSurrounding(sec);
 				if (floor->floordestheight != sec->floorheight)
 					floor->floordestheight += 8*FRACUNIT;
@@ -345,16 +346,22 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 						if (getSide(secnum,i,0)->sector-sectors == secnum)
 						{
 							sec = getSector(secnum,i,1);
-							floor->texture = sec->floorpic;
-							floor->newspecial = sec->special;
-							break;
+							if (sec->floorheight == floor->floordestheight)
+							{
+								floor->texture = sec->floorpic;
+								floor->newspecial = sec->special;
+								break;
+							}
 						}
 						else
 						{
 							sec = getSector(secnum,i,0);
-							floor->texture = sec->floorpic;
-							floor->newspecial = sec->special;
-							break;
+							if (sec->floorheight == floor->floordestheight)
+							{
+								floor->texture = sec->floorpic;
+								floor->newspecial = sec->special;
+								break;
+							}
 						}
 					}
 			default:
