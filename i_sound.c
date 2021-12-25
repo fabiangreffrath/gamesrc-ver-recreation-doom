@@ -254,8 +254,8 @@ void I_sndArbitrateCards(void)
   //
   gus = snd_MusicDevice == snd_GUS || snd_SfxDevice == snd_GUS;
   sb = snd_SfxDevice == snd_SB || snd_MusicDevice == snd_SB;
-  ensoniq = snd_MusicDevice == snd_ENS ;
-  codec = snd_MusicDevice == snd_CODEC ;
+  ensoniq = snd_SfxDevice == snd_ENS ;
+  codec = snd_SfxDevice == snd_CODEC ;
   adlib = snd_MusicDevice == snd_Adlib ;
   pc = snd_SfxDevice == snd_PC;
   midi = snd_MusicDevice == snd_MPU;
