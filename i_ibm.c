@@ -1355,7 +1355,7 @@ byte *I_ZoneBase (int *size)
 		ptr = malloc (heap);
 	} while (!ptr);
 
-	printf ("0x%x allocated for zone\n", heap);
+	printf (", 0x%x allocated for zone\n", heap);
 	if (heap < 0x180000)
 	{
 		printf ("\n");
