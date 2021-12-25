@@ -1274,15 +1274,11 @@ void I_Shutdown (void)
 
 void I_Error (char *error, ...)
 {
-	union REGS regs;
-
 	va_list argptr;
 
 	D_QuitNetGame ();
 	I_Shutdown ();
 	va_start (argptr,error);
-	regs.x.eax = 0x3;
-	int386(0x10, &regs, &regs);
 	vprintf (error,argptr);
 	va_end (argptr);
 	printf ("\n");
