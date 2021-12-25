@@ -419,7 +419,7 @@ void M_SaveDefaults (void)
 */
 
 extern byte scantokey[128];
-extern char *basedefault;
+extern char basedefault[];
 
 void M_LoadDefaults (void)
 {
