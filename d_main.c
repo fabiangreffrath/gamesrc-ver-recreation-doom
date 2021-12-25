@@ -588,6 +588,11 @@ void D_AddFile(char *file)
 	wadfiles[numwadfiles] = new;
 }
 
+void CheckBetaTest(void)
+{
+}
+
+
 #define DEVMAPS "f:/doom/"
 #define DEVDATA "c:/localid/"
 
