@@ -180,8 +180,7 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 
 	strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
 		|| joybuttons[joybstrafe];
-	speed = gamekeydown[key_speed] || joybuttons[joybspeed]
-		|| joybuttons[joybspeed];
+	speed = gamekeydown[key_speed] || joybuttons[joybspeed];
 
 	forward = side = 0;
 
@@ -596,7 +595,7 @@ void G_Ticker (void)
 			M_ScreenShot ();
 			gameaction = ga_nothing;
 			break;
-		default:
+		case ga_nothing:
 			break;
 		}
 	}
@@ -605,7 +604,6 @@ void G_Ticker (void)
 //
 // get commands, check consistancy, and build new consistancy check
 //
-	//buf = gametic%BACKUPTICS;
 	buf = (gametic/ticdup)%BACKUPTICS;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -623,8 +621,7 @@ void G_Ticker (void)
 			//
 			// check for turbo cheats
 			//
-			if (cmd->forwardmove > TURBOTHRESHOLD 
-				&& !(gametic&31) && ((gametic>>5)&3) == i )
+			if (cmd->forwardmove > TURBOTHRESHOLD && !(gametic&31) && ((gametic>>5)&3) == i )
 			{
 				static char turbomessage[80];
 				extern char *player_names[4];
@@ -1493,7 +1490,7 @@ void G_WriteDemoTiccmd (ticcmd_t *cmd)
 		G_CheckDemoStatus ();
 	*demo_p++ = cmd->forwardmove;
 	*demo_p++ = cmd->sidemove;
-	*demo_p++ = cmd->angleturn>>8;
+	*demo_p++ = (cmd->angleturn+128)>>8;
 	*demo_p++ = cmd->buttons;
 	demo_p -= 4;
 	if (demo_p > demoend - 16)
@@ -1580,11 +1577,7 @@ void G_DoPlayDemo (void)
 	gameaction = ga_nothing;
 	demobuffer = demo_p = W_CacheLumpName (defdemoname, PU_STATIC);
 	if (*demo_p++ != VERSION)
-	{
-		fprintf(stderr, "Demo is from a different game version!\n");
-		gameaction = ga_nothing;
-		return;
-	}
+		I_Error("Demo is from a different game version!");
 
 	skill = *demo_p++;
 	episode = *demo_p++;
