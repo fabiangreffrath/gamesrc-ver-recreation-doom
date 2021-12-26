@@ -1,6 +1,7 @@
 
 // P_Spec.c
 
+#include <stdlib.h>
 #include "DoomDef.h"
 #include "P_local.h"
 #include "soundst.h"

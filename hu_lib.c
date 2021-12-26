@@ -1,5 +1,7 @@
 // HU_lib.c
+#include <ctype.h>
 #include "DoomDef.h"
+#include "R_local.h"
 #include "HU_lib.h"
 
 // boolean : whether the screen is always erased

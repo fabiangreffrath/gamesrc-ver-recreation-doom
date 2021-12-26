@@ -1,4 +1,5 @@
 #include "DoomDef.h"
+#include "R_local.h"
 #include "soundst.h"
 
 static channel_t *channels; // the set of channels available
@@ -7,7 +8,6 @@ static boolean mus_paused;	// whether songs are mus_paused
 static musicinfo_t *mus_playing=0;// music currently being played
 int numChannels; // number of channels available
 static int nextcleanup;
-
 //
 // Internals.
 //

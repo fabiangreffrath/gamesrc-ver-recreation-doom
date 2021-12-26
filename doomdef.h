@@ -742,6 +742,11 @@ void TryRunTics (void);
 
 void mprintf (char *);
 
+void D_PageTicker (void);
+void D_PageDrawer (void);
+void D_AdvanceDemo (void);
+void D_StartTitle (void);
+
 //---------
 //SYSTEM IO
 //---------
@@ -822,6 +827,8 @@ void I_EndRead (void);
 byte	*I_AllocLow (int length);
 // allocates from low memory under dos, just mallocs under unix
 
+void I_Tactile (int on, int off, int total);
+
 ticcmd_t *I_BaseTiccmd(void);
 // Either returns a null ticcmd,
 // or calls a loadable driver to build it.
@@ -832,13 +839,93 @@ ticcmd_t *I_BaseTiccmd(void);
 //GAME
 //----
 
+void G_DeathMatchSpawnPlayer (int playernum);
+
+void G_InitNew (skill_t skill, int episode, int map);
+
+void G_DeferedInitNew (skill_t skill, int episode, int map);
+// can be called by the startup code or M_Responder
+// a normal game starts at map 1, but a warp test can start elsewhere
+
+void G_DeferedPlayDemo (char *demo);
+
+void G_LoadGame (char *name);
+// can be called by the startup code or M_Responder
+// calls P_SetupLevel or W_EnterWorld
+void G_DoLoadGame (void);
+
+void G_SaveGame (int slot, char *description);
+// called by M_Responder
+
+void G_RecordDemo (char *name);
+// only called by startup code
+
+void G_BeginRecording (void);
+
+void G_PlayDemo (char *name);
+void G_TimeDemo (char *name);
+boolean G_CheckDemoStatus (void);
+
+void G_ExitLevel (void);
+void G_SecretExitLevel (void);
+
+void G_WorldDone (void);
+
+void G_Ticker (void);
+boolean G_Responder (event_t *ev);
+
+void G_ScreenShot (void);
+
 //-----
 //PLAY
 //-----
 
+void P_Ticker (void);
+// called by C_Ticker
+// can call G_PlayerExited
+// carries out all thinking of monsters and players
+
+void P_SetupLevel (int episode, int map, int playermask, skill_t skill);
+// called by W_Ticker
+
+void P_Init (void);
+// called by startup code
+
+void P_ArchivePlayers (void);
+void P_UnArchivePlayers (void);
+void P_ArchiveWorld (void);
+void P_UnArchiveWorld (void);
+void P_ArchiveThinkers (void);
+void P_UnArchiveThinkers (void);
+void P_ArchiveSpecials (void);
+void P_UnArchiveSpecials (void);
+// load / save game routines
+
 //-------
 //REFRESH
 //-------
+
+void R_RenderPlayerView (player_t *player);
+// called by G_Drawer
+
+void R_Init (void);
+// called by startup code
+
+// Rendering function.
+void R_FillBackScreen (void);
+
+void R_DrawViewBorder (void);
+// if the view size is not full screen, draws a border around it
+
+void R_SetViewSize (int blocks, int detail);
+// called by M_Responder
+
+int	R_FlatNumForName (char *name);
+
+int	R_TextureNumForName (char *name);
+int	R_CheckTextureNumForName (char *name);
+// called by P_Ticker for switches and animations
+// returns the texture number for the texture name
 
 //----
 //MISC
@@ -888,9 +975,50 @@ void V_DrawBlock(int x, int y, int scrn, int width, int height, byte *src); // D
 void V_GetBlock(int x, int y, int scrn, int width, int height, byte *dest); // Reads a linear block of pixels into the view buffer
 void V_MarkRect(int x, int y, int width, int height);
 
-#include "sounds.h"
-
 /////////////////////////////////////////////////////
+
+//
+// FINALE
+//
+
+// Called by main loop.
+boolean F_Responder (event_t* ev);
+
+// Called by main loop.
+void F_Ticker (void);
+
+// Called by main loop.
+void F_Drawer (void);
+
+
+void F_StartFinale (void);
+
+//
+// MENUS
+//
+// Called by main loop,
+// saves config file and calls I_Quit when user exits.
+// Even when the menu is not displayed,
+// this can resize the view and change game parameters.
+// Does all the real work of the menu interaction.
+boolean M_Responder (event_t *ev);
+
+
+// Called by main loop,
+// only used for menu (skull cursor) animation.
+void M_Ticker (void);
+
+// Called by main loop,
+// draws the menus directly into the screen buffer.
+void M_Drawer (void);
+
+// Called by D_DoomMain,
+// loads the config file.
+void M_Init (void);
+
+// Called by intro code to force menu up upon a keypress,
+// does nothing if menu is already up.
+void M_StartControlPanel (void);
 
 //
 // INTERMISSION
@@ -1038,4 +1166,6 @@ void HU_Drawer(void);
 char HU_dequeueChatChar(void);
 void HU_Erase(void);
 
-#endif
+#include "sounds.h"
+
+#endif // __DOOMDEF__

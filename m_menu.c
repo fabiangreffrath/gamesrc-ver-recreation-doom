@@ -1,8 +1,11 @@
 
 // M_menu.c
 
-#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include "DoomDef.h"
 #include "R_local.h"
 #include "soundst.h"
