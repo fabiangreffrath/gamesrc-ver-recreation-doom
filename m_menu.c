@@ -1440,7 +1440,7 @@ boolean M_Responder (event_t* ev)
 			case KEY_F1:            // Help key
 				M_StartControlPanel ();
 
-				currentMenu = &ReadDef1;
+				currentMenu = &ReadDef2;
 	    
 				itemOn = 0;
 				S_StartSound(NULL,sfx_swtchn);
