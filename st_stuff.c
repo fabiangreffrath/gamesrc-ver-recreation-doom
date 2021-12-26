@@ -1,6 +1,8 @@
 // ST_stuff.c
 
 #include "DoomDef.h"
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9;
+extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15;
 #include "P_local.h"
 #include "DUtils.h"
 #include "AM_map.h"
@@ -701,28 +703,28 @@ int i;
 // unload the numbers, tall and short
   for (i=0;i<10;i++)
   {
-    Z_ChangeTag(tallnum[i], PU_CACHE);
-    Z_ChangeTag(shortnum[i], PU_CACHE);
+    Z_ChangeTag(tallnum[i], PU_CACHE,726);
+    Z_ChangeTag(shortnum[i], PU_CACHE,727);
   }
 // unload tall percent
-  Z_ChangeTag(tallpercent, PU_CACHE); 
+  Z_ChangeTag(tallpercent, PU_CACHE,729); 
 
 // unload arms background
-  Z_ChangeTag(armsbg, PU_CACHE); 
+  Z_ChangeTag(armsbg, PU_CACHE,731); 
 
 // unload gray #'s
   for (i=0;i<6;i++)
-    Z_ChangeTag(arms[i][0], PU_CACHE);
+    Z_ChangeTag(arms[i][0], PU_CACHE,732);
     
 // unload the key cards
   for (i=0;i<NUMCARDS;i++)
-    Z_ChangeTag(keys[i], PU_CACHE);
+    Z_ChangeTag(keys[i], PU_CACHE,735);
 
-  Z_ChangeTag(sbar, PU_CACHE);
-  Z_ChangeTag(faceback, PU_CACHE);
+  Z_ChangeTag(sbar, PU_CACHE,737);
+  Z_ChangeTag(faceback, PU_CACHE,738);
 
   for (i=0;i<ST_NUMFACES;i++)
-    Z_ChangeTag(faces[i], PU_CACHE);
+    Z_ChangeTag(faces[i], PU_CACHE,740);
 
 }
 

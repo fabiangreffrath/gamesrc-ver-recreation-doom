@@ -10,8 +10,7 @@
 #include "R_local.h"
 #include "soundst.h"
 
-
-extern boolean automapactive;
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7;
 
 extern patch_t *hu_font[HU_FONTSIZE];
 extern boolean message_dontfuckwithme;

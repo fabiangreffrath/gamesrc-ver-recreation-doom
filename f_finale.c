@@ -5,7 +5,10 @@
 #include "soundst.h"
 #include <ctype.h>
 
-int             finalestage;            // 0 = text, 1 = art screen
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8;
+extern int _wp9, _wp10, _wp11, _wp12, _wp13, _wp14, _wp15, _wp16, _wp17;
+
+int             finalestage;            // 0 = text, 1 = art screen, 2 = character cast
 int             finalecount;
 
 #define TEXTSPEED       3
@@ -39,9 +42,6 @@ char    *t6text = T6TEXT;
 
 char    *finaletext;
 char    *finaleflat;
-
-extern boolean automapactive;
-extern boolean viewactive;
 
 void	F_StartCast (void);
 void	F_CastTicker (void);
@@ -255,7 +255,6 @@ void F_Ticker (void)
 =======================
 */
 
-#include "HU_stuff.h"
 extern        patch_t *hu_font[HU_FONTSIZE];
 
 

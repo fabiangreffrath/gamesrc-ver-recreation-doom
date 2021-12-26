@@ -1,8 +1,11 @@
 // P_map.c
 
 #include "DoomDef.h"
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8;
 #include "P_local.h"
 #include "soundst.h"
+
+extern int _wp9, _wp10, _wp11, _wp12, _wp13;
 
 /*
 ===============================================================================

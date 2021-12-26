@@ -511,27 +511,26 @@ extern gameaction_t gameaction;
 
 extern boolean paused;
 
+extern boolean usergame;
+
+extern int _dp1, _dp2, _dp3, _dp4, _dp5, _dp6, _dp7; // align for d_main.c
+
+extern boolean nomonsters; // checkparm of -nomonsters
+extern boolean respawnparm; // checkparm of -respawn
+extern boolean fastparm; // checkparm of -fastparm
+
 extern boolean shareware; // true if main WAD is the shareware version
-
 extern boolean registered;
-
 extern boolean commercial;
-
 extern boolean french;
-
 extern boolean plutonia;
-
 extern boolean tnt;
 
 extern boolean devparm; // started game with -devparm
 
-extern boolean usergame;
-
-extern boolean nomonsters; // checkparm of -nomonsters
-
-extern boolean respawnparm; // checkparm of -respawn
-
-extern boolean fastparm; // checkparm of -fastparm
+extern int _gp1, _gp2, _gp3, _gp4, _gp5, _gp6, _gp7, _gp8; // align for g_game.c
+extern int _gp9, _gp10, _gp11, _gp12, _gp13, _gp14, _gp15, _gp16; // align for g_game.c
+extern int _gp17, _gp18, _gp19; // align for g_game.c
 
 extern boolean deathmatch; // only if started as net death
 
@@ -597,8 +596,18 @@ extern boolean precache; // if true, load all graphics at level load
 
 extern byte *screens[5]; // off screen work buffer, from V_video.c
 
-extern boolean singledemo; // quit after playing a demo from cmdline
+extern int _dp8, _dp9, _dp10, _dp11; // align for d_main.c
 
+extern boolean automapactive;
+extern boolean menuactive;
+extern boolean bodyqueslot;
+extern boolean nodrawers;
+extern boolean noblit;
+extern boolean viewactive;
+extern boolean singledemo; // quit after playing a demo from cmdline
+extern boolean modifiedgame;
+extern char wadfile[1024];
+extern char basedefault[1024];
 extern FILE *debugfile;
 extern int bodyqueslot;
 extern skill_t startskill;
@@ -682,10 +691,18 @@ typedef struct memblock_s
 	struct memblock_s       *next, *prev;
 } memblock_t;
 
+#if 0
 #define Z_ChangeTag(p,t) \
 { \
 if (( (memblock_t *)( (byte *)(p) - sizeof(memblock_t)))->id!=0x1d4a11) \
 	I_Error("Z_CT at "__FILE__":%i",__LINE__); \
+Z_ChangeTag2(p,t); \
+};
+#endif
+#define Z_ChangeTag(p,t,line) \
+{ \
+if (( (memblock_t *)( (byte *)(p) - sizeof(memblock_t)))->id!=0x1d4a11) \
+	I_Error("Z_CT at "__FILE__":%i",line); \
 Z_ChangeTag2(p,t); \
 };
 
@@ -698,7 +715,7 @@ typedef struct
 	int			handle,position,size;
 } lumpinfo_t;
 
-extern	void**		lumpcache;
+extern	void**		_lumpcache; // temp hack
 extern lumpinfo_t *lumpinfo;
 extern	int			numlumps;
 
@@ -1166,6 +1183,9 @@ void HU_Drawer(void);
 char HU_dequeueChatChar(void);
 void HU_Erase(void);
 
+
+extern int _tp1; // temp align
 #include "sounds.h"
+extern int _tp2, _tp3, _tp4, _tp5, _tp6; // temp align
 
 #endif // __DOOMDEF__

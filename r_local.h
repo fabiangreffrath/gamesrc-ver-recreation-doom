@@ -371,12 +371,14 @@ extern	fixed_t		*spritetopoffset;
 extern	lighttable_t	*colormaps;
 extern	int		viewwidth, scaledviewwidth, viewheight;
 extern	int			firstflat;
-extern	int			numflats;
+//extern	int			numflats;
 
 extern	int			*flattranslation;		// for global animation
 extern	int			*texturetranslation;	// for global animation
 
 extern	int		firstspritelump, lastspritelump, numspritelumps;
+
+extern	int			_numflats; // temp hack
 
 byte	*R_GetColumn (int tex, int col);
 void	R_InitData (void);

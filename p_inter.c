@@ -5,8 +5,6 @@
 #include "P_local.h"
 #include "soundst.h"
 
-extern int automapactive;
-
 #define BONUSADD 6
 
 // a weapon is found with two clip loads, a big item has five clip loads
@@ -695,7 +693,7 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 		ang = R_PointToAngle2 ( inflictor->x, inflictor->y
 			,target->x, target->y);
 		
-		thrust = damage*(FRACUNIT>>2)*100/target->info->mass;
+		thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
 
 		// make fall forwards sometimes
 		if ( damage < 40 && damage > target->health && target->z - inflictor->z > 64*FRACUNIT && (P_Random ()&1) )

@@ -1,11 +1,18 @@
 
 // WI_stuff.c
 #include "DoomDef.h"
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9;
+extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15, _wp16, _wp17;
+extern int _wp18;
 #include "WI_stuff.h"
 #include "wi_data.h"
 
 #define RANGECHECKING
+#if 0
 #define RNGCHECK(a, b, c) { if ((a) < (b) || (a) > (c)) { I_Error("%s=%d in %s:%d", #a, (a), __FILE__,__LINE__);}}
+#else
+#define RNGCHECK(a, b, c, line) { if ((a) < (b) || (a) > (c)) { I_Error("%s=%d in %s:%d", #a, (a), __FILE__,line);}}
+#endif
 
 //
 // GENERAL DATA
@@ -1060,48 +1067,48 @@ void WI_unloadData(void)
 {
   int i, j;
 
-  Z_ChangeTag(wiminus, PU_CACHE);
-  for (i=0 ; i<10 ; i++) Z_ChangeTag(num[i], PU_CACHE);
+  Z_ChangeTag(wiminus, PU_CACHE,1063);
+  for (i=0 ; i<10 ; i++) Z_ChangeTag(num[i], PU_CACHE,1064);
   if (commercial)
   {
-    for (i=0 ; i<NUMCMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE);
+    for (i=0 ; i<NUMCMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE,1067);
   }
   else
   {
-    Z_ChangeTag(yah[0], PU_CACHE); Z_ChangeTag(yah[1], PU_CACHE);
-    Z_ChangeTag(splat, PU_CACHE);
-    for (i=0 ; i<NUMMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE);
+    Z_ChangeTag(yah[0], PU_CACHE,1071); Z_ChangeTag(yah[1], PU_CACHE,1071);
+    Z_ChangeTag(splat, PU_CACHE,1072);
+    for (i=0 ; i<NUMMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE,1073);
     if (wbs->epsd < 3)
     {
       for (j=0;j<NUMANIMS[wbs->epsd];j++)
       {
 	if (wbs->epsd != 1 || j != 8)
 	  for (i=0;i<anims[wbs->epsd][j].nanims;i++)
-	    Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE);
+	    Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE,1080);
       }
     }
   }
   Z_Free(lnames);
-  Z_ChangeTag(percent, PU_CACHE);
-  Z_ChangeTag(colon, PU_CACHE);
-  Z_ChangeTag(finished, PU_CACHE);
-  Z_ChangeTag(entering, PU_CACHE);
-  Z_ChangeTag(kills, PU_CACHE);
-  Z_ChangeTag(secret, PU_CACHE);
-  Z_ChangeTag(sp_secret, PU_CACHE);
-  Z_ChangeTag(items, PU_CACHE);
-  Z_ChangeTag(frags, PU_CACHE);
-  Z_ChangeTag(time, PU_CACHE);
-  Z_ChangeTag(sucks, PU_CACHE);
-  Z_ChangeTag(par, PU_CACHE);
+  Z_ChangeTag(percent, PU_CACHE,1085);
+  Z_ChangeTag(colon, PU_CACHE,1086);
+  Z_ChangeTag(finished, PU_CACHE,1087);
+  Z_ChangeTag(entering, PU_CACHE,1088);
+  Z_ChangeTag(kills, PU_CACHE,1089);
+  Z_ChangeTag(secret, PU_CACHE,1090);
+  Z_ChangeTag(sp_secret, PU_CACHE,1091);
+  Z_ChangeTag(items, PU_CACHE,1092);
+  Z_ChangeTag(frags, PU_CACHE,1093);
+  Z_ChangeTag(time, PU_CACHE,1094);
+  Z_ChangeTag(sucks, PU_CACHE,1095);
+  Z_ChangeTag(par, PU_CACHE,1096);
 
-  Z_ChangeTag(victims, PU_CACHE);
-  Z_ChangeTag(killers, PU_CACHE);
-  Z_ChangeTag(total, PU_CACHE);
+  Z_ChangeTag(victims, PU_CACHE,1098);
+  Z_ChangeTag(killers, PU_CACHE,1099);
+  Z_ChangeTag(total, PU_CACHE,1100);
 //  Z_ChangeTag(star, PU_CACHE);
 //  Z_ChangeTag(bstar, PU_CACHE);
-  for (i=0 ; i<MAXPLAYERS ; i++) Z_ChangeTag(p[i], PU_CACHE);
-  for (i=0 ; i<MAXPLAYERS ; i++) Z_ChangeTag(bp[i], PU_CACHE);
+  for (i=0 ; i<MAXPLAYERS ; i++) Z_ChangeTag(p[i], PU_CACHE,1103);
+  for (i=0 ; i<MAXPLAYERS ; i++) Z_ChangeTag(bp[i], PU_CACHE,1104);
 }
 
 
@@ -1133,15 +1140,15 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
 #ifdef RANGECHECKING
   if (!commercial)
   {
-    RNGCHECK(wbs->epsd, 0, 3);
+    RNGCHECK(wbs->epsd, 0, 3,1136);
 
 
 
-    RNGCHECK(wbs->last, 0, 8);
-    RNGCHECK(wbs->next, 0, 8);
+    RNGCHECK(wbs->last, 0, 8,1140);
+    RNGCHECK(wbs->next, 0, 8,1141);
   }
-  RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
-  RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
+  RNGCHECK(wbs->pnum, 0, MAXPLAYERS,1143);
+  RNGCHECK(wbs->pnum, 0, MAXPLAYERS,1144);
 #endif
   acceleratestage = 0;
   cnt = bcnt = 0;

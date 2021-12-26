@@ -9,6 +9,8 @@
 #include "DoomDef.h"
 #include "R_local.h"
 
+// extern int _wp1, _wp2;
+
 #define DPMI_INT 0x31
 //#define NOKBD
 //#define NOTIMER
@@ -146,15 +148,6 @@ struct SREGS segregs;
 
 boolean novideo; // if true, stay in text mode for debugging
 
-typedef struct
-{
-	int f_0; // interrupt
-	ticcmd_t f_4; // cmd
-} doomcontrol_t;
-
-doomcontrol_t *doomcon;
-ticcmd_t emptycmd;
-
 #define KBDQUESIZE 32
 byte keyboardque[KBDQUESIZE];
 int kbdtail, kbdhead;
@@ -202,6 +195,15 @@ byte        scantokey[128] =
 =
 ===================
 */
+
+typedef struct
+{
+	int f_0; // interrupt
+	ticcmd_t f_4; // cmd
+} doomcontrol_t;
+
+doomcontrol_t *doomcon;
+ticcmd_t emptycmd;
 
 ticcmd_t *I_BaseTiccmd (void)
 {
@@ -401,8 +403,8 @@ void I_UpdateBox (int x, int y, int width, int height)
 
 void I_UpdateNoBlit(void)
 {
-	static int voldupdatebox[4];
 	static int oldupdatebox[4];
+	static int voldupdatebox[4];
 	int updatebox[4];
 
 	currentscreen = destscreen;

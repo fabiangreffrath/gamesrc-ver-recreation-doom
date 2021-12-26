@@ -16,6 +16,8 @@
 #include "soundst.h"
 #include "DUtils.h"
 
+extern int _wp1, _wp2, _wp3, _wp4;
+
 #define MAXWADFILES 20
 char *wadfiles[MAXWADFILES];
 
@@ -49,11 +51,6 @@ skill_t startskill;
 int startepisode;
 int startmap;
 boolean autostart;
-
-extern boolean viewactive;
-extern boolean automapactive;
-extern boolean menuactive;
-extern boolean nodrawers;
 
 FILE *debugfile;
 
@@ -92,77 +89,81 @@ event_t events[MAXEVENTS];
 int eventhead;
 int eventtail;
 
-//---------------------------------------------------------------------------
-//
-// PROC D_PostEvent
-//
-// Called by the I/O functions when input is detected.
-//
-//---------------------------------------------------------------------------
+/*
+================
+=
+= D_PostEvent
+=
+= Called by the I/O functions when input is detected
+=
+================
+*/
 
-void D_PostEvent(event_t *ev)
+void D_PostEvent (event_t *ev)
 {
 	events[eventhead] = *ev;
 	eventhead = (++eventhead)&(MAXEVENTS-1);
 }
 
-//---------------------------------------------------------------------------
-//
-// PROC D_ProcessEvents
-//
-// Send all the events of the given timestamp down the responder chain.
-//
-//---------------------------------------------------------------------------
+/*
+================
+=
+= D_ProcessEvents
+=
+= Send all the events of the given timestamp down the responder chain
+=
+================
+*/
 
-void D_ProcessEvents(void)
+void D_ProcessEvents (void)
 {
-	event_t *ev;
+	event_t		*ev;
 
 	// IF STORE DEMO, DO NOT ACCEPT INPUT
 	if ( commercial && (W_CheckNumForName("map01")<0) )
 		return;
 
-	for(; eventtail != eventhead; eventtail = (++eventtail)&(MAXEVENTS-1))
+	for ( ; eventtail != eventhead ; eventtail = (++eventtail)&(MAXEVENTS-1) )
 	{
 		ev = &events[eventtail];
-		if(M_Responder(ev))
-		{
-			continue;
-		}
+		if (M_Responder(ev))
+			continue;               // menu ate the event
 		G_Responder(ev);
 	}
 }
 
-//---------------------------------------------------------------------------
-//
-// FUNC FixedDiv
-//
-//---------------------------------------------------------------------------
+/*
+================
+=
+= FixedDiv
+=
+================
+*/
 
-fixed_t FixedDiv(fixed_t a, fixed_t b)
+fixed_t FixedDiv (fixed_t a, fixed_t b)
 {
-	if((abs(a)>>14) >= abs(b))
-	{
-		return((a^b)<0 ? MININT : MAXINT);
-	}
-	return(FixedDiv2(a, b));
+	if ( (abs(a)>>14) >= abs(b))
+		return (a^b)<0 ? MININT : MAXINT;
+	return FixedDiv2 (a,b);
 }
 
-//---------------------------------------------------------------------------
-//
-// PROC D_Display
-//
-// Draw current display, possibly wiping it from the previous.
-//
-//---------------------------------------------------------------------------
+/*
+================
+=
+= D_Display
+=
+= draw current display, possibly wiping it from the previous
+=
+================
+*/
 
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t wipegamestate = GS_DEMOSCREEN;
 extern boolean setsizeneeded;
 extern int showMessages;
-void R_ExecuteSetViewSize(void);
+void R_ExecuteSetViewSize (void);
 
-void D_Display(void)
+void D_Display (void)
 {
 	static boolean viewactivestate = false;
 	static boolean menuactivestate = false;
@@ -184,9 +185,9 @@ void D_Display(void)
 	redrawsbar = false;
 
 	// Change the view size if needed
-	if(setsizeneeded)
+	if (setsizeneeded)
 	{
-		R_ExecuteSetViewSize();
+		R_ExecuteSetViewSize ();
 		oldgamestate = -1;                      // force background redraw
 		borderdrawcount = 3;
 	}
@@ -315,50 +316,52 @@ void D_Display(void)
 	} while (!done);
 }
 
-//---------------------------------------------------------------------------
-//
-// PROC D_DoomLoop
-//
-//---------------------------------------------------------------------------
+/*
+================
+=
+= D_DoomLoop
+=
+================
+*/
 
-void D_DoomLoop(void)
+void D_DoomLoop (void)
 {
 	if (demorecording)
-		G_BeginRecording();
+		G_BeginRecording ();
 
-	if(M_CheckParm("-debugfile"))
+	if (M_CheckParm ("-debugfile"))
 	{
-		char filename[20];
-		sprintf(filename, "debug%i.txt", consoleplayer);
-		printf("debug output to: %s\n", filename);
-		debugfile = fopen(filename,"w");
+		char	filename[20];
+		sprintf (filename, "debug%i.txt", consoleplayer);
+		printf ("debug output to: %s\n", filename);
+		debugfile = fopen (filename,"w");
 	}
-	I_InitGraphics();
-	while(1)
+	I_InitGraphics ();
+	while (1)
 	{
-		// Frame syncronous IO operations
+		// frame syncronous IO operations
 		I_StartFrame();
 
-		// Process one or more tics
-		if(singletics)
+		// process one or more tics
+		if (singletics)
 		{
-			I_StartTic();
-			D_ProcessEvents();
-			G_BuildTiccmd(&netcmds[consoleplayer][maketic%BACKUPTICS]);
+			I_StartTic ();
+			D_ProcessEvents ();
+			G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
 			if (advancedemo)
 				D_DoAdvanceDemo ();
-			M_Ticker();
-			G_Ticker();
+			M_Ticker ();
+			G_Ticker ();
 			gametic++;
 			maketic++;
 		}
 		else
 		{
-			// Will run at least one tic
-			TryRunTics();
+			// will run at least one tic
+			TryRunTics ();
 		}
 
-		// Move positional sounds
+		// move positional sounds
 		S_UpdateSounds(players[consoleplayer].mo);
 		D_Display();
 	}
@@ -402,9 +405,7 @@ void D_PageTicker (void)
 ================
 */
 
-extern boolean MenuActive;
-
-void D_PageDrawer(void)
+void D_PageDrawer (void)
 {
 	V_DrawPatch (0,0, 0, W_CacheLumpName(pagename, PU_CACHE));
 }
@@ -788,21 +789,23 @@ void FindResponseFile (void)
 		}
 }
 
-//---------------------------------------------------------------------------
-//
-// PROC D_DoomMain
-//
-//---------------------------------------------------------------------------
+/*
+=================
+=
+= D_DoomMain
+=
+=================
+*/
 
-void D_DoomMain(void)
+void D_DoomMain (void)
 {
 	union REGS regs;
 	int p;
 	char file[256];
 
-	FindResponseFile();
+	FindResponseFile ();
 
-	IdentifyVersion();
+	IdentifyVersion ();
 	
 	setbuf (stdout, NULL);
 	modifiedgame = false;
@@ -850,11 +853,11 @@ void D_DoomMain(void)
 	}
 
 	regs.w.ax = 3;
-	int386(0x10, &regs, &regs);
+	int386 (0x10, &regs, &regs);
 
-	sub_2DB40(title, FGCOLOR, BGCOLOR);
+	sub_2DB40 (title, FGCOLOR, BGCOLOR);
 
-	printf("\nP_Init: Checking cmd-line parameters...\n");
+	printf ("\nP_Init: Checking cmd-line parameters...\n");
 	
 	if (devparm)
 		mprintf(D_DEVSTR);

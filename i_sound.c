@@ -7,6 +7,8 @@
 #include "sounds.h"
 #include "i_sound.h"
 
+extern int _wp1, _wp2;
+
 /*
 ===============
 =

@@ -8,6 +8,9 @@
 #include "AM_data.h"
 #include <stdio.h>
 
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9;
+extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15;
+
 static int cheating = 0;
 static int grid = 0;
 
@@ -62,6 +65,7 @@ static unsigned char cheat_amap_seq[] = { 0xb2, 0x26, 0x26, 0x2e, 0xff };
 static cheatseq_t cheat_amap = { cheat_amap_seq, 0 };
 
 extern boolean viewactive;
+extern boolean singledemo;
 //extern byte screens[][SCREENWIDTH*SCREENHEIGHT];
 void V_MarkRect (int x, int y, int width, int height);
 
@@ -236,7 +240,7 @@ void AM_loadPics(void)
 void AM_unloadPics(void)
 {
   int i;
-  for (i=0;i<10;i++) Z_ChangeTag(marknums[i], PU_CACHE);
+  for (i=0;i<10;i++) Z_ChangeTag(marknums[i], PU_CACHE,236);
 
 }
 

@@ -33,7 +33,7 @@ void S_StopMusic(void)
       I_ResumeSong(mus_playing->handle);
     I_StopSong(mus_playing->handle);
     I_UnRegisterSong(mus_playing->handle);
-    Z_ChangeTag(mus_playing->data, PU_CACHE);
+    Z_ChangeTag(mus_playing->data, PU_CACHE,38);
 #ifdef __WATCOMC__
     _dpmi_unlockregion(mus_playing->data, lumpinfo[mus_playing->lumpnum].size);
 #endif
@@ -410,7 +410,7 @@ void S_UpdateSounds(void* listener_p)
       {
         if (--S_sfx[i].usefulness == -1)
         {
-          Z_ChangeTag(S_sfx[i].data, PU_CACHE);
+          Z_ChangeTag(S_sfx[i].data, PU_CACHE,413);
 	  _dpmi_unlockregion(S_sfx[i].data, lumpinfo[S_sfx[i].lumpnum].size);
           S_sfx[i].data = 0;
         }

@@ -5,6 +5,7 @@ option quiet
 option map
 option stack=65536
 option stub=wstub
+option static
 debug all
 libpath %WATCOM%\lib386
 libpath %WATCOM%\lib386\dos

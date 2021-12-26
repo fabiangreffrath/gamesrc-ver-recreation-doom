@@ -93,7 +93,7 @@ void P_CalcHeight (player_t *player)
 	
 		if (player->deltaviewheight)	
 		{
-			player->deltaviewheight += FRACUNIT/2;
+			player->deltaviewheight += FRACUNIT/4;
 			if (!player->deltaviewheight)
 				player->deltaviewheight = 1;
 		}

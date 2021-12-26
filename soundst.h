@@ -30,10 +30,12 @@
 #define NA				0
 #define S_NUMCHANNELS		2
 
-extern int snd_MaxVolume;
-extern int snd_MusicVolume;
+extern int _snd_MaxVolume; // temp hack
+extern int _snd_MusicVolume; // temp hack
 extern int snd_DesiredMusicDevice;
 extern int snd_DesiredSfxDevice;
+extern int snd_MusicDevice;
+extern int snd_SfxDevice;
 
 typedef struct
 {
