@@ -36,10 +36,10 @@ lnode_t *dll_AddStartNode(list_t *list, void *value)
     I_Error("Bad list in dll_AddStartNode");
   node = (lnode_t*)Z_Malloc(sizeof(lnode_t), PU_STATIC, 0);
   node->value = value;
-  node->prev = NULL;
   node->next = list->start;
+  node->prev = NULL;
   if (list->start)
-    list->start->next = node;
+    list->start->prev = node;
   else
     list->end = node;
   list->start = node;

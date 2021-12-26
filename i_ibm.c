@@ -146,6 +146,15 @@ struct SREGS segregs;
 
 boolean novideo; // if true, stay in text mode for debugging
 
+typedef struct
+{
+	int f_0; // interrupt
+	ticcmd_t f_4; // cmd
+} doomcontrol_t;
+
+doomcontrol_t *doomcon;
+ticcmd_t emptycmd;
+
 #define KBDQUESIZE 32
 byte keyboardque[KBDQUESIZE];
 int kbdtail, kbdhead;
@@ -186,30 +195,32 @@ byte        scantokey[128] =
 
 //==========================================================================
 
-typedef struct
-{
-	int f_0; // interrupt
-	ticcmd_t f_4; // cmd
-} doomcontrol_t;
+/*
+===================
+=
+= I_BaseTiccmd
+=
+===================
+*/
 
-doomcontrol_t *doomcon;
-ticcmd_t emptycmd;
-ticcmd_t *I_BaseTiccmd(void)
+ticcmd_t *I_BaseTiccmd (void)
 {
 	if (!doomcon)
 		return &emptycmd;
 
-	DPMIInt(doomcon->f_0);
+	DPMIInt (doomcon->f_0);
 	return &doomcon->f_4;
 }
 
-//--------------------------------------------------------------------------
-//
-// FUNC I_GetTime
-//
-// Returns time in 1/35th second tics.
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_GetTime
+=
+= Returns time in 1/35th second tics.
+=
+===================
+*/
 
 int I_GetTime (void)
 {
@@ -219,101 +230,101 @@ int I_GetTime (void)
 	return (ticcount);
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_ColorBorder
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_ColorBorder
+=
+===================
+*/
 
 void I_ColorBorder (void)
 {
-	int i;
+	int	i;
 
-	I_WaitVBL(1);
-	_outbyte(PEL_WRITE_ADR, 0);
-	for(i = 0; i < 3; i++)
+	I_WaitVBL (1);
+	_outbyte (PEL_WRITE_ADR, 0);
+	for (i = 0; i < 3; i++)
 	{
-		_outbyte(PEL_DATA, 63);
+		_outbyte (PEL_DATA, 63);
 	}
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_UnColorBorder
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_UnColorBorder
+=
+===================
+*/
 
-void I_UnColorBorder(void)
+void I_UnColorBorder (void)
 {
-	int i;
+	int	i;
 
-	I_WaitVBL(1);
-	_outbyte(PEL_WRITE_ADR, 0);
-	for(i = 0; i < 3; i++)
+	I_WaitVBL (1);
+	_outbyte (PEL_WRITE_ADR, 0);
+	for (i = 0; i < 3; i++)
 	{
-		_outbyte(PEL_DATA, 0);
+		_outbyte (PEL_DATA, 0);
 	}
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_WaitVBL
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_WaitVBL
+=
+===================
+*/
 
-void I_WaitVBL(int vbls)
+void I_WaitVBL (int vbls)
 {
-	int i;
-	int old;
-	int stat;
+	int	i;
+	int	old;
+	int	stat;
 
-	if(novideo)
-	{
+	if (novideo)
 		return;
-	}
-	while(vbls--)
+
+	while (vbls--)
 	{
 		do
 		{
-			stat = inp(STATUS_REGISTER_1);
-			if(stat&8)
-			{
+			stat = inp (STATUS_REGISTER_1);
+			if (stat&8)
 				break;
-			}
 		} while(1);
 		do
 		{
-			stat = inp(STATUS_REGISTER_1);
-			if((stat&8) == 0)
-			{
+			stat = inp (STATUS_REGISTER_1);
+			if ((stat&8) == 0)
 				break;
-			}
 		} while(1);
 	}
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_SetPalette
-//
-// Palette source must use 8 bit RGB elements.
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_SetPalette
+=
+= Palette source must use 8 bit RGB elements.
+=
+===================
+*/
 
-void I_SetPalette(byte *palette)
+void I_SetPalette (byte *palette)
 {
-	int i;
+	int	i;
 
-	if(novideo)
-	{
+	if (novideo)
 		return;
-	}
-	I_WaitVBL(1);
-	_outbyte(PEL_WRITE_ADR, 0);
-	for(i = 0; i < 768; i++)
-	{
-		_outbyte(PEL_DATA, (gammatable[usegamma][*palette++])>>2);
-	}
+
+	I_WaitVBL (1);
+	_outbyte (PEL_WRITE_ADR, 0);
+	for (i = 0; i < 768; i++)
+		_outbyte (PEL_DATA, (gammatable[usegamma][*palette++])>>2);
 }
 
 /*
@@ -326,11 +337,13 @@ void I_SetPalette(byte *palette)
 
 byte *screen, *currentscreen, *destscreen, *destview;
 
-//--------------------------------------------------------------------------
-//
-// PROC I_UpdateBox
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_UpdateBox
+=
+===================
+*/
 
 #define PLANEWIDTH	80
 
@@ -360,12 +373,15 @@ void I_UpdateBox (int x, int y, int width, int height)
 	destdelta = PLANEWIDTH/2 - wwide;
 	outp (SC_INDEX, SC_MAPMASK);
 
-	for (p = 0 ; p < 4 ; p++) {
+	for (p = 0 ; p < 4 ; p++)
+	{
 		outp (SC_INDEX+1, 1<<p);
 		source = screens[0] + ofs + p;
 		dest = (short *)(destscreen + (ofs>>2));
-		for (y=0 ; y<height ; y++) {
-			for (x=wwide ; x ; x--) {
+		for (y=0 ; y<height ; y++)
+		{
+			for (x=wwide ; x ; x--)
+			{
 				*dest++ = *source + (source[4]<<8);
 				source += 8;
 			}
@@ -375,11 +391,13 @@ void I_UpdateBox (int x, int y, int width, int height)
 	}
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_UpdateNoBlit
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_UpdateNoBlit
+=
+===================
+*/
 
 void I_UpdateNoBlit(void)
 {
@@ -388,89 +406,86 @@ void I_UpdateNoBlit(void)
 	int updatebox[4];
 
 	currentscreen = destscreen;
-	updatebox[BOXTOP] = dirtybox[BOXTOP];
-	if (updatebox[BOXTOP] <= voldupdatebox[BOXTOP])
-		updatebox[BOXTOP] = voldupdatebox[BOXTOP];
-	updatebox[BOXRIGHT] = dirtybox[BOXRIGHT];
-	if (updatebox[BOXRIGHT] <= voldupdatebox[BOXRIGHT])
-		updatebox[BOXRIGHT] = voldupdatebox[BOXRIGHT];
-	updatebox[BOXBOTTOM] = dirtybox[BOXBOTTOM];
-	if (updatebox[BOXBOTTOM] >= voldupdatebox[BOXBOTTOM])
-		updatebox[BOXBOTTOM] = voldupdatebox[BOXBOTTOM];
-	updatebox[BOXLEFT] = dirtybox[BOXLEFT];
-	if (updatebox[BOXLEFT] >= voldupdatebox[BOXLEFT])
-		updatebox[BOXLEFT] = voldupdatebox[BOXLEFT];
+	updatebox[BOXTOP] = (dirtybox[BOXTOP] > voldupdatebox[BOXTOP]) ?
+		dirtybox[BOXTOP] : voldupdatebox[BOXTOP];
+	updatebox[BOXRIGHT] = (dirtybox[BOXRIGHT] > voldupdatebox[BOXRIGHT]) ?
+		dirtybox[BOXRIGHT] : voldupdatebox[BOXRIGHT];
+	updatebox[BOXBOTTOM] = (dirtybox[BOXBOTTOM] < voldupdatebox[BOXBOTTOM]) ?
+		dirtybox[BOXBOTTOM] : voldupdatebox[BOXBOTTOM];
+	updatebox[BOXLEFT] = (dirtybox[BOXLEFT] < voldupdatebox[BOXLEFT]) ?
+		dirtybox[BOXLEFT] : voldupdatebox[BOXLEFT];
 
-	if (updatebox[BOXTOP] <= oldupdatebox[BOXTOP])
-		updatebox[BOXTOP] = oldupdatebox[BOXTOP];
-	if (updatebox[BOXRIGHT] <= oldupdatebox[BOXRIGHT])
-		updatebox[BOXRIGHT] = oldupdatebox[BOXRIGHT];
-	if (updatebox[BOXBOTTOM] >= oldupdatebox[BOXBOTTOM])
-		updatebox[BOXBOTTOM] = oldupdatebox[BOXBOTTOM];
-	if (updatebox[BOXLEFT] >= oldupdatebox[BOXLEFT])
-		updatebox[BOXLEFT] = oldupdatebox[BOXLEFT];
+	updatebox[BOXTOP] = (updatebox[BOXTOP] > oldupdatebox[BOXTOP]) ?
+		updatebox[BOXTOP] : oldupdatebox[BOXTOP];
+	updatebox[BOXRIGHT] = (updatebox[BOXRIGHT] > oldupdatebox[BOXRIGHT]) ?
+		updatebox[BOXRIGHT] : oldupdatebox[BOXRIGHT];
+	updatebox[BOXBOTTOM] = (updatebox[BOXBOTTOM] < oldupdatebox[BOXBOTTOM]) ?
+		updatebox[BOXBOTTOM] : oldupdatebox[BOXBOTTOM];
+	updatebox[BOXLEFT] = (updatebox[BOXLEFT] < oldupdatebox[BOXLEFT]) ?
+		updatebox[BOXLEFT] : oldupdatebox[BOXLEFT];
 
-	memcpy(voldupdatebox, oldupdatebox, sizeof(oldupdatebox));
-	memcpy(oldupdatebox, dirtybox, sizeof(dirtybox));
+	memcpy (voldupdatebox, oldupdatebox, sizeof(oldupdatebox));
+	memcpy (oldupdatebox, dirtybox, sizeof(dirtybox));
 
 	if (updatebox[BOXTOP] >= updatebox[BOXBOTTOM])
-		I_UpdateBox(updatebox[BOXLEFT], updatebox[BOXBOTTOM],
+		I_UpdateBox (updatebox[BOXLEFT], updatebox[BOXBOTTOM],
 			updatebox[BOXRIGHT] - updatebox[BOXLEFT] + 1,
 			updatebox[BOXTOP] - updatebox[BOXBOTTOM] + 1);
 
-	M_ClearBox(dirtybox);
+	M_ClearBox (dirtybox);
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_FinishUpdate
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_FinishUpdate
+=
+===================
+*/
 
-void I_FinishUpdate(void)
+void I_FinishUpdate (void)
 {
 	static	int		lasttic;
 	int				tics, i;
 
-    // draws little dots on the bottom of the screen
-    if (devparm)
-    {
-		i = I_GetTime();
-		tics = i - lasttic;
-		lasttic = i;
+	// draws little dots on the bottom of the screen
+	if (devparm)
+	{
+		tics = ticcount - lasttic;
+		lasttic = ticcount;
 		if (tics > 20) tics = 20;
 
-		outpw(SC_INDEX, SC_MAPMASK | (1 << 8));
+		outpw (SC_INDEX, SC_MAPMASK | (1 << 8));
 
-		for (i=0 ; i<tics*2 ; i+=2)
+		for (i=0 ; i<tics ; i++)
 			destscreen[ (SCREENHEIGHT-1)*PLANEWIDTH + i] = 0xff;
-		for ( ; i<20*2 ; i+=2)
+		for ( ; i<20 ; i++)
 			destscreen[ (SCREENHEIGHT-1)*PLANEWIDTH + i] = 0x0;
-    }
+	}
 
 	// page flip
-	outpw(CRTC_INDEX, CRTC_STARTHIGH+((int)destscreen&0xff00));
+	outpw (CRTC_INDEX, CRTC_STARTHIGH+((int)destscreen&0xff00));
 
 	destscreen += 0x4000;
 	if ( (int)destscreen == 0xac000)
 		destscreen = (byte *)0xa0000;
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_InitGraphics
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_InitGraphics
+=
+===================
+*/
 
-void I_InitGraphics(void)
+void I_InitGraphics (void)
 {
-	if(novideo)
-	{
+	if (novideo)
 		return;
-	}
 	grmode = true;
 	regs.w.ax = 0x13;
-	int386(0x10, (const union REGS *)&regs, &regs);
+	int386 (0x10, (const union REGS *)&regs, &regs);
 	screen = currentscreen = (byte *)0xa0000;
 	destscreen = (byte *)0xa4000;
 	outp (SC_INDEX,SC_MEMMODE);
@@ -480,51 +495,52 @@ void I_InitGraphics(void)
 	outp (GC_INDEX,GC_MISCELLANEOUS);
 	outp (GC_INDEX+1,inp(GC_INDEX+1)&~2);
 	outpw (SC_INDEX,SC_MAPMASK|(15<<8));
-	memset(screen, 0, 65536);
+	memset (screen, 0, 65536);
 	outp (CRTC_INDEX,CRTC_UNDERLINE);
 	outp (CRTC_INDEX+1,inp(CRTC_INDEX+1)&~0x40);
 	outp (CRTC_INDEX,CRTC_MODE);
 	outp (CRTC_INDEX+1,inp(CRTC_INDEX+1)|0x40);
 	outp (GC_INDEX,GC_READMAP);
-	I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
-	I_InitDiskFlash();
+	I_SetPalette (W_CacheLumpName("PLAYPAL", PU_CACHE));
+	I_InitDiskFlash ();
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_ShutdownGraphics
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_ShutdownGraphics
+=
+===================
+*/
 
-void I_ShutdownGraphics(void)
+void I_ShutdownGraphics (void)
 {
-
-	if(*(byte *)0x449 == 0x13) // don't reset mode if it didn't get set
+	if (*(byte *)0x449 == 0x13) // don't reset mode if it didn't get set
 	{
 		regs.w.ax = 3;
-		int386(0x10, &regs, &regs); // back to text mode
+		int386 (0x10, &regs, &regs); // back to text mode
 	}
 }
 
-//--------------------------------------------------------------------------
-//
-// PROC I_ReadScreen
-//
-// Reads the screen currently displayed into a linear buffer.
-//
-//--------------------------------------------------------------------------
+/*
+===================
+=
+= I_ReadScreen
+=
+= Reads the screen currently displayed into a linear buffer.
+=
+===================
+*/
 
-void I_ReadScreen(byte *scr)
+void I_ReadScreen (byte *scr)
 {
-	int p, i;
+	int	p, i;
 	outp (GC_INDEX,GC_READMAP);
 	for (p = 0; p < 4; p++)
 	{
 		outp (GC_INDEX+1,p);
 		for (i = 0; i < SCREENWIDTH*SCREENHEIGHT/4; i++)
-		{
 			scr[i*4+p] = currentscreen[i];
-		}
 	}
 }
 
@@ -966,33 +982,33 @@ void I_StartupJoystick (void)
 	if (!I_ReadJoystick ())
 	{
 		joystickpresent = false;
-		printf("joystick not found\n");
+		printf ("joystick not found\n");
 		return;
 	}
-	printf("joystick found\n");
+	printf ("joystick found\n");
 	joystickpresent = true;
 
-	printf("CENTER the joystick and press button 1:");
+	printf ("CENTER the joystick and press button 1:");
 	if (!WaitJoyButton ())
 		return;
 	I_ReadJoystick ();
 	centerx = joystickx;
 	centery = joysticky;
 
-	printf("\nPush the joystick to the UPPER LEFT corner and press button 1:");
+	printf ("\nPush the joystick to the UPPER LEFT corner and press button 1:");
 	if (!WaitJoyButton ())
 		return;
 	I_ReadJoystick ();
 	joyxl = (centerx + joystickx)/2;
 	joyyl = (centerx + joysticky)/2;
 
-	printf("\nPush the joystick to the LOWER RIGHT corner and press button 1:");
+	printf ("\nPush the joystick to the LOWER RIGHT corner and press button 1:");
 	if (!WaitJoyButton ())
 		return;
 	I_ReadJoystick ();
 	joyxh = (centerx + joystickx)/2;
 	joyyh = (centery + joysticky)/2;
-	printf("\n");
+	printf ("\n");
 }
 
 /*
@@ -1230,16 +1246,16 @@ void I_Init (void)
 		doomcon = (doomcontrol_t*)atoi(myargv[i+1]);
 		printf("Using external control API\n");
 	}
-	printf("I_StartupDPMI\n");
-	I_StartupDPMI();
-	printf("I_StartupMouse\n");
-	I_StartupMouse();
-	printf("I_StartupJoystick\n");
-	I_StartupJoystick();
-	printf("I_StartupKeyboard\n");
-	I_StartupKeyboard();
-	printf("I_StartupSound\n");
-	I_StartupSound();
+	printf ("I_StartupDPMI\n");
+	I_StartupDPMI ();
+	printf ("I_StartupMouse\n");
+	I_StartupMouse ();
+	printf ("I_StartupJoystick\n");
+	I_StartupJoystick ();
+	printf ("I_StartupKeyboard\n");
+	I_StartupKeyboard ();
+	printf ("I_StartupSound\n");
+	I_StartupSound ();
 	//IO_StartupTimer();
 }
 
@@ -1285,36 +1301,38 @@ void I_Error (char *error, ...)
 	exit (1);
 }
 
-//--------------------------------------------------------------------------
-//
-// I_Quit
-//
-// Shuts down net game, saves defaults, prints the exit text message,
-// goes to text mode, and exits.
-//
-//--------------------------------------------------------------------------
+/*
+===============
+=
+= I_Quit
+=
+= Shuts down net game, saves defaults, prints the exit text message,
+= goes to text mode, and exits.
+=
+===============
+*/
 
-void I_Quit(void)
+void I_Quit (void)
 {
 	byte *scr;
 	char *lumpName;
 	int r;
 
 	if (demorecording)
-		G_CheckDemoStatus();
+		G_CheckDemoStatus ();
 	else
-		D_QuitNetGame();
-	M_SaveDefaults();
-	scr = (byte *)W_CacheLumpName("ENDOOM", PU_CACHE);
-	I_Shutdown();
-	memcpy((void *)0xb8000, scr, 80*25*2);
+		D_QuitNetGame ();
+	M_SaveDefaults ();
+	scr = (byte *)W_CacheLumpName ("ENDOOM", PU_CACHE);
+	I_Shutdown ();
+	memcpy ((void *)0xb8000, scr, 80*25*2);
 	regs.w.ax = 0x0200;
 	regs.h.bh = 0;
 	regs.h.dl = 0;
 	regs.h.dh = 23;
-	int386(0x10, (const union REGS *)&regs, &regs); // Set text pos
-	printf("\n");
-	exit(0);
+	int386 (0x10, (const union REGS *)&regs, &regs); // Set text pos
+	printf ("\n");
+	exit (0);
 }
 
 /*

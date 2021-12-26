@@ -229,7 +229,8 @@ void I_UpdateSoundParams(int handle, int vol, int sep, int pitch)
 
 void I_sndArbitrateCards(void)
 {
-  boolean gus, adlib, pc, sb, midi, ensoniq, codec;
+  // boolean gus, adlib, pc, sb, midi, ensoniq, codec;
+  boolean codec, ensoniq, gus, adlib, pc, sb, midi;
   int i, rc, mputype, p, opltype, wait, dmxlump;
 
   snd_MaxVolume = 127;
@@ -285,7 +286,10 @@ void I_sndArbitrateCards(void)
 	else
 	{
 	  fprintf(stderr, "GUS2\n");
-	  dmxlump = W_GetNumForName(commercial ? "dmxgusc" : "dmxgus");
+	  if (commercial)
+	    dmxlump = W_GetNumForName("dmxgusc");
+	  else
+	    dmxlump = W_GetNumForName("dmxgus");
 	  GF1_SetMap(W_CacheLumpNum(dmxlump, PU_CACHE), lumpinfo[dmxlump].size);
 	}
 

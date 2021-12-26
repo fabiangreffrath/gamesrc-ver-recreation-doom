@@ -519,10 +519,10 @@ int sub_2DAE0(void)
 void sub_2DB10(int a1, int a2)
 {
 	union REGS regs;
-	regs.h.dh = a2;
-	regs.h.dl = a1;
 	regs.h.ah = 2;
 	regs.h.bh = 0;
+	regs.h.dh = a2;
+	regs.h.dl = a1;
 	int386(0x10, &regs, &regs);
 }
 
