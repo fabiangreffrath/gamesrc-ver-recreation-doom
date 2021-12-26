@@ -17,7 +17,7 @@ extern int _wp1, _wp2;
 ===============
 */
 
-int tsm_ID;
+static int tsm_ID;
 
 void I_StartupTimer (void)
 {
