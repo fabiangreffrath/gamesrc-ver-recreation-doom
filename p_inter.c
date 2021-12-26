@@ -123,7 +123,7 @@ boolean P_GiveWeapon (player_t *player, weapontype_t weapon, boolean dropped)
 			P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
 		player->pendingweapon = weapon;
 		if (player == &players[consoleplayer])
-			S_StartSound (player->mo, sfx_wpnup);
+			S_StartSound (NULL, sfx_wpnup);
 		return false;
 	}
 	
@@ -306,14 +306,14 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 // bonus items
 //
 	case SPR_BON1:
-		player->health+=2;		// can go over 100%
+		player->health++;		// can go over 100%
 		if (player->health > 200)
 			player->health = 200;
 		player->mo->health = player->health;
 		player->message = GOTHTHBONUS;
 		break;
 	case SPR_BON2:
-		player->armorpoints+=2;		// can go over 100%
+		player->armorpoints++;		// can go over 100%
 		if (player->armorpoints > 200)
 			player->armorpoints = 200;
 		if (!player->armortype)
@@ -745,7 +745,7 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 		if (player->health < 0)
 			player->health = 0;
 		player->attacker = source;
-		player->damagecount += (damage>>1);	// add damage after armor / invuln
+		player->damagecount += damage;	// add damage after armor / invuln
 		if (player->damagecount > 100)
 			player->damagecount = 100;	// teleport stomp does 10k points...
 	

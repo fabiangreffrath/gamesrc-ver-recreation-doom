@@ -70,8 +70,8 @@ void P_CalcHeight (player_t *player)
 		return;
 	}
 		
-	angle = (FINEANGLES/20*leveltime)&(FINEANGLES-1);
-	bob = (( player->bob )>>17) * finesine[angle];
+	angle = (FINEANGLES/20*leveltime)&FINEMASK;
+	bob = FixedMul ( player->bob/2, finesine[angle]);
 	
 //
 // move viewheight

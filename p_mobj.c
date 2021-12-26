@@ -92,7 +92,7 @@ void P_XYMovement (mobj_t *mo)
 			mo->flags &= ~MF_SKULLFLY;
 			mo->momx = mo->momy = mo->momz = 0;
 
-			P_SetMobjState (mo, mo->info->seestate);
+			P_SetMobjState (mo, mo->info->spawnstate);
 		}
 		return;
 	}
@@ -627,12 +627,10 @@ void P_SpawnMapThing (mapthing_t *mthing)
 	if (mthing->type <= 4)
 	{
 		// save spots for respawning in network games
-		if (mthing->type <= MAXPLAYERS)
-		{
-			playerstarts[mthing->type-1] = *mthing;
-			if (!deathmatch)
-				P_SpawnPlayer (mthing);
-		}
+		playerstarts[mthing->type-1] = *mthing;
+		if (!deathmatch)
+			P_SpawnPlayer (mthing);
+
 		return;
 	}
 
@@ -661,7 +659,7 @@ void P_SpawnMapThing (mapthing_t *mthing)
 
 		
 // don't spawn keycards and players in deathmatch
-	if (deathmatch && mobjinfo[i].flags & (MF_NOTDMATCH|MF_COUNTKILL) )
+	if (deathmatch && mobjinfo[i].flags & MF_NOTDMATCH)
 		return;
 		
 // don't spawn any monsters if -nomonsters
@@ -788,7 +786,7 @@ mobj_t *P_SpawnMissile (mobj_t *source, mobj_t *dest, mobjtype_t type)
 	
 	th = P_SpawnMobj (source->x,source->y, source->z + 4*8*FRACUNIT, type);
 	if (th->info->seesound)
-		S_StartSound (source, th->info->seesound);
+		S_StartSound (th, th->info->seesound);
 	th->target = source;		// where it came from
 	an = R_PointToAngle2 (source->x, source->y, dest->x, dest->y);	
 	// fuzzy player

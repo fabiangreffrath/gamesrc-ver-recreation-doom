@@ -388,7 +388,7 @@ void WI_drawShowNextLoc(void)
   }
 
   // draws which level you are entering..
-  if (commercial || wbs->next != 30)
+  if (!commercial || wbs->next != 30)
     WI_drawEL();  
 }
 

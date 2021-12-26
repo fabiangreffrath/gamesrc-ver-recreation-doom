@@ -26,7 +26,7 @@ void T_FireFlicker (lightflash_t *flash)
 	if (flash->sector->lightlevel - amount < flash->minlight)
 		flash->sector->lightlevel = flash->minlight;
 	else
-		flash->sector->lightlevel = flash->maxlight;
+		flash->sector->lightlevel = flash->maxlight - amount;
 
 	flash->count = 4;
 }

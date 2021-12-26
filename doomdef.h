@@ -331,17 +331,17 @@ typedef enum
 
 typedef enum
 {
-    wp_fist,
-    wp_pistol,
-    wp_shotgun,
-    wp_chaingun,
-    wp_missile,
-    wp_plasma,
-    wp_bfg,
-    wp_chainsaw,
-    wp_supershotgun,
-    NUMWEAPONS,
-    wp_nochange
+	wp_fist,
+	wp_pistol,
+	wp_shotgun,
+	wp_chaingun,
+	wp_missile,
+	wp_plasma,
+	wp_bfg,
+	wp_chainsaw,
+	wp_supershotgun,
+	NUMWEAPONS,
+	wp_nochange
 } weapontype_t;
 
 typedef enum
@@ -377,10 +377,10 @@ typedef enum
 	NUMPOWERS
 } powertype_t;
 
-#define	INVULNTICS (30*15)
-#define	INVISTICS (60*15)
-#define	INFRATICS (120*15)
-#define	IRONTICS (60*15)
+#define	INVULNTICS (30*35)
+#define	INVISTICS (60*35)
+#define	INFRATICS (120*35)
+#define	IRONTICS (60*35)
 
 /*
 ================

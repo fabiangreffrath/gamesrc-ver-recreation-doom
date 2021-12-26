@@ -730,7 +730,7 @@ void AM_drawWalls(void)
           AM_drawMline(&l, WALLCOLORS+WALLRANGE/2);
 	} else if (lines[i].flags & ML_SECRET) // secret door
 	{
-	  if (cheating) AM_drawMline(&l, 0);
+	  if (cheating) AM_drawMline(&l, SECRETWALLCOLORS + lightlev);
 	  else AM_drawMline(&l, WALLCOLORS+lightlev);
 	} else if (lines[i].backsector->floorheight
 		   != lines[i].frontsector->floorheight) {
