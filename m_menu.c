@@ -373,7 +373,7 @@ menu_t  ReadDef2 =
 	read2_end,
 	NULL,
 	ReadMenu2,
-	M_DrawReadThisRetail,
+	M_DrawReadThis2,
 	330,175,
 	0
 };
