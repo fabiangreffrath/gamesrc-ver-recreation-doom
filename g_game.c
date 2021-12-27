@@ -377,16 +377,6 @@ void G_DoLoadLevel (void)
 {
 	int             i;
 
-	if (commercial)
-	{
-		skytexture = R_TextureNumForName ("SKY3");
-		if (gamemap < 12)
-			skytexture = R_TextureNumForName ("SKY1");
-		else
-			if (gamemap < 21)
-				skytexture = R_TextureNumForName ("SKY2");
-	}
-
 	levelstarttic = gametic;        // for time calculation
 	
 	if (wipegamestate == GS_LEVEL) 
@@ -1648,7 +1638,7 @@ boolean G_CheckDemoStatus (void)
 		if (singledemo)
 			I_Quit ();
 
-		Z_ChangeTag (demobuffer, PU_CACHE, 1608);
+		Z_ChangeTag (demobuffer, PU_CACHE, 1595);
 		demoplayback = false;
 		netdemo = false;
 		netgame = false;

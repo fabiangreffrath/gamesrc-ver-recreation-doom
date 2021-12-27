@@ -431,7 +431,7 @@ void D_DoAdvanceDemo (void)
 	usergame = false;               // can't save / end game here
 	paused = false;
 	gameaction = ga_nothing;
-	demosequence = (demosequence+1)%6;
+	demosequence = (demosequence+1)%7;
 	switch (demosequence)
 	{
 		case 0:
