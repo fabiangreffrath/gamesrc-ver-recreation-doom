@@ -431,7 +431,11 @@ void D_DoAdvanceDemo (void)
 	usergame = false;               // can't save / end game here
 	paused = false;
 	gameaction = ga_nothing;
+#if (APPVER_DOOMREV < AV_DR_DM19F2)
 	demosequence = (demosequence+1)%7;
+#else
+	demosequence = (demosequence+1)%6;
+#endif
 	switch (demosequence)
 	{
 		case 0:

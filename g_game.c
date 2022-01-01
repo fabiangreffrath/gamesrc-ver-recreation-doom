@@ -377,6 +377,18 @@ void G_DoLoadLevel (void)
 {
 	int             i;
 
+#if (APPVER_DOOMREV >= AV_DR_DM19F2) // "Sky never changes in Doom II" bug fix
+	if (commercial)
+	{
+		skytexture = R_TextureNumForName ("SKY3");
+		if (gamemap < 12)
+			skytexture = R_TextureNumForName ("SKY1");
+		else
+			if (gamemap < 21)
+				skytexture = R_TextureNumForName ("SKY2");
+	}
+#endif
+
 	levelstarttic = gametic;        // for time calculation
 	
 	if (wipegamestate == GS_LEVEL) 
@@ -1638,7 +1650,11 @@ boolean G_CheckDemoStatus (void)
 		if (singledemo)
 			I_Quit ();
 
+#if (APPVER_DOOMREV < AV_DR_DM19F2)
 		Z_ChangeTag (demobuffer, PU_CACHE, 1595);
+#else
+		Z_ChangeTag (demobuffer, PU_CACHE, 1608);
+#endif
 		demoplayback = false;
 		netdemo = false;
 		netgame = false;
