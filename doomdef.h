@@ -11,6 +11,10 @@
 #define	strncasecmp strnicmp
 #endif
 
+// VERSIONS RESTORATION
+// This *must* be included (near) the beginning for every compilation unit
+#include "GAMEVER.H"
+
 #define VERSION 109
 
 // if rangecheck is undefined, most parameter validation debugging code
