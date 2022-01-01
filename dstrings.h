@@ -196,6 +196,7 @@
 #define HUSTR_31	"level 31: wolfenstein"
 #define HUSTR_32	"level 32: grosse"
 
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 #define PHUSTR_1	"level 1: congo"
 #define PHUSTR_2	"level 2: well of souls"
 #define PHUSTR_3	"level 3: aztec"
@@ -267,6 +268,7 @@
 
 #define THUSTR_31	"level 31: pharaoh"
 #define THUSTR_32	"level 32: caribbean"
+#endif // APPVER_DOOMREV >= AV_DR_DM19F
 
 #define HUSTR_CHATMACRO1	"I'm ready to kick butt!"
 #define HUSTR_CHATMACRO2	"I'm OK."
@@ -505,6 +507,7 @@
 "BLAZE THROUGH THIS ONE!\n"
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 // after map 06	
 
 #define P1TEXT  \
@@ -649,6 +652,7 @@
 "\n"\
 "As you step off the transport, you hear\n"\
 "the stomp of a cyberdemon's iron shoe."
+#endif // APPVER_DOOMREV >= AV_DR_DM19F
 
 
 

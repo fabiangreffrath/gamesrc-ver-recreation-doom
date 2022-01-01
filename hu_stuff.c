@@ -148,6 +148,7 @@ char *mapnames2[] =	// DOOM 2 map names.
 };
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 char*	mapnamesp[] =	// Plutonia WAD map names.
 {
 	PHUSTR_1,
@@ -224,6 +225,7 @@ char *mapnamest[] =	// TNT WAD map names.
 	THUSTR_31,
 	THUSTR_32
 };
+#endif // APPVER_DOOMREV >= AV_DR_DM19F
 
 
 const char *shiftxform;
@@ -383,11 +385,13 @@ void HU_Start(void)
 
   if (commercial)
   {
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
     if (plutonia)
       s = HU_TITLEP;
     else if (tnt)
       s = HU_TITLET;
     else
+#endif
       s = HU_TITLE2;
   }
   else

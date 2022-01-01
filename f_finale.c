@@ -26,6 +26,7 @@ char    *c4text = C4TEXT;
 char    *c5text = C5TEXT;
 char    *c6text = C6TEXT;
 
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 char    *p1text = P1TEXT;
 char    *p2text = P2TEXT;
 char    *p3text = P3TEXT;
@@ -39,6 +40,7 @@ char    *t3text = T3TEXT;
 char    *t4text = T4TEXT;
 char    *t5text = T5TEXT;
 char    *t6text = T6TEXT;
+#endif
 
 char    *finaletext;
 char    *finaleflat;
@@ -64,6 +66,7 @@ void F_StartFinale (void)
 
 	if (commercial)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 		if (plutonia)
 		{
 			switch(gamemap)
@@ -125,6 +128,7 @@ void F_StartFinale (void)
 			}
 		}
 		else
+#endif // APPVER_DOOMREV >= AV_DR_DM19F
 		{
 			switch(gamemap)
 			{

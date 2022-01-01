@@ -25,8 +25,10 @@ boolean shareware;		// true if only episode 1 present
 boolean registered;
 boolean commercial;
 boolean french;
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 boolean plutonia;
 boolean tnt;
+#endif
 
 boolean devparm;            // started game with -devparm
 boolean nomonsters;			// checkparm of -nomonsters
@@ -615,13 +617,19 @@ void IdentifyVersion (void)
 {
 
 	char	*doom1wad, *doomwad, *doom2wad;
+#if (APPVER_DOOMREV < AV_DR_DM19F)
+	char	*doom2fwad;
+#else
 	char	*doom2fwad, *plutoniawad, *tntwad;
+#endif
 	strcpy(basedefault,"default.cfg");
 	doom1wad = "doom1.wad";
 	doom2fwad = "doom2f.wad";
 	doom2wad = "doom2.wad";
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 	plutoniawad = "plutonia.wad";
 	tntwad = "tnt.wad";
+#endif
 	doomwad = "doom.wad";
 	if (M_CheckParm ("-shdev"))
 	{
@@ -651,11 +659,13 @@ void IdentifyVersion (void)
 	{
 		commercial = true;
 		devparm = true;
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 		if(plutonia)
 			D_AddFile (DEVDATA"plutonia.wad");
 		else if(tnt)
 			D_AddFile (DEVDATA"tnt.wad");
 		else
+#endif
 			D_AddFile (DEVDATA"doom2.wad");
 		    
 		D_AddFile (DEVMAPS"cdata/texture1.lmp");
@@ -682,6 +692,7 @@ void IdentifyVersion (void)
 		return;
 	}
 	
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 	if ( !access (plutoniawad, R_OK ) )
 	{
 		commercial = true;
@@ -697,6 +708,7 @@ void IdentifyVersion (void)
 		D_AddFile (tntwad);
 		return;
 	}
+#endif // APPVER_DOOMREV >= AV_DR_DM19F
 	
 	if ( !access (doomwad, R_OK ) )
 	{
@@ -831,6 +843,7 @@ void D_DoomMain (void)
 				 "                        ",
 				 VERSION/100,VERSION%100);
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 	else if (plutonia)
 	{
 		sprintf (title,
@@ -847,6 +860,7 @@ void D_DoomMain (void)
 				 "                           ",
 				 VERSION/100,VERSION%100);
 	}
+#endif // APPVER_DOOMREV >= AV_DR_DM19F
 	else
 	{
 		sprintf (title,

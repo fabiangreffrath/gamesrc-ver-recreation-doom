@@ -527,8 +527,10 @@ extern boolean shareware; // true if main WAD is the shareware version
 extern boolean registered;
 extern boolean commercial;
 extern boolean french;
+#if (APPVER_DOOMREV >= AV_DR_DM19F)
 extern boolean plutonia;
 extern boolean tnt;
+#endif
 
 extern boolean devparm; // started game with -devparm
 

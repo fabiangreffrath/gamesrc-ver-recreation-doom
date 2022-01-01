@@ -726,7 +726,11 @@ void M_DrawReadThis1(void)
 void M_DrawReadThis2(void)
 {
 	inhelpscreens = true;
+#if (APPVER_DOOMREV < AV_DR_DM19F)
+	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP1",PU_CACHE));
+#else
 	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP",PU_CACHE));
+#endif
 }
 
 void M_DrawReadThisRetail(void)
