@@ -1557,6 +1557,13 @@ void A_BossDeath (mobj_t *mo)
 	}
 	else
 	{
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+		if (gamemap != 8)
+			return;
+
+		if ((mo->type == MT_BRUISER) && (gameepisode != 1))
+			return;
+#else
 		switch(gameepisode)
 		{
 			case 1:
@@ -1608,6 +1615,7 @@ void A_BossDeath (mobj_t *mo)
 					return;
 				break;
 		}
+#endif // APPVER_DOOMREV
 	}
 
 //
@@ -1657,6 +1665,14 @@ void A_BossDeath (mobj_t *mo)
 	}
 	else
 	{
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+		if (gameepisode == 1)
+		{
+			junk.tag = 666;
+			EV_DoFloor (&junk, lowerFloorToLowest);
+			return;
+		}
+#else
 		switch(gameepisode)
 		{
 			case 1:
@@ -1681,6 +1697,7 @@ void A_BossDeath (mobj_t *mo)
 						break;
 				}
 		}
+#endif
 	}
 	
 	G_ExitLevel ();

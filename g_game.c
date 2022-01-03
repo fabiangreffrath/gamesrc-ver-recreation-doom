@@ -1075,9 +1075,11 @@ void G_DoCompleted(void)
 				case 3:
 					wminfo.next = 6;
 					break;
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 				case 4:
 					wminfo.next = 2;
 					break;
+#endif
 			}
 		}
 		else
@@ -1442,7 +1444,11 @@ void G_InitNew(skill_t skill, int episode, int map)
 				skytexture = R_TextureNumForName("SKY3");
 				break;
 			case 4:	// Special Edition sky
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+				skytexture = R_TextureNumForName("SKY2");
+#else
 				skytexture = R_TextureNumForName("SKY4");
+#endif
 				break;
 		}
 

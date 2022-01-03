@@ -16,6 +16,13 @@
 #include "soundst.h"
 #include "DUtils.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+#undef	BGCOLOR
+#undef	FGCOLOR
+#define	BGCOLOR	3
+#define	FGCOLOR	0
+#endif
+
 extern int _wp1, _wp2, _wp3, _wp4;
 
 #define MAXWADFILES 20
@@ -433,7 +440,7 @@ void D_DoAdvanceDemo (void)
 	usergame = false;               // can't save / end game here
 	paused = false;
 	gameaction = ga_nothing;
-#if (APPVER_DOOMREV < AV_DR_DM19F2)
+#if (APPVER_DOOMREV >= AV_DR_DM19U) && (APPVER_DOOMREV < AV_DR_DM19F2)
 	demosequence = (demosequence+1)%7;
 #else
 	demosequence = (demosequence+1)%6;
@@ -474,16 +481,22 @@ void D_DoAdvanceDemo (void)
 			else
 			{
 				pagetic = 200;
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+				pagename = "HELP2";
+#else
 				pagename = "CREDIT";
+#endif
 			}
 			break;
 		case 5:
 			G_DeferedPlayDemo ("demo3");
 			break;
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 			// THE DEFINITIVE DOOM Special Edition demo
 		case 6:
 			G_DeferedPlayDemo ("demo4");
 			break;
+#endif
 	}
 }
 
@@ -600,7 +613,11 @@ void CheckBetaTest(void)
 }
 
 
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+#define DEVMAPS "e:/doom/"
+#else
 #define DEVMAPS "f:/doom/data_se/"
+#endif
 #define DEVDATA "c:/localid/"
 
 /*
@@ -838,9 +855,15 @@ void D_DoomMain (void)
 	if (!commercial)
 	{
 		sprintf (title,
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+				 "                   "
+				 "DOOM System Startup v%i.%i Special Edition"
+				 "                          ",
+#else
 				 "                         "
 				 "The Ultimate DOOM Startup v%i.%i"
 				 "                        ",
+#endif
 				 VERSION/100,VERSION%100);
 	}
 #if (APPVER_DOOMREV >= AV_DR_DM19F)

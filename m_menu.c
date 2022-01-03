@@ -215,8 +215,12 @@ menuitem_t MainMenu[]=
 	{1,"M_OPTION",M_Options, 'o'},
 	{1,"M_LOADG", M_LoadGame,'l'},
 	{1,"M_SAVEG", M_SaveGame,'s'},
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+	{1,"M_RDTHIS",M_ReadThis,'r'},
+#else
 	// Another hickup with Special edition.
 	{1,"M_RDTHIS",M_ReadThis2,'r'},
+#endif
 	{1,"M_QUITG", M_QuitDOOM,'q'}
 };
 

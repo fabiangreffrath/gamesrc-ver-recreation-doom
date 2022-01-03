@@ -177,10 +177,12 @@ void F_StartFinale (void)
 				finaleflat = "MFLR8_4";
 				finaletext = e3text;
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 			case 4:
 				finaleflat = "MFLR8_3";
 				finaletext = e4text;
 				break;
+#endif
 		}
 
 		S_ChangeMusic(mus_victor, true);
@@ -752,9 +754,11 @@ void F_Drawer (void)
 			case 3:
 				F_BunnyScroll();
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 			case 4:
 				V_DrawPatch(0,0,0,W_CacheLumpName("ENDPIC",PU_CACHE));
 				break;
+#endif
 		}
 	}
 			

@@ -117,14 +117,17 @@ boolean ST_Responder (event_t *ev)
 	  plyr->message = STSTR_MUS;
 	  cht_GetParam(&cheat_mus, buf);
 	
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 	  if (commercial)
 	  {
+#endif
 	    musnum = mus_runnin + (buf[0]-'0')*10 + buf[1]-'0' - 1;
 	  
 	    if (((buf[0]-'0')*10 + buf[1]-'0') > 35)
 	      plyr->message = STSTR_NOMUS;
 	    else
 	      S_ChangeMusic(musnum, 1);
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 	  }
 	  else
 	  {
@@ -135,6 +138,7 @@ boolean ST_Responder (event_t *ev)
 	    else
 	      S_ChangeMusic(musnum, 1);
 	  }
+#endif
 	}
 	else if (!commercial && cht_CheckCheat(&cheat_noclip, ev->data1) )
 	{	
