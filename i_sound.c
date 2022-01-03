@@ -7,7 +7,11 @@
 #include "sounds.h"
 #include "i_sound.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM19F)
+extern int _wp1;
+#else
 extern int _wp1, _wp2;
+#endif
 
 /*
 ===============
