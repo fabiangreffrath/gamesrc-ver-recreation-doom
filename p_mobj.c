@@ -231,6 +231,7 @@ void P_ZMovement (mobj_t *mo)
 	if (mo->z <= mo->floorz)
 	{	// hit the floor
 
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 		// Note (id):
 		//  somebody left this after the setting momz to 0,
 		//  kinda useless there.
@@ -238,6 +239,7 @@ void P_ZMovement (mobj_t *mo)
 		{	// the skull slammed into something
 			mo->momz = -mo->momz;
 		}
+#endif
 
 		if (mo->momz < 0)
 		{
@@ -250,6 +252,12 @@ void P_ZMovement (mobj_t *mo)
 		}
 		mo->z = mo->floorz;
 
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+		if (mo->flags & MF_SKULLFLY)
+		{	// the skull slammed into something
+			mo->momz = -mo->momz;
+		}
+#endif
 		if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
 		{
 			P_ExplodeMissile (mo);
