@@ -17,7 +17,9 @@ int             finalecount;
 char    *e1text = E1TEXT;
 char    *e2text = E2TEXT;
 char    *e3text = E3TEXT;
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 char    *e4text = E4TEXT;
+#endif
 
 char    *c1text = C1TEXT;
 char    *c2text = C2TEXT;
@@ -746,7 +748,11 @@ void F_Drawer (void)
 		switch (gameepisode)
 		{
 			case 1:
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+				V_DrawPatch(0,0,0,W_CacheLumpName("HELP2",PU_CACHE));
+#else
 				V_DrawPatch(0,0,0,W_CacheLumpName("CREDIT",PU_CACHE));
+#endif
 				break;
 			case 2:
 				V_DrawPatch(0,0,0,W_CacheLumpName("VICTORY2",PU_CACHE));

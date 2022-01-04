@@ -654,8 +654,13 @@ void IdentifyVersion (void)
 		shareware = true;
 		devparm = true;
 		D_AddFile (DEVDATA"doom1.wad");
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+		D_AddFile (DEVMAPS"data/texture1.lmp");
+		D_AddFile (DEVMAPS"data/pnames.lmp");
+#else
 		D_AddFile (DEVMAPS"data_se/texture1.lmp");
 		D_AddFile (DEVMAPS"data_se/pnames.lmp");
+#endif
 		strcpy (basedefault,DEVDATA"default.cfg");
 		return;
 	}
@@ -665,9 +670,15 @@ void IdentifyVersion (void)
 		registered = true;
 		devparm = true;
 		D_AddFile (DEVDATA"doom.wad");
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+		D_AddFile (DEVMAPS"data/texture1.lmp");
+		D_AddFile (DEVMAPS"data/texture2.lmp");
+		D_AddFile (DEVMAPS"data/pnames.lmp");
+#else
 		D_AddFile (DEVMAPS"data_se/texture1.lmp");
 		D_AddFile (DEVMAPS"data_se/texture2.lmp");
 		D_AddFile (DEVMAPS"data_se/pnames.lmp");
+#endif
 		strcpy (basedefault,DEVDATA"default.cfg");
 		return;
 	}

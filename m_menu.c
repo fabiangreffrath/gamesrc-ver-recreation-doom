@@ -375,7 +375,11 @@ menuitem_t ReadMenu2[]=
 menu_t  ReadDef2 =
 {
 	read2_end,
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+	&ReadDef1,
+#else
 	NULL,
+#endif
 	ReadMenu2,
 #if (APPVER_DOOMREV < AV_DR_DM19F2)
 	M_DrawReadThis2,

@@ -93,10 +93,12 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	HUSTR_E4M3,
 	HUSTR_E4M4,
 	HUSTR_E4M5,
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 	HUSTR_E4M6,
 	HUSTR_E4M7,
 	HUSTR_E4M8,
 	HUSTR_E4M9,
+#endif
 
 	"NEWLEVEL",
 	"NEWLEVEL",
@@ -106,6 +108,18 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	"NEWLEVEL",
 	"NEWLEVEL",
 	"NEWLEVEL",
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+	"NEWLEVEL",
+#endif
 	"NEWLEVEL"
 };
 

@@ -155,10 +155,12 @@
 #define HUSTR_E4M3	"E4M3: Sever The Wicked"
 #define HUSTR_E4M4	"E4M4: Unruly Evil"
 #define HUSTR_E4M5	"E4M5: They Will Repent"
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 #define HUSTR_E4M6	"E4M6: Against Thee Wickedly"
 #define HUSTR_E4M7	"E4M7: And Hell Followed"
 #define HUSTR_E4M8	"E4M8: Unto The Cruel"
 #define HUSTR_E4M9	"E4M9: Fear"
+#endif
 
 #define HUSTR_1	"level 1: entryway"
 #define HUSTR_2	"level 2: underhalls"
@@ -397,6 +399,7 @@
 "door with you ..."
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
 #define E4TEXT \
 "the spider mastermind must have sent forth\n"\
 "its legions of hellspawn before your\n"\
@@ -414,6 +417,7 @@
 "of demons run amok among our cities.\n"\
 "\n"\
 "next stop, hell on earth!"
+#endif
 
 
 // after level 6, put this:

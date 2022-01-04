@@ -536,6 +536,17 @@ void S_Start(void)
     {
       // Song - Who? - Where?
       
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+      mus_e2m6,
+      mus_e3m2,
+      mus_e3m3,
+      mus_e1m4,
+      mus_e2m7,
+      mus_e2m4,
+      mus_e2m5,
+      mus_e1m6,
+      mus_e1m6
+#else
       mus_e3m4,	// American	e4m1
       mus_e3m2,	// Romero	e4m2
       mus_e3m3,	// Shawn	e4m3
@@ -545,6 +556,7 @@ void S_Start(void)
       mus_e2m6,	// J.Anderson	e4m7 CHIRON.WAD
       mus_e2m5,	// Shawn	e4m8
       mus_e1m9	// Tim		e4m9
+#endif
     };
     
     if (gameepisode < 4)
