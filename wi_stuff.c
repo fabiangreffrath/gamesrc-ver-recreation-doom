@@ -1002,6 +1002,15 @@ void WI_loadData(void)
   else
   {
     lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS, PU_STATIC, 0);
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+    if (wbs->epsd == 3)
+      for (i=0 ; i<6 ; i++)
+      {
+        sprintf(name, "WILV3%d", i);
+        lnames[i] = W_CacheLumpName(name, PU_STATIC);
+      }
+    else
+#endif
     for (i=0 ; i<NUMMAPS ; i++)
     {
       sprintf(name, "WILV%d%d", wbs->epsd, i);
@@ -1078,7 +1087,9 @@ void WI_unloadData(void)
     Z_ChangeTag(yah[0], PU_CACHE,1071); Z_ChangeTag(yah[1], PU_CACHE,1071);
     Z_ChangeTag(splat, PU_CACHE,1072);
     for (i=0 ; i<NUMMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE,1073);
+#if (APPVER_DOOMREV >= AV_DR_DM19U)
     if (wbs->epsd < 3)
+#endif
     {
       for (j=0;j<NUMANIMS[wbs->epsd];j++)
       {
