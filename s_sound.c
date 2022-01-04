@@ -531,6 +531,9 @@ void S_Start(void)
   if (commercial)
     mnum = mus_runnin + gamemap - 1;
   else
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+    mnum = mus_e1m1 + (gameepisode-1)*9 + gamemap-1;
+#else
   {
     int spmus[]=
     {
@@ -564,6 +567,7 @@ void S_Start(void)
     else
       mnum = spmus[gamemap-1];
     }	
+#endif // AV_DR_DM950328
   
   // HACK FOR COMMERCIAL
   //  if (commercial && mnum > mus_e3m9)	

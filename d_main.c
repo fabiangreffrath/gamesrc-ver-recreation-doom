@@ -16,7 +16,10 @@
 #include "soundst.h"
 #include "DUtils.h"
 
-#if (APPVER_DOOMREV < AV_DR_DM19U)
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+#undef	FGCOLOR
+#define	FGCOLOR	4
+#elif (APPVER_DOOMREV < AV_DR_DM19U)
 #undef	BGCOLOR
 #undef	FGCOLOR
 #define	BGCOLOR	3

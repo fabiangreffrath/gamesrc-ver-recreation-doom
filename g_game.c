@@ -1368,8 +1368,15 @@ void G_InitNew(skill_t skill, int episode, int map)
 
 	if(skill > sk_nightmare)
 		skill = sk_nightmare;
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+	if(episode < 1)
+		episode = 1;
+	if(episode > 3)
+		episode = 3;
+#else
 	if(episode == 0)
 		episode = 4;
+#endif
 	if(episode > 1 && shareware)
 		episode = 1;
 	if(map < 1)
@@ -1443,6 +1450,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 			case 3:
 				skytexture = R_TextureNumForName("SKY3");
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
 			case 4:	// Special Edition sky
 #if (APPVER_DOOMREV < AV_DR_DM19U)
 				skytexture = R_TextureNumForName("SKY2");
@@ -1450,6 +1458,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 				skytexture = R_TextureNumForName("SKY4");
 #endif
 				break;
+#endif
 		}
 
 //

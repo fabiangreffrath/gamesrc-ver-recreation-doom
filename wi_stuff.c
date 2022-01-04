@@ -157,8 +157,10 @@ void WI_initAnimatedBack(void)
 
   if (commercial)
     return;
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
   if (wbs->epsd > 2)
     return;
+#endif
   for (i=0;i<NUMANIMS[wbs->epsd];i++)
   {
     a = &anims[wbs->epsd][i];
@@ -181,8 +183,10 @@ void WI_updateAnimatedBack(void)
 
   if (commercial)
     return;
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
   if (wbs->epsd > 2)
     return;
+#endif
   for (i=0;i<NUMANIMS[wbs->epsd];i++)
   {
     a = &anims[wbs->epsd][i];
@@ -227,8 +231,10 @@ void WI_drawAnimatedBack(void)
 
     if (commercial)
 	return;
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
     if (wbs->epsd > 2)
 	return;
+#endif
     for (i=0 ; i<NUMANIMS[wbs->epsd] ; i++)
     {
 	a = &anims[wbs->epsd][i];
@@ -975,8 +981,10 @@ void WI_loadData(void)
     strcpy(name, "INTERPIC");
   else 
     sprintf(name, "WIMAP%d", wbs->epsd);
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
   if (wbs->epsd == 3)
     strcpy(name,"INTERPIC");
+#endif
   bg = W_CacheLumpName(name, PU_CACHE);    // background
   V_DrawPatch(0, 0, 1, bg);
 // unsigned char *pic = screens[1];
@@ -1002,7 +1010,7 @@ void WI_loadData(void)
   else
   {
     lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS, PU_STATIC, 0);
-#if (APPVER_DOOMREV < AV_DR_DM19U)
+#if (APPVER_DOOMREV == AV_DR_DM950328)
     if (wbs->epsd == 3)
       for (i=0 ; i<6 ; i++)
       {
@@ -1019,7 +1027,9 @@ void WI_loadData(void)
     yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);// you are here
     yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);// you are here (alt.)
     splat = W_CacheLumpName("WISPLAT", PU_STATIC); // splat
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
     if (wbs->epsd < 3)
+#endif
       for (j=0;j<NUMANIMS[wbs->epsd];j++)
       {
 	a = &anims[wbs->epsd][j];
@@ -1151,7 +1161,11 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
 #ifdef RANGECHECKING
   if (!commercial)
   {
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+    RNGCHECK(wbs->epsd, 0, 2,1136);
+#else
     RNGCHECK(wbs->epsd, 0, 3,1136);
+#endif
 
 
 
@@ -1169,6 +1183,9 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
   if (!wbs->maxkills) wbs->maxkills = 1;
   if (!wbs->maxitems) wbs->maxitems = 1;
   if (!wbs->maxsecret) wbs->maxsecret = 1;
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+  if (wbs->epsd > 2) wbs->epsd -= 3;
+#endif
 }
 
 void WI_Start(wbstartstruct_t *wbstartstruct)
