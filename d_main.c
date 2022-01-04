@@ -869,7 +869,11 @@ void D_DoomMain (void)
 	if (!commercial)
 	{
 		sprintf (title,
-#if (APPVER_DOOMREV < AV_DR_DM19U)
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+				 "                          "
+				 "DOOM System Startup v%i.%i"
+				 "                          ",
+#elif (APPVER_DOOMREV < AV_DR_DM19U)
 				 "                   "
 				 "DOOM System Startup v%i.%i Special Edition"
 				 "                          ",

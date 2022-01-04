@@ -1,6 +1,10 @@
 #ifndef __WISTUFFH__
 #define __WISTUFFH__
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+#define NUMEPISODES	3
+#else
 #define NUMEPISODES	4
+#endif
 #define NUMMAPS		9
 
 

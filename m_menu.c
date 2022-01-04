@@ -243,7 +243,9 @@ enum
 	ep1,
 	ep2,
 	ep3,
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
 	ep4,
+#endif
 	ep_end
 } episodes_e;
 
@@ -252,7 +254,9 @@ menuitem_t EpisodeMenu[]=
 	{1,"M_EPI1", M_Episode,'k'},
 	{1,"M_EPI2", M_Episode,'t'},
 	{1,"M_EPI3", M_Episode,'i'},
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
 	{1,"M_EPI4", M_Episode,'t'}
+#endif
 };
 
 menu_t  EpiDef =

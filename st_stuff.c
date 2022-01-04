@@ -218,8 +218,13 @@ boolean ST_Responder (event_t *ev)
 	  map = buf[1] - '0';
 	}
 
+#if (APPVER_DOOMREV < AV_DR_DM950328)
+	if ( (!commercial && epsd > 0 && epsd < 4 && map > 0 && map < 10)
+	  || (commercial && map > 0 && map <= 40 ) )
+#else
 	if ( (!commercial && epsd > 0 && epsd < 5 && map > 0 && map < 10)
 	  || (commercial && map > 0 && map <= 40 ) )
+#endif
 	{
 	  plyr->message = STSTR_CLEV;
 	  G_DeferedInitNew(gameskill, epsd, map);

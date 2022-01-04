@@ -88,6 +88,7 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	HUSTR_E3M8,
 	HUSTR_E3M9,
 
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
 	HUSTR_E4M1,
 	HUSTR_E4M2,
 	HUSTR_E4M3,
@@ -98,6 +99,7 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	HUSTR_E4M7,
 	HUSTR_E4M8,
 	HUSTR_E4M9,
+#endif
 #endif
 
 	"NEWLEVEL",

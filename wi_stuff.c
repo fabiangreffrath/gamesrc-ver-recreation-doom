@@ -383,11 +383,13 @@ void WI_drawShowNextLoc(void)
   WI_drawAnimatedBack(); 
   if (!commercial)
   {
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
     if (wbs->epsd > 2)
     {
       WI_drawEL();
       return;
     }
+#endif
     last = (wbs->last == 8) ? wbs->next - 1 : wbs->last;
     // draw a splat on taken cities.
     for (i=0 ; i<=last ; i++)
@@ -904,7 +906,9 @@ void WI_drawStats(void)
   WI_drawPercent(SCREENWIDTH - SP_STATSX, SP_STATSY+2*lh, cnt_secret[0]);
   V_DrawPatch(SP_TIMEX, SP_TIMEY, FB, time);
   WI_drawTime(SCREENWIDTH/2 - SP_TIMEX, SP_TIMEY, cnt_time);
+#if (APPVER_DOOMREV >= AV_DR_DM950328)
   if (wbs->epsd < 3)
+#endif
   {
     V_DrawPatch(SCREENWIDTH/2 + SP_TIMEX, SP_TIMEY, FB, par);
     WI_drawTime(SCREENWIDTH - SP_TIMEX, SP_TIMEY, cnt_par);
