@@ -1458,7 +1458,11 @@ boolean M_Responder (event_t* ev)
 			case KEY_F1:            // Help key
 				M_StartControlPanel ();
 
+#if (APPVER_DOOMREV < AV_DR_DM19U)
+				currentMenu = &ReadDef1;
+#else
 				currentMenu = &ReadDef2;
+#endif
 	    
 				itemOn = 0;
 				S_StartSound(NULL,sfx_swtchn);
