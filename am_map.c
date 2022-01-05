@@ -401,7 +401,11 @@ boolean AM_Responder (event_t *ev)
 	cheatstate=0;
 	rc = false;
     }
+#if (APPVER_DOOMREV < AV_DR_DM19)
+    if(cht_CheckCheat(&cheat_amap, ev->data1))
+#else
     if(!deathmatch && cht_CheckCheat(&cheat_amap, ev->data1))
+#endif
     {
       rc = false;
       cheating = (cheating+1) % 3;

@@ -15,7 +15,11 @@
 // This *must* be included (near) the beginning for every compilation unit
 #include "GAMEVER.H"
 
-#define VERSION 109
+#if (APPVER_DOOMREV < AV_DR_DM19)
+#define VERSION 108
+#else
+#define version 109
+#endif
 
 // if rangecheck is undefined, most parameter validation debugging code
 // will not be compiled

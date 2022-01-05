@@ -1,8 +1,10 @@
 
 // D_main.c
 
+#if 0 // VERSIONS RESTORATION: Move these down for convenience
 #define	BGCOLOR		7
 #define	FGCOLOR		8
+#endif
 
 #ifdef __WATCOMC__
 #include <dos.h>
@@ -16,14 +18,18 @@
 #include "soundst.h"
 #include "DUtils.h"
 
-#if (APPVER_DOOMREV < AV_DR_DM950328)
-#undef	FGCOLOR
-#define	FGCOLOR	4
+#if (APPVER_DOOMREV < AV_DR_DM19)
+#define	BGCOLOR		4
+#define	FGCOLOR		15
+#elif (APPVER_DOOMREV < AV_DR_DM950328)
+#define	BGCOLOR		7
+#define	FGCOLOR		4
 #elif (APPVER_DOOMREV < AV_DR_DM19U)
-#undef	BGCOLOR
-#undef	FGCOLOR
-#define	BGCOLOR	3
-#define	FGCOLOR	0
+#define	BGCOLOR		3
+#define	FGCOLOR		0
+#else
+#define	BGCOLOR		7
+#define	FGCOLOR		8
 #endif
 
 extern int _wp1, _wp2, _wp3, _wp4;
@@ -916,7 +922,11 @@ void D_DoomMain (void)
 
 	sub_2DB40 (title, FGCOLOR, BGCOLOR);
 
+#if (APPVER_DOOMREV < AV_DR_DM19)
+	printf ("\n");
+#else
 	printf ("\nP_Init: Checking cmd-line parameters...\n");
+#endif
 	
 	if (devparm)
 		mprintf(D_DEVSTR);

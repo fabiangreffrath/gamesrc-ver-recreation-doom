@@ -13,6 +13,7 @@
 #define AV_DR_DM19F 199606100
 #define AV_DR_DM19U 199505250
 #define AV_DR_DM950328 199503280
+#define AV_DR_DM19 199502010
 
 // Now define APPVER_DOOMREV to one of the above, based on APPVER_EXEDEF
 
