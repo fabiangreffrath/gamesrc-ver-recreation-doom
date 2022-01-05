@@ -17,8 +17,10 @@ typedef enum
   snd_MPU2,
   snd_MPU3,
   snd_AWE,
+#if (APPVER_DOOMREV >= AV_DR_DM18)
   snd_ENS,
   snd_CODEC,
+#endif
   NUM_SCARDS
 } cardenum_t;
 

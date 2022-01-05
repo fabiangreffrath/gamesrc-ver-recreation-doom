@@ -65,8 +65,13 @@ const char *dnames[] = {"None",
 			};
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM18)
+const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
+  'M', 'M', 'S'};
+#else
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
   'M', 'M', 'S', 'S', 'S'};
+#endif
 
 int snd_DesiredMusicDevice, snd_DesiredSfxDevice;
 int snd_MusicDevice,    // current music card # (index to dmxCodes)
@@ -236,7 +241,11 @@ void I_UpdateSoundParams(int handle, int vol, int sep, int pitch)
 void I_sndArbitrateCards(void)
 {
   // boolean gus, adlib, pc, sb, midi, ensoniq, codec;
+#if (APPVER_DOOMREV < AV_DR_DM18)
+  boolean gus, adlib, pc, sb, midi;
+#else
   boolean codec, ensoniq, gus, adlib, pc, sb, midi;
+#endif
   int i, rc, mputype, p, opltype, wait, dmxlump;
 
   snd_MaxVolume = 127;
@@ -261,12 +270,15 @@ void I_sndArbitrateCards(void)
   //
   gus = snd_MusicDevice == snd_GUS || snd_SfxDevice == snd_GUS;
   sb = snd_SfxDevice == snd_SB || snd_MusicDevice == snd_SB;
+#if (APPVER_DOOMREV >= AV_DR_DM18)
   ensoniq = snd_SfxDevice == snd_ENS ;
   codec = snd_SfxDevice == snd_CODEC ;
+#endif
   adlib = snd_MusicDevice == snd_Adlib ;
   pc = snd_SfxDevice == snd_PC;
   midi = snd_MusicDevice == snd_MPU;
 
+#if (APPVER_DOOMREV >= AV_DR_DM18)
   // initialize whatever i've got
   //
   if (ensoniq)
@@ -283,6 +295,7 @@ void I_sndArbitrateCards(void)
 	if (CODEC_Detect(&snd_SBport, &snd_SBdma))
 	  printf("CODEC.  The CODEC ain't responding.\n");
   }
+#endif
   if (gus)
   {
 	if (devparm)
@@ -363,8 +376,10 @@ void I_StartupSound (void)
   dmxCodes[snd_GUS] = AHW_ULTRA_SOUND;
   dmxCodes[snd_MPU] = AHW_MPU_401;
   dmxCodes[snd_AWE] = AHW_AWE32;
+#if (APPVER_DOOMREV >= AV_DR_DM18)
   dmxCodes[snd_ENS] = AHW_ENSONIQ;
   dmxCodes[snd_CODEC] = AHW_CODEC;
+#endif
 
   // inits sound library timer stuff
   I_StartupTimer();
