@@ -232,12 +232,18 @@ int S_getChannel (void *origin, sfxinfo_t *sfxinfo)
   return cnum;
 }
 
+#if (APPVER_DOOMREV < AV_DR_DM17)
+void S_StartSoundAtVolume(mobj_t *origin, int sfx_id, int volume)
+#else
 void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
+#endif
 {
   int rc, sep, pitch, priority;
   sfxinfo_t *sfx;
   int cnum;
+#if (APPVER_DOOMREV >= AV_DR_DM17)
   mobj_t *origin = (mobj_t *) origin_p;
+#endif
 
   // Debug.
   /*fprintf( stderr,
@@ -394,12 +400,18 @@ void S_StartSound (void *origin, int sfx_id)
 //
 // Updates music & sounds
 //
+#if (APPVER_DOOMREV < AV_DR_DM17)
+void S_UpdateSounds(mobj_t* listener)
+#else
 void S_UpdateSounds(void* listener_p)
+#endif
 {
   int audible, cnum,volume, sep, pitch, i;
   sfxinfo_t *sfx;
   channel_t *c; 
+#if (APPVER_DOOMREV >= AV_DR_DM17)
   mobj_t *listener = (mobj_t*)listener_p;
+#endif
 
 #ifdef __WATCOMC__
   if (gametic > nextcleanup)
@@ -447,7 +459,11 @@ void S_UpdateSounds(void* listener_p)
 	}
 	// check non-local sounds for distance clipping
 	//  or modify their params
+#if (APPVER_DOOMREV < AV_DR_DM17)
+	if (c->origin && listener != c->origin)
+#else
 	if (c->origin && listener_p != c->origin)
+#endif
 	{
 	  audible = S_AdjustSoundParams(listener, c->origin,
 	    &volume, &sep, &pitch);

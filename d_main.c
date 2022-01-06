@@ -895,7 +895,11 @@ void D_DoomMain (void)
 	if (!commercial)
 	{
 		sprintf (title,
-#if (APPVER_DOOMREV < AV_DR_DM950328)
+#if (APPVER_DOOMREV < AV_DR_DM17)
+				 "                          "
+				 "DOOM System Startup v%i.%i66"
+				 "                          ",
+#elif (APPVER_DOOMREV < AV_DR_DM950328)
 				 "                          "
 				 "DOOM System Startup v%i.%i"
 				 "                          ",
@@ -932,7 +936,10 @@ void D_DoomMain (void)
 	{
 		sprintf (title,
 				 "                         "
-#if (APPVER_DOOMREV < AV_DR_DM17A)
+#if (APPVER_DOOMREV < AV_DR_DM17)
+				 "DOOM 2: Hell on Earth v%i.%i66"
+				 "                          ",
+#elif (APPVER_DOOMREV < AV_DR_DM17A)
 				 "DOOM 2: Hell on Earth v%i.%i"
 				 "                          ",
 #elif (APPVER_DOOMREV < AV_DR_DM18FR)
@@ -962,7 +969,11 @@ void D_DoomMain (void)
 	if (M_CheckParm("-cdrom"))
 	{
 		printf(D_CDROM);
+#if (APPVER_DOOMREV < AV_DR_DM17)
+		mkdir("c:doomdata",0);
+#else
 		mkdir("c:\\doomdata",0);
+#endif
 		strcpy (basedefault,"c:/doomdata/default.cfg");
 	}	
 	

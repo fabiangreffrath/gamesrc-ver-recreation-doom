@@ -15,7 +15,9 @@
 // This *must* be included (near) the beginning for every compilation unit
 #include "GAMEVER.H"
 
-#if (APPVER_DOOMREV < AV_DR_DM18FR)
+#if (APPVER_DOOMREV < AV_DR_DM17)
+#define VERSION 106
+#elif (APPVER_DOOMREV < AV_DR_DM18FR)
 #define VERSION 107
 #elif (APPVER_DOOMREV < AV_DR_DM19)
 #define VERSION 108
