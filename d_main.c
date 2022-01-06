@@ -139,9 +139,11 @@ void D_ProcessEvents (void)
 {
 	event_t		*ev;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666E)
 	// IF STORE DEMO, DO NOT ACCEPT INPUT
 	if ( commercial && (W_CheckNumForName("map01")<0) )
 		return;
+#endif
 
 	for ( ; eventtail != eventhead ; eventtail = (++eventtail)&(MAXEVENTS-1) )
 	{
@@ -973,7 +975,9 @@ void D_DoomMain (void)
 	if (M_CheckParm("-cdrom"))
 	{
 		printf(D_CDROM);
-#if (APPVER_DOOMREV < AV_DR_DM17)
+#if (APPVER_DOOMREV < AV_DR_DM1666E)
+		mkdir("c:doomdata");
+#elif (APPVER_DOOMREV < AV_DR_DM17)
 		mkdir("c:doomdata",0);
 #else
 		mkdir("c:\\doomdata",0);
@@ -1140,6 +1144,19 @@ void D_DoomMain (void)
 				if (W_CheckNumForName(name[i])<0)
 					I_Error("\nThis is not the registered version.");
 	}
+#if (APPVER_DOOMREV < AV_DR_DM1666E)
+	if (commercial)
+	{
+		char name[5][8]=
+		{
+			"fatti5","map20","keena0","vileg1","skelg1"
+		};
+		int i;
+		for (i = 0;i < 5; i++)
+			if (W_CheckNumForName(name[i])<0)
+				I_Error("\nThis is not the DOOM 2 wadfile.");
+	}
+#endif
 	
 	// Iff additonal PWAD files are used, print modified banner
 	if (modifiedgame)
@@ -1244,9 +1261,11 @@ void D_DoomMain (void)
 	p = M_CheckParm ("-loadgame");
 	if (p && p < myargc-1)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666E)
 		if (M_CheckParm("-cdrom"))
 			sprintf(file, "c:\\doomdata\\"SAVEGAMENAME"%c.dsg",myargv[p+1][0]);
 		else
+#endif
 			sprintf(file, SAVEGAMENAME"%c.dsg",myargv[p+1][0]);
 		G_LoadGame (file);
 	}

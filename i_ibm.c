@@ -1381,8 +1381,12 @@ byte *I_ZoneBase (int *size)
 		printf ("creating a custom boot menu item in your CONFIG.SYS for optimum DOOMing.\n");
 		printf ("Please consult your DOS manual (\"Making more memory available\") for\n");
 		printf ("information on how to free up more memory for DOOM.\n\n");
+#if (APPVER_DOOMREV < AV_DR_DM1666E)
+		I_Error ("DOOM aborted.");
+#else
 		printf ("DOOM aborted.\n");
 		exit (1);
+#endif
 	}
 #if 0
 	regs.w.ax = 0x501;      // allocate linear block

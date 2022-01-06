@@ -980,10 +980,12 @@ void G_ExitLevel (void)
 // Here's for the german edition
 void G_SecretExitLevel (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666E)
 	// IF NO WOLF3D LEVELS, NO SECRET EXIT!
 	if (commercial && (W_CheckNumForName("map31")<0))
 		secretexit = false;
 	else
+#endif
 		secretexit = true; 
 	gameaction = ga_completed;
 }
@@ -1265,11 +1267,13 @@ void G_DoSaveGame(void)
 	int length;
 	int i;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666E)
 	if (M_CheckParm("-cdrom"))
 	{
 		sprintf(name, "c:\\doomdata\\"SAVEGAMENAME"%d.dsg", savegameslot);
 	}
 	else
+#endif
 	{
 		sprintf(name, SAVEGAMENAME"%d.dsg", savegameslot);
 	}
