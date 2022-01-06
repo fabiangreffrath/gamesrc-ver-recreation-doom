@@ -15,7 +15,9 @@
 // This *must* be included (near) the beginning for every compilation unit
 #include "GAMEVER.H"
 
-#if (APPVER_DOOMREV < AV_DR_DM19)
+#if (APPVER_DOOMREV < AV_DR_DM18FR)
+#define VERSION 107
+#elif (APPVER_DOOMREV < AV_DR_DM19)
 #define VERSION 108
 #else
 #define version 109
@@ -530,10 +532,12 @@ extern boolean fastparm; // checkparm of -fastparm
 extern boolean shareware; // true if main WAD is the shareware version
 extern boolean registered;
 extern boolean commercial;
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 extern boolean french;
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
 extern boolean plutonia;
 extern boolean tnt;
+#endif
 #endif
 
 extern boolean devparm; // started game with -devparm

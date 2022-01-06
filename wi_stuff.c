@@ -1059,6 +1059,7 @@ void WI_loadData(void)
   kills = W_CacheLumpName("WIOSTK", PU_STATIC);   // "kills"
   secret = W_CacheLumpName("WIOSTS", PU_STATIC);// "scrt"
   sp_secret = W_CacheLumpName("WISCRT2", PU_STATIC);// "secret"
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
   if (french) // Yuck. 
   {
     if (netgame && !deathmatch)
@@ -1066,6 +1067,7 @@ void WI_loadData(void)
     else
       items = W_CacheLumpName("WIOSTI", PU_STATIC);
   } else
+#endif
     items = W_CacheLumpName("WIOSTI", PU_STATIC);
   frags = W_CacheLumpName("WIFRGS", PU_STATIC);    // "frgs"
   colon = W_CacheLumpName("WICOLON", PU_STATIC); // ":"

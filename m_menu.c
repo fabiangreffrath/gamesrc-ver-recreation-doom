@@ -1047,9 +1047,11 @@ void M_QuitDOOM(int choice)
 {
 	if (commercial)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 		if (french)
 			sprintf(endstring,"%s\n\n"DOSY,endmsg2[0]);
 		else
+#endif
 			sprintf(endstring,"%s\n\n"DOSY,endmsg2[(gametic>>2)&7]);
 	}
 	else

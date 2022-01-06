@@ -244,6 +244,7 @@ char *mapnamest[] =	// TNT WAD map names.
 #endif // APPVER_DOOMREV >= AV_DR_DM19F
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 const char *shiftxform;
 
 const char french_shiftxform[] =
@@ -289,6 +290,9 @@ const char french_shiftxform[] =
 };
 
 const char english_shiftxform[] =
+#else // APPVER_DOOMREV < AV_DR_DM18FR
+const char shiftxform[] =
+#endif
 {
 
 	0,
@@ -323,13 +327,18 @@ const char english_shiftxform[] =
 	'[', // shift-[
 	'!', // shift-backslash - OH MY GOD DOES WATCOM SUCK
 	']', // shift-]
+#if (APPVER_DOOMREV < AV_DR_DM18FR)
+	'^', '_',
+#else
 	'"', '_',
+#endif
 	'\'', // shift-`
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 	'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	'{', '|', '}', '~', 127
 };
 
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 char frenchKeyMap[128]=
 {
 	0,
@@ -349,6 +358,7 @@ char ForeignTranslation(unsigned char ch)
 {
   return ch < 128 ? frenchKeyMap[ch] : ch;
 }
+#endif
 
 void HU_Init(void)
 {
@@ -356,10 +366,12 @@ void HU_Init(void)
   int i, j;
   char buffer[9];
 
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
   if (french)
     shiftxform = french_shiftxform;
   else
     shiftxform = english_shiftxform;
+#endif
 
 // load the heads-up font
   j = HU_FONTSTART;
@@ -669,8 +681,10 @@ boolean HU_Responder(event_t *ev)
     }
     else
     {
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
       if (french)
 	c = ForeignTranslation(c);
+#endif
       if (shiftdown || (c >= 'a' && c <= 'z'))
 	c = shiftxform[c];
       eatkey = HUlib_keyInIText(&w_chat, c);

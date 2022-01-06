@@ -123,9 +123,11 @@ boolean ST_Responder (event_t *ev)
 #endif
 	    musnum = mus_runnin + (buf[0]-'0')*10 + buf[1]-'0' - 1;
 	  
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 	    if (((buf[0]-'0')*10 + buf[1]-'0') > 35)
 	      plyr->message = STSTR_NOMUS;
 	    else
+#endif
 	      S_ChangeMusic(musnum, 1);
 #if (APPVER_DOOMREV >= AV_DR_DM19U)
 	  }

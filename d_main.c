@@ -40,10 +40,12 @@ char *wadfiles[MAXWADFILES];
 boolean shareware;		// true if only episode 1 present
 boolean registered;
 boolean commercial;
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 boolean french;
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
 boolean plutonia;
 boolean tnt;
+#endif
 #endif
 
 boolean devparm;            // started game with -devparm
@@ -617,9 +619,11 @@ void D_AddFile(char *file)
 	wadfiles[numwadfiles] = new;
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM18FR) // Doom 95 debug info shows that it moved
 void CheckBetaTest(void)
 {
 }
+#endif
 
 
 #if (APPVER_DOOMREV < AV_DR_DM19U)
@@ -643,14 +647,18 @@ void IdentifyVersion (void)
 {
 
 	char	*doom1wad, *doomwad, *doom2wad;
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 #if (APPVER_DOOMREV < AV_DR_DM19F)
 	char	*doom2fwad;
 #else
 	char	*doom2fwad, *plutoniawad, *tntwad;
 #endif
+#endif // AV_DR_DM18FR
 	strcpy(basedefault,"default.cfg");
 	doom1wad = "doom1.wad";
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 	doom2fwad = "doom2f.wad";
+#endif
 	doom2wad = "doom2.wad";
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
 	plutoniawad = "plutonia.wad";
@@ -711,6 +719,7 @@ void IdentifyVersion (void)
 		return;
 	}
 	
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
 	if ( !access (doom2fwad,R_OK) )
 	{
 		commercial = true;
@@ -721,6 +730,7 @@ void IdentifyVersion (void)
 		D_AddFile (doom2fwad);
 		return;
 	}
+#endif
 	
 	if ( !access (doom2wad,R_OK) )
 	{
@@ -761,9 +771,19 @@ void IdentifyVersion (void)
 		return;
 	}
 	
+#if (APPVER_DOOMREV < AV_DR_DM18FR)
+	I_Error("Game mode indeterminate\n");
+#else
 	printf("Game mode indeterminate.\n");
 	exit(1);
+#endif
 }
+
+#if (APPVER_DOOMREV < AV_DR_DM18FR) // Doom 95 debug info shows that it moved
+void CheckBetaTest(void)
+{
+}
+#endif
 
 /*
 =================
@@ -912,8 +932,13 @@ void D_DoomMain (void)
 	{
 		sprintf (title,
 				 "                         "
+#if (APPVER_DOOMREV < AV_DR_DM18FR)
+				 "DOOM 2: Hell on Earth v%i.%ia"
+				 "                          ",
+#else
 				 "DOOM 2: Hell on Earth v%i.%i"
 				 "                           ",
+#endif
 				 VERSION/100,VERSION%100);
 	}
 
