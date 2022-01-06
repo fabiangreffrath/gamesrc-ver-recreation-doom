@@ -932,7 +932,10 @@ void D_DoomMain (void)
 	{
 		sprintf (title,
 				 "                         "
-#if (APPVER_DOOMREV < AV_DR_DM18FR)
+#if (APPVER_DOOMREV < AV_DR_DM17A)
+				 "DOOM 2: Hell on Earth v%i.%i"
+				 "                          ",
+#elif (APPVER_DOOMREV < AV_DR_DM18FR)
 				 "DOOM 2: Hell on Earth v%i.%ia"
 				 "                          ",
 #else
