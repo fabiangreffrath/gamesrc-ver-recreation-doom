@@ -98,7 +98,11 @@ void S_StopChannel(int cnum)
     // check to see
     //  if other channels are playing the sound
     for (i=0 ; i<numChannels ; i++)
+#if (APPVER_DOOMREV < AV_DR_DM1666)
+      if (cnum != i && c->sfxinfo == c->sfxinfo)
+#else
       if (cnum != i && c->sfxinfo == channels[i].sfxinfo)
+#endif
 	break;
     // degrade usefulness of sound data
     c->sfxinfo->usefulness--;

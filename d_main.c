@@ -814,8 +814,12 @@ void FindResponseFile (void)
 			handle = fopen (&myargv[i][1],"rb");
 			if (!handle)
 			{
+#if (APPVER_DOOMREV < AV_DR_DM1666)
+				I_Error ("No such response file!");
+#else
 				printf ("\nNo such response file!");
 				exit(1);
+#endif
 			}
 			printf("Found response file %s!\n",&myargv[i][1]);
 			fseek (handle,0,SEEK_END);
