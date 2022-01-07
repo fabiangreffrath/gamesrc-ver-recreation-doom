@@ -22,7 +22,7 @@
 #elif (APPVER_DOOMREV < AV_DR_DM19)
 #define VERSION 108
 #else
-#define version 109
+#define VERSION 109
 #endif
 
 // if rangecheck is undefined, most parameter validation debugging code
