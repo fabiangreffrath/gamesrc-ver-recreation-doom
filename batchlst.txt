@@ -1,0 +1,18 @@
+[1] Doom II prototype v1.666
+[2] Doom Shareware / Doom II early v1.666
+[3] Doom v1.666
+[4] Doom II v1.7
+[5] Doom II v1.7a
+[6] Doom II French v1.8
+[7] Doom / Doom II v1.8
+[8] Doom / Doom II v1.9
+[9] Doom v1.9 Special Edition prototype exe
+[A] The Ultimate Doom
+[B] Final Doom
+[C] Final Doom, later id Anthology revision
+
+[0] Cancel and quit
+
+* Watcom 9.5b should be used for a more accurate code generation,
+along with TASM 3.1.
+

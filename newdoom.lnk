@@ -13,9 +13,7 @@ lib noemu387.lib
 format os2 le
 name newdoom
 
-# TEST
-file ..\dmx\lib\dmx.lib
-#file ..\dmx\lib\dmx_r.lib
+%DMXLIBS%
 file i_main.obj
 file i_ibm.obj
 file i_sound.obj
