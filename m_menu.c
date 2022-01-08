@@ -65,6 +65,15 @@ char gammamsg[5][26] =
 char endmsg[8][80] =
 {
 	QUITMSG,
+#if APPVER_CHEX
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!"
+#else
 	"please don't leave, there's more\ndemons to toast!",
 	"let's beat it -- this is turning\ninto a bloodbath!",
 	"i wouldn't leave if i were you.\ndos is much worse.",
@@ -72,11 +81,21 @@ char endmsg[8][80] =
 	"don't leave yet -- there's a\ndemon around that corner!",
 	"ya know, next time you come in here\ni'm gonna toast ya.",
 	"go ahead and leave. see if i care."
+#endif
 };
 
 char endmsg2[8][80] =
 {
 	QUITMSG,
+#if APPVER_CHEX
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!",
+	"please don't leave, we\nneed your help!"
+#else
 	"you want to quit?\nthen, thou hast lost an eighth!",
 	"don't go now, there's a \ndimensional shambler waiting\nat the dos prompt!",
 	"get outta here and go back\nto your boring programs.",
@@ -84,6 +103,7 @@ char endmsg2[8][80] =
 	"look, bud. you leave now\nand you forfeit your body count!",
 	"just leave. when you come\nback, i'll be waiting with a bat.",
 	"you're lucky i don't smack\nyou for thinking about leaving."
+#endif
 };
 
 // we are going to be entering a savegame string
@@ -241,10 +261,12 @@ menu_t  MainDef =
 enum
 {
 	ep1,
+#if !APPVER_CHEX
 	ep2,
 	ep3,
 #if (APPVER_DOOMREV >= AV_DR_DM950328)
 	ep4,
+#endif
 #endif
 	ep_end
 } episodes_e;
@@ -252,10 +274,12 @@ enum
 menuitem_t EpisodeMenu[]=
 {
 	{1,"M_EPI1", M_Episode,'k'},
+#if !APPVER_CHEX
 	{1,"M_EPI2", M_Episode,'t'},
 	{1,"M_EPI3", M_Episode,'i'},
 #if (APPVER_DOOMREV >= AV_DR_DM950328)
 	{1,"M_EPI4", M_Episode,'t'}
+#endif
 #endif
 };
 
@@ -385,7 +409,7 @@ menu_t  ReadDef2 =
 	NULL,
 #endif
 	ReadMenu2,
-#if (APPVER_DOOMREV < AV_DR_DM19F2)
+#if (APPVER_DOOMREV < AV_DR_DM19F2) || APPVER_CHEX
 	M_DrawReadThis2,
 #else
 	M_DrawReadThisRetail,
@@ -742,7 +766,7 @@ void M_DrawReadThis1(void)
 void M_DrawReadThis2(void)
 {
 	inhelpscreens = true;
-#if (APPVER_DOOMREV < AV_DR_DM19F)
+#if (APPVER_DOOMREV < AV_DR_DM19F) || APPVER_CHEX
 	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP1",PU_CACHE));
 #else
 	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP",PU_CACHE));
@@ -840,10 +864,14 @@ void M_NewGame(int choice)
 		return;
 	}
 	
+#if APPVER_CHEX
+	M_SetupNextMenu(&NewDef);
+#else
 	if (commercial)
 		M_SetupNextMenu(&NewDef);
 	else
 		M_SetupNextMenu(&EpiDef);
+#endif
 }
 
 

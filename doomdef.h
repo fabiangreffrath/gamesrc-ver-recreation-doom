@@ -91,7 +91,11 @@ extern byte *destview, *destscreen;	// PC direct to screen pointers
 #define	FINEMASK			(FINEANGLES-1)
 #define	ANGLETOFINESHIFT	19	// 0x100000000 to 0x2000
 
+#if APPVER_CHEX
+#define	SAVEGAMENAME "chexsav"
+#else
 #define	SAVEGAMENAME "doomsav"
+#endif
 
 /*
 ===============================================================================

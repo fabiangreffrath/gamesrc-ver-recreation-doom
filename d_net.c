@@ -488,7 +488,11 @@ void D_ArbitrateNetStart (void)
 			if (netbuffer->checksum & NCMD_SETUP)
 			{
 				if (netbuffer->player != VERSION)
+#if APPVER_CHEX
+					I_Error ("Different Chex(R) Quest versions cannot play a net quest!");
+#else
 					I_Error ("Different DOOM versions cannot play a net game!");
+#endif
 				startskill = netbuffer->retransmitfrom & 15;
 				deathmatch = (netbuffer->retransmitfrom & 0xc0) >> 6;
 				nomonsters = (netbuffer->retransmitfrom & 0x20) > 0;

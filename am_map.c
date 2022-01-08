@@ -61,7 +61,14 @@ static int markpointnum = 0; // next point to be assigned
 
 static int followplayer = 1; // specifies whether to follow the player around
 
+#if APPVER_CHEX
+static unsigned char cheat_amap_seq[] =
+{
+  0xea, 0x32, 0xa6, 0x6a, 0x6a, 0xb2, 0x36, 0x36, 0xff
+};
+#else
 static unsigned char cheat_amap_seq[] = { 0xb2, 0x26, 0x26, 0x2e, 0xff };
+#endif
 static cheatseq_t cheat_amap = { cheat_amap_seq, 0 };
 
 extern boolean viewactive;

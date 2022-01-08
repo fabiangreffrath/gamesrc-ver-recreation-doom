@@ -681,6 +681,9 @@
 #define CC_CYBER	"THE CYBERDEMON"
 #define CC_HERO	"OUR HERO"
 
+#if APPVER_CHEX
+#include "d_chex.h"
+#endif
 
 #endif
 

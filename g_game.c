@@ -945,7 +945,11 @@ void G_ScreenShot (void)
 int pars[4][10] =
 {
 	{0},
+#if APPVER_CHEX
+	{0,120,360,480,200,360,180,180,30,165},
+#else
 	{0,30,75,120,90,165,180,180,30,165},
+#endif
 	{0,90,90,90,120,90,360,240,30,170},
 	{0,90,45,90,150,90,90,165,30,135}
 };
@@ -1011,7 +1015,11 @@ void G_DoCompleted(void)
 	{
 		switch (gamemap)
 		{
+#if APPVER_CHEX
+			case 5:
+#else
 			case 8:
+#endif
 				gameaction = ga_victory;
 				return;
 			case 9:

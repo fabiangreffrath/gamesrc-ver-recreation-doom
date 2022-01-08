@@ -1,9 +1,9 @@
 @echo off
 cls
 type BATCHLST.TXT
-choice /C:123456789ABC0 /N Please select what to clean:
+choice /C:123456789ABCD0 /N Please select what to clean:
 echo.
-if ERRORLEVEL 13 goto end
+if ERRORLEVEL 14 goto end
 if ERRORLEVEL 1 set DIR=DM1666P
 if ERRORLEVEL 2 set DIR=DM1666E
 if ERRORLEVEL 3 set DIR=DM1666
@@ -16,6 +16,7 @@ if ERRORLEVEL 9 set DIR=DM950328
 if ERRORLEVEL 10 set DIR=DM19U
 if ERRORLEVEL 11 set DIR=DM19F
 if ERRORLEVEL 12 set DIR=DM19F2
+if ERRORLEVEL 13 set DIR=CHEX
 
 del %DIR%\*.*
 set DIR=

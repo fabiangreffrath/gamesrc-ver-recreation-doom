@@ -1376,6 +1376,15 @@ byte *I_ZoneBase (int *size)
 	{
 		printf ("\n");
 		printf ("Insufficient memory!  You need to have at least 3.7 megabytes of total\n");
+#if APPVER_CHEX
+		printf ("free memory available for Chex(R) Quest.  Reconfigure your CONFIG.SYS\n");
+		printf ("or AUTOEXEC.BAT to load fewer device drivers or TSR's.  We recommend\n");
+		printf ("creating a custom boot menu item in your CONFIG.SYS for optimum play.\n");
+		printf ("Please consult your DOS manual (\"Making more memory available\") for\n");
+		printf ("information on how to free up more memory for Chex(R) Quest.\n\n");
+		printf ("Chex(R) Quest aborted.\n");
+		exit (1);
+#else
 		printf ("free memory available for DOOM to execute.  Reconfigure your CONFIG.SYS\n");
 		printf ("or AUTOEXEC.BAT to load fewer device drivers or TSR's.  We recommend\n");
 		printf ("creating a custom boot menu item in your CONFIG.SYS for optimum DOOMing.\n");
@@ -1387,6 +1396,7 @@ byte *I_ZoneBase (int *size)
 		printf ("DOOM aborted.\n");
 		exit (1);
 #endif
+#endif // APPVER_CHEX
 	}
 #if 0
 	regs.w.ax = 0x501;      // allocate linear block

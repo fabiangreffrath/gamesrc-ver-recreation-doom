@@ -631,9 +631,15 @@ state_t	states[NUMSTATES] = {
 {SPR_BOSS,2,3,{A_Chase},S_BOSS_RUN7,0,0},	// S_BOSS_RUN6
 {SPR_BOSS,3,3,{A_Chase},S_BOSS_RUN8,0,0},	// S_BOSS_RUN7
 {SPR_BOSS,3,3,{A_Chase},S_BOSS_RUN1,0,0},	// S_BOSS_RUN8
+#if APPVER_CHEX
+{SPR_BOSS,4,3,{A_FaceTarget},S_BOSS_ATK2,0,0},	// S_BOSS_ATK1
+{SPR_BOSS,5,3,{A_FaceTarget},S_BOSS_ATK3,0,0},	// S_BOSS_ATK2
+{SPR_BOSS,6,0,{A_BruisAttack},S_BOSS_RUN1,0,0},	// S_BOSS_ATK3
+#else
 {SPR_BOSS,4,8,{A_FaceTarget},S_BOSS_ATK2,0,0},	// S_BOSS_ATK1
 {SPR_BOSS,5,8,{A_FaceTarget},S_BOSS_ATK3,0,0},	// S_BOSS_ATK2
 {SPR_BOSS,6,8,{A_BruisAttack},S_BOSS_RUN1,0,0},	// S_BOSS_ATK3
+#endif
 {SPR_BOSS,7,2,{NULL},S_BOSS_PAIN2,0,0},	// S_BOSS_PAIN
 {SPR_BOSS,7,2,{A_Pain},S_BOSS_RUN1,0,0},	// S_BOSS_PAIN2
 {SPR_BOSS,8,8,{NULL},S_BOSS_DIE2,0,0},	// S_BOSS_DIE1
@@ -1103,8 +1109,13 @@ sfx_pistol,		// attacksound
 S_POSS_PAIN,		// painstate
 200,		// painchance
 sfx_popain,		// painsound
+#if APPVER_CHEX
+S_POSS_ATK1,		// meleestate
+0,		// missilestate
+#else
 0,		// meleestate
 S_POSS_ATK1,		// missilestate
+#endif
 S_POSS_DIE1,		// deathstate
 S_POSS_XDIE1,		// xdeathstate
 sfx_podth1,		// deathsound
@@ -1129,8 +1140,13 @@ sfx_posit2,		// seesound
 S_SPOS_PAIN,		// painstate
 170,		// painchance
 sfx_popain,		// painsound
+#if APPVER_CHEX
+S_SPOS_ATK1,		// meleestate
+0,		// missilestate
+#else
 0,		// meleestate
 S_SPOS_ATK1,		// missilestate
+#endif
 S_SPOS_DIE1,		// deathstate
 S_SPOS_XDIE1,		// xdeathstate
 sfx_podth2,		// deathsound
@@ -1472,9 +1488,15 @@ S_BOSS_ATK1,		// missilestate
 S_BOSS_DIE1,		// deathstate
 S_NULL,		// xdeathstate
 sfx_brsdth,		// deathsound
+#if APPVER_CHEX
+0,		// speed
+44*FRACUNIT,		// radius
+100*FRACUNIT,		// height
+#else
 8,		// speed
 24*FRACUNIT,		// radius
 64*FRACUNIT,		// height
+#endif
 1000,		// mass
 0,		// damage
 sfx_dmact,		// activesound
@@ -1546,7 +1568,11 @@ S_SKULL_PAIN,		// painstate
 256,		// painchance
 sfx_dmpain,		// painsound
 0,		// meleestate
+#if APPVER_CHEX
+0,		// missilestate
+#else
 S_SKULL_ATK1,		// missilestate
+#endif
 S_SKULL_DIE1,		// deathstate
 S_NULL,		// xdeathstate
 sfx_firxpl,		// deathsound

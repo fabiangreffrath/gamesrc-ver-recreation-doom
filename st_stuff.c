@@ -218,6 +218,12 @@ boolean ST_Responder (event_t *ev)
 	{
 	  epsd = buf[0] - '0';
 	  map = buf[1] - '0';
+#if APPVER_CHEX
+	  if (epsd > 1)
+	    epsd = 1;
+	  if (map > 5)
+	    map = 5;
+#endif
 	}
 
 #if (APPVER_DOOMREV < AV_DR_DM950328)
@@ -525,12 +531,16 @@ void ST_doPaletteStuff(void)
 	
   if (cnt)
   {
+#if APPVER_CHEX
+    palette = RADIATIONPAL;
+#else
     palette = (cnt+7)>>3;
 	
     if (palette >= NUMREDPALS)
       palette = NUMREDPALS-1;
 
     palette += STARTREDPALS;
+#endif
   }
 
   else if (plyr->bonuscount)

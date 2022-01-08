@@ -1,9 +1,9 @@
 @echo off
 cls
 type BATCHLST.TXT
-choice /C:123456789ABC0 /N Please select what to build:
+choice /C:123456789ABCD0 /N Please select what to build:
 echo.
-if ERRORLEVEL 13 goto end
+if ERRORLEVEL 14 goto end
 if ERRORLEVEL 1 set TARGET=DM1666P
 if ERRORLEVEL 2 set TARGET=DM1666E
 if ERRORLEVEL 3 set TARGET=DM1666
@@ -16,6 +16,7 @@ if ERRORLEVEL 9 set TARGET=DM950328
 if ERRORLEVEL 10 set TARGET=DM19U
 if ERRORLEVEL 11 set TARGET=DM19F
 if ERRORLEVEL 12 set TARGET=DM19F2
+if ERRORLEVEL 13 set TARGET=CHEX
 
 if "%1" == "USE_APODMX" goto apodmx
 

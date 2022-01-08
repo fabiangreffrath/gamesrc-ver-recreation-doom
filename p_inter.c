@@ -621,6 +621,7 @@ void P_KillMobj (mobj_t *source, mobj_t *target)
 		target->tics = 1;
 //	I_StartSound(&actor->r, actor->info->deathsound);
 		
+#if !APPVER_CHEX
 //
 // drop stuff
 //
@@ -642,6 +643,7 @@ void P_KillMobj (mobj_t *source, mobj_t *target)
 
 	mo = P_SpawnMobj (target->x,target->y,ONFLOORZ, item);
 	mo->flags |= MF_DROPPED;		// special versions of items
+#endif
 }
 
 

@@ -666,7 +666,11 @@ void IdentifyVersion (void)
 	plutoniawad = "plutonia.wad";
 	tntwad = "tnt.wad";
 #endif
+#if APPVER_CHEX
+	doomwad = "chex.wad";
+#else
 	doomwad = "doom.wad";
+#endif
 	if (M_CheckParm ("-shdev"))
 	{
 		registered = false;
@@ -688,7 +692,11 @@ void IdentifyVersion (void)
 	{
 		registered = true;
 		devparm = true;
+#if APPVER_CHEX
+		D_AddFile (DEVDATA"chex.wad");
+#else
 		D_AddFile (DEVDATA"doom.wad");
+#endif
 #if (APPVER_DOOMREV < AV_DR_DM19U)
 		D_AddFile (DEVMAPS"data/texture1.lmp");
 		D_AddFile (DEVMAPS"data/texture2.lmp");
@@ -893,10 +901,12 @@ void D_DoomMain (void)
 	respawnparm = M_CheckParm ("-respawn");
 	fastparm = M_CheckParm ("-fast");
 	devparm = M_CheckParm ("-devparm");
+#if !APPVER_CHEX
 	if (M_CheckParm ("-altdeath"))
 		deathmatch = 2;
 	else if (M_CheckParm ("-deathmatch"))
 		deathmatch = 1;
+#endif
 
 	if (!commercial)
 	{
@@ -913,9 +923,13 @@ void D_DoomMain (void)
 				 "                   "
 				 "DOOM System Startup v%i.%i Special Edition"
 				 "                          ",
-#else
+#elif !APPVER_CHEX
 				 "                         "
 				 "The Ultimate DOOM Startup v%i.%i"
+				 "                        ",
+#else
+				 "                         "
+				 "Chex(R) Quest Startup"
 				 "                        ",
 #endif
 				 VERSION/100,VERSION%100);
@@ -925,7 +939,11 @@ void D_DoomMain (void)
 	{
 		sprintf (title,
 				 "                   "
+#if APPVER_CHEX
+				 "Chex(R) Quest"
+#else
 				 "DOOM 2: Plutonia Experiment v%i.%i"
+#endif
 				 "                           ",
 				 VERSION/100,VERSION%100);
 	}
@@ -933,7 +951,11 @@ void D_DoomMain (void)
 	{
 		sprintf (title,
 				 "                     "
+#if APPVER_CHEX
+				 "Chex(R) Quest"
+#else
 				 "DOOM 2: TNT - Evilution v%i.%i"
+#endif
 				 "                           ",
 				 VERSION/100,VERSION%100);
 	}
@@ -951,8 +973,11 @@ void D_DoomMain (void)
 #elif (APPVER_DOOMREV < AV_DR_DM18FR)
 				 "DOOM 2: Hell on Earth v%i.%ia"
 				 "                          ",
-#else
+#elif !APPVER_CHEX
 				 "DOOM 2: Hell on Earth v%i.%i"
+				 "                           ",
+#else
+				 "Chex(R) Quest"
 				 "                           ",
 #endif
 				 VERSION/100,VERSION%100);
@@ -1134,15 +1159,24 @@ void D_DoomMain (void)
 		int i;
 	
 		if (shareware)
+#if APPVER_CHEX
+			I_Error("\nYou cannot -file with Chex(R) Quest "
+				"version. Register!");
+#else
 			I_Error("\nYou cannot -file with the shareware "
 				"version. Register!");
+#endif
 	
 		// Check for fake IWAD with right name,
 		// but w/o all the lumps of the registered version. 
 		if (registered)
 			for (i = 0;i < 23; i++)
 				if (W_CheckNumForName(name[i])<0)
+#if APPVER_CHEX
+					I_Error("\nThis is Chex(R) Quest.");
+#else
 					I_Error("\nThis is not the registered version.");
+#endif
 	}
 #if (APPVER_DOOMREV < AV_DR_DM1666E)
 	if (commercial)
@@ -1158,6 +1192,7 @@ void D_DoomMain (void)
 	}
 #endif
 	
+#if !APPVER_CHEX
 	// Iff additonal PWAD files are used, print modified banner
 	if (modifiedgame)
 	{
@@ -1171,18 +1206,21 @@ void D_DoomMain (void)
 			);
 		getchar ();
 	}
+#endif
 	
 	
 	// Check and print which version is executed.
 	if (registered)
 	{
 		mprintf("\tregistered version.\n");
+#if !APPVER_CHEX
 		mprintf (
 			"===========================================================================\n"
 			"             This version is NOT SHAREWARE, do not distribute!\n"
 			"         Please report software piracy to the SPA: 1-800-388-PIR8\n"
 			"===========================================================================\n"
 		);
+#endif
 	}
 	if (shareware)
 	{
@@ -1191,18 +1229,24 @@ void D_DoomMain (void)
 	if (commercial)
 	{
 		mprintf("\tcommercial version.\n");
+#if !APPVER_CHEX
 		mprintf (
 			"===========================================================================\n"
 			"                            Do not distribute!\n"
 			"         Please report software piracy to the SPA: 1-800-388-PIR8\n"
 			"===========================================================================\n"
 		);
+#endif
 	}
 	
 	mprintf ("M_Init: Init miscellaneous info.\n");
 	M_Init ();
 	
+#if APPVER_CHEX
+	mprintf ("R_Init: Init Chex(R) Quest refresh daemon - ");
+#else
 	mprintf ("R_Init: Init DOOM refresh daemon - ");
+#endif
 	R_Init ();
 	
 	mprintf ("\nP_Init: Init Playloop state.\n");

@@ -1,11 +1,16 @@
 #ifndef __WISTUFFH__
 #define __WISTUFFH__
+#if APPVER_CHEX
+#define NUMEPISODES	1
+#define	NUMMAPS		5
+#else
 #if (APPVER_DOOMREV < AV_DR_DM950328)
 #define NUMEPISODES	3
 #else
 #define NUMEPISODES	4
 #endif
 #define NUMMAPS		9
+#endif // APPVER_CHEX
 
 
 // in tics

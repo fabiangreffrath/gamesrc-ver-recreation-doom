@@ -21,11 +21,17 @@
 #define AV_DR_DM19U 199505250
 #define AV_DR_DM19F 199606100
 #define AV_DR_DM19F2 199610090
+#define AV_DR_CHEX 199610310
 
 // Now define APPVER_DOOMREV to one of the above, based on APPVER_EXEDEF
 
 #define APPVER_CONCAT1(x,y) x ## y
 #define APPVER_CONCAT2(x,y) APPVER_CONCAT1(x,y)
 #define APPVER_DOOMREV APPVER_CONCAT2(AV_DR_,APPVER_EXEDEF)
+
+// Convenience macro
+#if (APPVER_DOOMREV == AV_DR_CHEX)
+#define APPVER_CHEX 1
+#endif
 
 #endif // GAMEVER_H

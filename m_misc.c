@@ -619,7 +619,11 @@ void M_ScreenShot (void)
 //
 // find a file name to save it to
 //
+#if APPVER_CHEX
+	strcpy(lbmname,"CHEX00.pcx");
+#else
 	strcpy(lbmname,"DOOM00.pcx");
+#endif
 
 	for (i=0 ; i<=99 ; i++)
 	{

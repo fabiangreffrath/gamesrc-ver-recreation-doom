@@ -10,6 +10,7 @@
 [A] The Ultimate Doom
 [B] Final Doom
 [C] Final Doom, later id Anthology revision
+[D] Chex Quest
 
 [0] Cancel and quit
 
