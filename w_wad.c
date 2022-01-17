@@ -491,7 +491,7 @@ byte *ptr;
 	else
 	{
 //printf ("cache hit on lump %i\n",lump);
-		Z_ChangeTag (lumpcache[lump],tag,510);
+		Z_ChangeTag (lumpcache[lump],tag);
 	}
 	
 	return lumpcache[lump];

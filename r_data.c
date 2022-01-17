@@ -160,7 +160,7 @@ void R_GenerateComposite (int texnum)
 	}
 
 // now that the texture has been built, it is purgable
-	Z_ChangeTag (block, PU_CACHE,163);
+	Z_ChangeTag (block, PU_CACHE);
 }
 
 

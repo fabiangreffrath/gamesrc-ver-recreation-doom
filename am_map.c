@@ -247,7 +247,7 @@ void AM_loadPics(void)
 void AM_unloadPics(void)
 {
   int i;
-  for (i=0;i<10;i++) Z_ChangeTag(marknums[i], PU_CACHE,236);
+  for (i=0;i<10;i++) Z_ChangeTag(marknums[i], PU_CACHE);
 
 }
 

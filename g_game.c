@@ -1678,9 +1678,9 @@ boolean G_CheckDemoStatus (void)
 			I_Quit ();
 
 #if (APPVER_DOOMREV < AV_DR_DM19F2)
-		Z_ChangeTag (demobuffer, PU_CACHE, 1595);
+		Z_ChangeTag (demobuffer, PU_CACHE);
 #else
-		Z_ChangeTag (demobuffer, PU_CACHE, 1608);
+		Z_ChangeTag (demobuffer, PU_CACHE);
 #endif
 		demoplayback = false;
 		netdemo = false;

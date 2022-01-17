@@ -411,6 +411,6 @@ void R_DrawPlanes (void)
 			R_MakeSpans (x,pl->top[x-1],pl->bottom[x-1]
 			,pl->top[x],pl->bottom[x]);
 		
-		Z_ChangeTag (ds_source, PU_CACHE, 406);
+		Z_ChangeTag (ds_source, PU_CACHE);
 	}
 }

@@ -711,18 +711,10 @@ typedef struct memblock_s
 	struct memblock_s       *next, *prev;
 } memblock_t;
 
-#if 0
 #define Z_ChangeTag(p,t) \
 { \
 if (( (memblock_t *)( (byte *)(p) - sizeof(memblock_t)))->id!=0x1d4a11) \
 	I_Error("Z_CT at "__FILE__":%i",__LINE__); \
-Z_ChangeTag2(p,t); \
-};
-#endif
-#define Z_ChangeTag(p,t,line) \
-{ \
-if (( (memblock_t *)( (byte *)(p) - sizeof(memblock_t)))->id!=0x1d4a11) \
-	I_Error("Z_CT at "__FILE__":%i",line); \
 Z_ChangeTag2(p,t); \
 };
 
