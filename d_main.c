@@ -549,56 +549,56 @@ int GetTextY(void)
 	return regs.h.dh;
 }
 
-void SetTextPos(int a1, int a2)
+void SetTextPos(int x, int y)
 {
 	union REGS regs;
 	regs.h.ah = 2;
 	regs.h.bh = 0;
-	regs.h.dh = a2;
-	regs.h.dl = a1;
+	regs.h.dh = y;
+	regs.h.dl = x;
 	int386(0x10, &regs, &regs);
 }
 
-void tprintf(char *a1, int a2, int a3)
+void tprintf(char *msg, int fgcolor, int bgcolor)
 {
 	union REGS regs;
-	byte v4;
-	int vsi;
-	int v8;
-	int vc;
+	byte attr;
+	int x;
+	int y;
+	int i;
 
-	v4 = (a3 << 4) | a2;
-	vsi = GetTextX();
-	v8 = GetTextY();
+	attr = (bgcolor << 4) | fgcolor;
+	x = GetTextX();
+	y = GetTextY();
 
-	for (vc = 0; vc < strlen(a1); vc++)
+	for (i = 0; i < strlen(msg); i++)
 	{
 		regs.h.ah = 9;
-		regs.h.al = a1[vc];
+		regs.h.al = msg[i];
 		regs.w.cx = 1;
-		regs.h.bl = v4;
+		regs.h.bl = attr;
 		regs.h.bh = 0;
 		int386(0x10, &regs, &regs);
-		if (++vsi > 79)
-			vsi = 0;
+		if (++x > 79)
+			x = 0;
 
-		SetTextPos(vsi, v8);
+		SetTextPos(x, y);
 	}
 }
 
-void mprintf(char *a1)
+void mprintf(char *msg)
 {
-	int vc, vsi;
-	printf(a1);
+	int x, y;
+	printf(msg);
 
-	vc = GetTextX();
-	vsi = GetTextY();
+	x = GetTextX();
+	y = GetTextY();
 
 	SetTextPos(0, 0);
 
 	tprintf(title, FGCOLOR, BGCOLOR);
 
-	SetTextPos(vc, vsi);
+	SetTextPos(x, y);
 }
 
 /*
