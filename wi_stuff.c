@@ -8,11 +8,7 @@ extern int _wp18;
 #include "wi_data.h"
 
 #define RANGECHECKING
-#if 0
 #define RNGCHECK(a, b, c) { if ((a) < (b) || (a) > (c)) { I_Error("%s=%d in %s:%d", #a, (a), __FILE__,__LINE__);}}
-#else
-#define RNGCHECK(a, b, c, line) { if ((a) < (b) || (a) > (c)) { I_Error("%s=%d in %s:%d", #a, (a), __FILE__,line);}}
-#endif
 
 //
 // GENERAL DATA
@@ -1168,18 +1164,18 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
   if (!commercial)
   {
 #if (APPVER_DOOMREV < AV_DR_DM950328)
-    RNGCHECK(wbs->epsd, 0, 2,1136);
+    RNGCHECK(wbs->epsd, 0, 2);
 #else
-    RNGCHECK(wbs->epsd, 0, 3,1136);
+    RNGCHECK(wbs->epsd, 0, 3);
 #endif
 
 
 
-    RNGCHECK(wbs->last, 0, 8,1140);
-    RNGCHECK(wbs->next, 0, 8,1141);
+    RNGCHECK(wbs->last, 0, 8);
+    RNGCHECK(wbs->next, 0, 8);
   }
-  RNGCHECK(wbs->pnum, 0, MAXPLAYERS,1143);
-  RNGCHECK(wbs->pnum, 0, MAXPLAYERS,1144);
+  RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
+  RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
 #endif
   acceleratestage = 0;
   cnt = bcnt = 0;
