@@ -531,7 +531,7 @@ void D_StartTitle (void)
 
 char title[128]; //      print title for every printed line
 
-int sub_2DAB0(void)
+int GetTextX(void)
 {
 	union REGS regs;
 	regs.h.ah = 3;
@@ -540,7 +540,7 @@ int sub_2DAB0(void)
 	return regs.h.dl;
 }
 
-int sub_2DAE0(void)
+int GetTextY(void)
 {
 	union REGS regs;
 	regs.h.ah = 3;
@@ -549,7 +549,7 @@ int sub_2DAE0(void)
 	return regs.h.dh;
 }
 
-void sub_2DB10(int a1, int a2)
+void SetTextPos(int a1, int a2)
 {
 	union REGS regs;
 	regs.h.ah = 2;
@@ -559,7 +559,7 @@ void sub_2DB10(int a1, int a2)
 	int386(0x10, &regs, &regs);
 }
 
-void sub_2DB40(char *a1, int a2, int a3)
+void tprintf(char *a1, int a2, int a3)
 {
 	union REGS regs;
 	byte v4;
@@ -568,8 +568,8 @@ void sub_2DB40(char *a1, int a2, int a3)
 	int vc;
 
 	v4 = (a3 << 4) | a2;
-	vsi = sub_2DAB0();
-	v8 = sub_2DAE0();
+	vsi = GetTextX();
+	v8 = GetTextY();
 
 	for (vc = 0; vc < strlen(a1); vc++)
 	{
@@ -582,7 +582,7 @@ void sub_2DB40(char *a1, int a2, int a3)
 		if (++vsi > 79)
 			vsi = 0;
 
-		sub_2DB10(vsi, v8);
+		SetTextPos(vsi, v8);
 	}
 }
 
@@ -591,14 +591,14 @@ void mprintf(char *a1)
 	int vc, vsi;
 	printf(a1);
 
-	vc = sub_2DAB0();
-	vsi = sub_2DAE0();
+	vc = GetTextX();
+	vsi = GetTextY();
 
-	sub_2DB10(0, 0);
+	SetTextPos(0, 0);
 
-	sub_2DB40(title, FGCOLOR, BGCOLOR);
+	tprintf(title, FGCOLOR, BGCOLOR);
 
-	sub_2DB10(vc, vsi);
+	SetTextPos(vc, vsi);
 }
 
 /*
@@ -986,7 +986,7 @@ void D_DoomMain (void)
 	regs.w.ax = 3;
 	int386 (0x10, &regs, &regs);
 
-	sub_2DB40 (title, FGCOLOR, BGCOLOR);
+	tprintf (title, FGCOLOR, BGCOLOR);
 
 #if (APPVER_DOOMREV < AV_DR_DM19)
 	printf ("\n");
