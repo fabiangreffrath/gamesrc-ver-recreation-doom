@@ -243,7 +243,7 @@ boolean ST_Responder (event_t *ev)
 #endif
 	}
 
-#if (APPVER_DOOMREV < AV_DR_DM950328)
+#if (APPVER_DOOMREV < AV_DR_DM19UP)
 	if ( (!commercial && epsd > 0 && epsd < 4 && map > 0 && map < 10)
 	  || (commercial && map > 0 && map <= 40 ) )
 #else

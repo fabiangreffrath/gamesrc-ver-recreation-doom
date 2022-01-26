@@ -37,7 +37,7 @@
 #if (APPVER_DOOMREV < AV_DR_DM19)
 #define	BGCOLOR		4
 #define	FGCOLOR		15
-#elif (APPVER_DOOMREV < AV_DR_DM950328)
+#elif (APPVER_DOOMREV < AV_DR_DM19UP)
 #define	BGCOLOR		7
 #define	FGCOLOR		4
 #elif (APPVER_DOOMREV < AV_DR_DM19U)
@@ -931,7 +931,7 @@ void D_DoomMain (void)
 				 "                          "
 				 "DOOM System Startup v%i.%i66"
 				 "                          ",
-#elif (APPVER_DOOMREV < AV_DR_DM950328)
+#elif (APPVER_DOOMREV < AV_DR_DM19UP)
 				 "                          "
 				 "DOOM System Startup v%i.%i"
 				 "                          ",

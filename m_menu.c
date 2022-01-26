@@ -280,7 +280,7 @@ enum
 #if !APPVER_CHEX
 	ep2,
 	ep3,
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
 	ep4,
 #endif
 #endif
@@ -293,7 +293,7 @@ menuitem_t EpisodeMenu[]=
 #if !APPVER_CHEX
 	{1,"M_EPI2", M_Episode,'t'},
 	{1,"M_EPI3", M_Episode,'i'},
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
 	{1,"M_EPI4", M_Episode,'t'}
 #endif
 #endif

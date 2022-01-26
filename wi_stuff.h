@@ -21,7 +21,7 @@
 #define NUMEPISODES	1
 #define	NUMMAPS		5
 #else
-#if (APPVER_DOOMREV < AV_DR_DM950328)
+#if (APPVER_DOOMREV < AV_DR_DM19UP)
 #define NUMEPISODES	3
 #else
 #define NUMEPISODES	4

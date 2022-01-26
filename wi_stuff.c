@@ -169,7 +169,7 @@ void WI_initAnimatedBack(void)
 
   if (commercial)
     return;
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd > 2)
     return;
 #endif
@@ -195,7 +195,7 @@ void WI_updateAnimatedBack(void)
 
   if (commercial)
     return;
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd > 2)
     return;
 #endif
@@ -243,7 +243,7 @@ void WI_drawAnimatedBack(void)
 
     if (commercial)
 	return;
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
     if (wbs->epsd > 2)
 	return;
 #endif
@@ -395,7 +395,7 @@ void WI_drawShowNextLoc(void)
   WI_drawAnimatedBack(); 
   if (!commercial)
   {
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
     if (wbs->epsd > 2)
     {
       WI_drawEL();
@@ -918,7 +918,7 @@ void WI_drawStats(void)
   WI_drawPercent(SCREENWIDTH - SP_STATSX, SP_STATSY+2*lh, cnt_secret[0]);
   V_DrawPatch(SP_TIMEX, SP_TIMEY, FB, time);
   WI_drawTime(SCREENWIDTH/2 - SP_TIMEX, SP_TIMEY, cnt_time);
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd < 3)
 #endif
   {
@@ -997,7 +997,7 @@ void WI_loadData(void)
     strcpy(name, "INTERPIC");
   else 
     sprintf(name, "WIMAP%d", wbs->epsd);
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd == 3)
     strcpy(name,"INTERPIC");
 #endif
@@ -1026,7 +1026,7 @@ void WI_loadData(void)
   else
   {
     lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS, PU_STATIC, 0);
-#if (APPVER_DOOMREV == AV_DR_DM950328)
+#if (APPVER_DOOMREV == AV_DR_DM19UP)
     if (wbs->epsd == 3)
       for (i=0 ; i<6 ; i++)
       {
@@ -1043,7 +1043,7 @@ void WI_loadData(void)
     yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);// you are here
     yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);// you are here (alt.)
     splat = W_CacheLumpName("WISPLAT", PU_STATIC); // splat
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
     if (wbs->epsd < 3)
 #endif
       for (j=0;j<NUMANIMS[wbs->epsd];j++)
@@ -1179,7 +1179,7 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
 #ifdef RANGECHECKING
   if (!commercial)
   {
-#if (APPVER_DOOMREV < AV_DR_DM950328)
+#if (APPVER_DOOMREV < AV_DR_DM19UP)
     RNGCHECK(wbs->epsd, 0, 2);
 #else
     RNGCHECK(wbs->epsd, 0, 3);
@@ -1201,7 +1201,7 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
   if (!wbs->maxkills) wbs->maxkills = 1;
   if (!wbs->maxitems) wbs->maxitems = 1;
   if (!wbs->maxsecret) wbs->maxsecret = 1;
-#if (APPVER_DOOMREV < AV_DR_DM950328)
+#if (APPVER_DOOMREV < AV_DR_DM19UP)
   if (wbs->epsd > 2) wbs->epsd -= 3;
 #endif
 }

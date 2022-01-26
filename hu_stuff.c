@@ -105,7 +105,7 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	HUSTR_E3M8,
 	HUSTR_E3M9,
 
-#if (APPVER_DOOMREV >= AV_DR_DM950328)
+#if (APPVER_DOOMREV >= AV_DR_DM19UP)
 	HUSTR_E4M1,
 	HUSTR_E4M2,
 	HUSTR_E4M3,
