@@ -1,22 +1,8 @@
 @echo off
-cls
-type BATCHLST.TXT
-choice /C:123456789ABCD0 /N Please select what to build:
-echo.
-if ERRORLEVEL 14 goto end
-if ERRORLEVEL 1 set TARGET=DM1666P
-if ERRORLEVEL 2 set TARGET=DM1666E
-if ERRORLEVEL 3 set TARGET=DM1666
-if ERRORLEVEL 4 set TARGET=DM17
-if ERRORLEVEL 5 set TARGET=DM17A
-if ERRORLEVEL 6 set TARGET=DM18FR
-if ERRORLEVEL 7 set TARGET=DM18
-if ERRORLEVEL 8 set TARGET=DM19
-if ERRORLEVEL 9 set TARGET=DM19UP
-if ERRORLEVEL 10 set TARGET=DM19U
-if ERRORLEVEL 11 set TARGET=DM19F
-if ERRORLEVEL 12 set TARGET=DM19F2
-if ERRORLEVEL 13 set TARGET=CHEX
+set MSG=Please select what to build:
+call REVSEL.BAT
+
+if "%CHOICE%" == "" goto end
 
 if "%1" == "USE_APODMX" goto apodmx
 
@@ -47,12 +33,12 @@ goto end
 REM Since environment variables may actually impact the compiler output,
 REM use a helper script in order to try and refrain from them
 
-mkdir %TARGET%
-echo wmake.exe %TARGET%\newdoom.exe "appver_exedef = %TARGET%" "use_apodmx = %USE_APODMX%" > BUILDTMP.BAT
+mkdir %CHOICE%
+echo wmake.exe %CHOICE%\newdoom.exe "appver_exedef = %CHOICE%" "use_apodmx = %USE_APODMX%" > BUILDTMP.BAT
 echo del BUILDTMP.BAT >> BUILDTMP.BAT
-set TARGET=
+set CHOICE=
 set USE_APODMX=
 BUILDTMP.BAT
 
 :end
-set TARGET=
+set CHOICE=
