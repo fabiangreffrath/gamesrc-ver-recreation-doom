@@ -425,11 +425,7 @@ menu_t  ReadDef2 =
 	NULL,
 #endif
 	ReadMenu2,
-#if (APPVER_DOOMREV < AV_DR_DM19F2) || APPVER_CHEX
 	M_DrawReadThis2,
-#else
-	M_DrawReadThisRetail,
-#endif
 	330,175,
 	0
 };
