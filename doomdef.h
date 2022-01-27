@@ -1214,6 +1214,6 @@ void HU_Erase(void);
 
 extern int _tp1; // temp align
 #include "sounds.h"
-extern int _tp2, _tp3, _tp4, _tp5, _tp6; // temp align
+extern int _tp2, _tp3, _tp4, _tp5, _tp6, _tp7, _tp8, _tp9, _tp10, _tp11, _tp12; // temp align
 
 #endif // __DOOMDEF__
