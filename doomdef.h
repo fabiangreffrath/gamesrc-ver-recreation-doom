@@ -566,7 +566,11 @@ extern boolean devparm; // started game with -devparm
 
 extern int _gp1, _gp2, _gp3, _gp4, _gp5, _gp6, _gp7, _gp8; // align for g_game.c
 extern int _gp9, _gp10, _gp11, _gp12, _gp13, _gp14, _gp15, _gp16; // align for g_game.c
-extern int _gp17, _gp18, _gp19; // align for g_game.c
+extern int _gp17, _gp18; // align for g_game.c
+
+#if (APPVER_DOOMREV >= AV_DR_DM18FR)
+extern int _gp19;
+#endif
 
 extern boolean deathmatch; // only if started as net death
 
@@ -633,6 +637,10 @@ extern boolean precache; // if true, load all graphics at level load
 extern byte *screens[5]; // off screen work buffer, from V_video.c
 
 extern int _dp8, _dp9, _dp10, _dp11; // align for d_main.c
+
+#if (APPVER_DOOMREV < AV_DR_DM18FR)
+extern int _dp12;
+#endif
 
 extern boolean automapactive;
 extern boolean menuactive;
