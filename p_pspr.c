@@ -20,6 +20,7 @@
 #include "DoomDef.h"
 #include "P_local.h"
 #include "soundst.h"
+extern int _wp1;
 
 #define LOWERSPEED		FRACUNIT*6
 #define RAISESPEED		FRACUNIT*6

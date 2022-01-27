@@ -1195,8 +1195,6 @@ typedef enum
 
 boolean ST_Responder(event_t *ev);
 
-#include "HU_stuff.h"
-
 //
 // HEADS UP TEXT
 //

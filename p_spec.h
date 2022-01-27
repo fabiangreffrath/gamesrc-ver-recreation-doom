@@ -53,17 +53,17 @@ typedef struct
 extern	anim_t	anims[MAXANIMS], *lastanim;
 
 //
+// End-level timer (-TIMER option)
+//
+extern	boolean levelTimer;
+extern	int	levelTimeCount;
+
+//
 //	Animating line specials
 //
 #define	MAXLINEANIMS		64
 extern	short	numlinespecials;
 extern	line_t	*linespeciallist[MAXLINEANIMS];
-
-//
-// End-level timer (-TIMER option)
-//
-extern	boolean levelTimer;
-extern	int	levelTimeCount;
 
 
 //	Define values for map objects

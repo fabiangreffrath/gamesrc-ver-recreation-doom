@@ -24,6 +24,10 @@
 #include "R_local.h"
 #endif
 
+extern int _bp1, _bp2, _bp3, _bp4, _bp5, _bp6, _bp7;
+extern int _bp8, _bp9, _bp10, _bp11, _bp12, _bp13, _bp14;
+extern int _bp15, _bp16, _bp17, _bp18, _bp19, _bp20, _bp21;
+
 #define FLOATSPEED		(FRACUNIT*4)
 
 
@@ -236,10 +240,6 @@ void P_RadiusAttack (mobj_t *spot, mobj_t *source, int damage);
 
 ===============================================================================
 */
-
-extern int _bp1, _bp2, _bp3, _bp4, _bp5, _bp6, _bp7;
-extern int _bp8, _bp9, _bp10, _bp11, _bp12, _bp13, _bp14;
-extern int _bp15, _bp16, _bp17, _bp18, _bp19, _bp20;
 
 extern byte		*rejectmatrix;			// for fast sight rejection
 extern short		*blockmaplump;		// offsets in blockmap are from here

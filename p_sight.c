@@ -20,7 +20,7 @@
 #include "DoomDef.h"
 #include "P_local.h"
 
-extern int _wp1, _wp2;
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8;
 
 /*
 ==============================================================================

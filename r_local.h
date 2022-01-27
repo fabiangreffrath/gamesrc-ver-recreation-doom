@@ -395,8 +395,6 @@ extern	int			*texturetranslation;	// for global animation
 
 extern	int		firstspritelump, lastspritelump, numspritelumps;
 
-extern	int			_numflats; // temp hack
-
 byte	*R_GetColumn (int tex, int col);
 void	R_InitData (void);
 void R_PrecacheLevel (void);
@@ -456,7 +454,6 @@ void 	R_DrawFuzzColumn (void);
 void 	R_DrawFuzzColumnLow (void);
 void	R_DrawTranslatedColumn (void);
 void	R_DrawTranslatedColumnLow (void);
-void	R_VideoErase (unsigned ofs, int count);
 
 extern	int				ds_y;
 extern	int				ds_x1;
@@ -477,6 +474,7 @@ void 	R_DrawSpanLow (void);
 void 	R_InitBuffer (int width, int height);
 void	R_InitTranslationTables (void);
 void R_FillBackScreen (void);
+void	R_VideoErase (unsigned ofs, int count);
 void R_DrawViewBorder (void);
 
 #endif		// __R_LOCAL__

@@ -25,7 +25,7 @@
 #include "DoomDef.h"
 #include "R_local.h"
 
-// extern int _wp1, _wp2;
+extern int _wp1, _wp2;
 
 #define DPMI_INT 0x31
 //#define NOKBD

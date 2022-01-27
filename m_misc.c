@@ -30,6 +30,7 @@
 #include <ctype.h>
 
 #include "DoomDef.h"
+#include "HU_stuff.h"
 #include "soundst.h"
 
 int myargc;
