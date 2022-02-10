@@ -36,11 +36,11 @@ DMXVER=dmx34af1
 !else ifeq appver_exedef DM1666
 DMXVER=dmx34af2
 !else ifeq appver_exedef DM17
-DMXVER=dmx34afm
+DMXVER=dmx34af3
 !else ifeq appver_exedef DM17A
-DMXVER=dmx34afm
+DMXVER=dmx34af3
 !else ifeq appver_exedef DM18FR
-DMXVER=dmx34afm
+DMXVER=dmx34af3
 !else
 DMXVER=dmx37
 !endif
