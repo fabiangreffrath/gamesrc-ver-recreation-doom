@@ -149,6 +149,7 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		S_SAW1,			// atkstate
 		S_NULL			// flashstate
 	},
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{
 		// super shotgun
 		am_shell,		// ammo
@@ -158,6 +159,7 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		S_DSGUN1,		// atkstate
 		S_DSGUNFLASH1	// flashstate
 	},
+#endif
 };
 
 
@@ -231,8 +233,10 @@ boolean P_CheckAmmo (player_t *player)
 	ammo = weaponinfo[player->readyweapon].ammo;
 	if (player->readyweapon == wp_bfg)
 		count = BFGCELLS;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	else if (player->readyweapon == wp_supershotgun)
 		count = 2;
+#endif
 	else
 		count = 1;
 	if (ammo == am_noammo || player->ammo[ammo] >= count)
@@ -243,8 +247,10 @@ boolean P_CheckAmmo (player_t *player)
 	{
 		if (player->weaponowned[wp_plasma] && player->ammo[am_cell] && !shareware)
 			player->pendingweapon = wp_plasma;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		else if (player->weaponowned[wp_supershotgun] && player->ammo[am_shell]>2 && commercial)
 			player->pendingweapon = wp_supershotgun;
+#endif
 		else if (player->weaponowned[wp_chaingun] && player->ammo[am_clip])
 			player->pendingweapon = wp_chaingun;
 		else if (player->weaponowned[wp_shotgun] && player->ammo[am_shell])
@@ -716,6 +722,7 @@ void A_FireShotgun (player_t *player, pspdef_t *psp)
 		P_GunShot (player->mo, false);
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /* 
 ================== 
 = 
@@ -747,6 +754,7 @@ void A_FireShotgun2 (player_t *player, pspdef_t *psp)
 			bulletslope + ((P_Random()-P_Random())<<5), damage);
     }
 }
+#endif
 
 /* 
 ================== 

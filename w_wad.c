@@ -147,8 +147,10 @@ void ExtractFileBase (char *path, char *dest)
 ====================
 */
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 int				reloadlump;
 char			*reloadname;
+#endif
 
 void W_AddFile (char *filename)
 {
@@ -158,24 +160,32 @@ void W_AddFile (char *filename)
 	int				handle, length;
 	int				startlump;
 	filelump_t		*fileinfo, singleinfo;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int				storehandle;
+#endif
 	
 //
 // open the file and add to directory
 //	
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (filename[0] == '~')		// handle reload indicator
 	{
 		filename++;
 		reloadname = filename;
 		reloadlump = numlumps;
 	}
+#endif
 	if ( (handle = open (filename,O_RDONLY | O_BINARY)) == -1)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		printf ("	couldn't open %s\n",filename);
+#endif
 		return;
 	}
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	printf ("	adding %s\n",filename);
+#endif
 	startlump = numlumps;
 	
 	if (strcmpi (filename+strlen(filename)-3 , "wad" ) )
@@ -214,21 +224,30 @@ void W_AddFile (char *filename)
 	if (!lumpinfo)
 		I_Error ("Couldn't realloc lumpinfo");
 	lump_p = &lumpinfo[startlump];
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	storehandle = reloadname ? -1 : handle;
+#endif
 	for (i=startlump ; i<numlumps ; i++,lump_p++, fileinfo++)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		lump_p->handle = handle;
+#else
 		lump_p->handle = storehandle;
+#endif
 		lump_p->position = LONG(fileinfo->filepos);
 		lump_p->size = LONG(fileinfo->size);
 		strncpy (lump_p->name, fileinfo->name, 8);
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (reloadname)
 		close (handle);
+#endif
 }
 
 
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ====================
 =
@@ -279,6 +298,7 @@ void W_Reload (void)
 	
 	close (handle);
 }
+#endif
 
 
 
@@ -459,13 +479,19 @@ void W_ReadLump (int lump, void *dest)
 {
 	int			c;
 	lumpinfo_t	*l;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int			handle;
+#endif
 	
 	if (lump >= numlumps)
 		I_Error ("W_ReadLump: %i >= numlumps",lump);
 	l = lumpinfo+lump;
 	
 	I_BeginRead ();
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	lseek (l->handle, l->position, SEEK_SET);
+	c = read (l->handle, dest, l->size);
+#else
 	if (l->handle == -1)
 	{	// reloadable file, so use open / read / close
 		if ( (handle = open (reloadname,O_RDONLY | O_BINARY)) == -1)
@@ -475,10 +501,13 @@ void W_ReadLump (int lump, void *dest)
 		handle = l->handle;
 	lseek (handle, l->position, SEEK_SET);
 	c = read (handle, dest, l->size);
+#endif
 	if (c < l->size)
-		I_Error ("W_ReadLump: only read %i of %i on lump %i",c,l->size,lump);	
+		I_Error ("W_ReadLump: only read %i of %i on lump %i",c,l->size,lump);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (l->handle == -1)
 		close (handle);
+#endif
 	I_EndRead ();
 }
 

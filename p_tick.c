@@ -27,7 +27,11 @@ int leveltime;
 
 // Pads save_p to a 4-byte boundary
 //  so that the load/save works on SGI&Gecko.
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define PADSAVEP()
+#else
 #define PADSAVEP()	save_p += (4 - ((int) save_p & 3)) & 3
+#endif
 
 /*
 ====================
@@ -364,6 +368,7 @@ T_PlatRaise, (plat_t: sector_t *), - active list
 // save off the current thinkers
 	for (th = thinkercap.next; th != &thinkercap; th = th->next)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (th->function == NULL)
 		{
 			for (i = 0; i < MAXCEILINGS;i++)
@@ -380,6 +385,7 @@ T_PlatRaise, (plat_t: sector_t *), - active list
 			}
 			continue;
 		}
+#endif
 		if (th->function == T_MoveCeiling)
 		{
 			*save_p++ = tc_ceiling;
@@ -491,7 +497,11 @@ void P_UnArchiveSpecials (void)
 				memcpy (ceiling, save_p, sizeof(*ceiling));
 				save_p += sizeof(*ceiling);
 				ceiling->sector = &sectors[(int)ceiling->sector];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				ceiling->sector->specialdata = T_MoveCeiling;
+#else
 				ceiling->sector->specialdata = ceiling;
+#endif
 				if (ceiling->thinker.function)
 					ceiling->thinker.function = T_MoveCeiling;
 				P_AddThinker (&ceiling->thinker);
@@ -504,7 +514,11 @@ void P_UnArchiveSpecials (void)
 				memcpy (door, save_p, sizeof(*door));
 				save_p += sizeof(*door);
 				door->sector = &sectors[(int)door->sector];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				door->sector->specialdata = T_VerticalDoor;
+#else
 				door->sector->specialdata = door;
+#endif
 				door->thinker.function = T_VerticalDoor;
 				P_AddThinker (&door->thinker);
 				break;
@@ -515,7 +529,11 @@ void P_UnArchiveSpecials (void)
 				memcpy (floor, save_p, sizeof(*floor));
 				save_p += sizeof(*floor);
 				floor->sector = &sectors[(int)floor->sector];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				floor->sector->specialdata = T_MoveFloor;
+#else
 				floor->sector->specialdata = floor;
+#endif
 				floor->thinker.function = T_MoveFloor;
 				P_AddThinker (&floor->thinker);
 				break;
@@ -526,7 +544,11 @@ void P_UnArchiveSpecials (void)
 				memcpy (plat, save_p, sizeof(*plat));
 				save_p += sizeof(*plat);
 				plat->sector = &sectors[(int)plat->sector];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				plat->sector->specialdata = T_PlatRaise;
+#else
 				plat->sector->specialdata = plat;
+#endif
 				if (plat->thinker.function)
 					plat->thinker.function = T_PlatRaise;
 				P_AddThinker (&plat->thinker);
@@ -710,7 +732,9 @@ void P_Ticker (void)
 
 	P_RunThinkers ();
 	P_UpdateSpecials ();
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	P_RespawnSpecials ();
+#endif
 
 	leveltime++;	// for par times
 }

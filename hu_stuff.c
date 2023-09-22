@@ -142,6 +142,7 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	"NEWLEVEL"
 };
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 char *mapnames2[] =	// DOOM 2 map names.
 {
 	HUSTR_1,
@@ -179,6 +180,7 @@ char *mapnames2[] =	// DOOM 2 map names.
 	HUSTR_31,
 	HUSTR_32
 };
+#endif
 
 
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
@@ -427,7 +429,8 @@ void HU_Start(void)
 // create the map title widget
   HUlib_initTextLine(&w_title, HU_TITLEX, HU_TITLEY,
     hu_font, HU_FONTSTART);
-
+  
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
   {
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
@@ -440,6 +443,7 @@ void HU_Start(void)
       s = HU_TITLE2;
   }
   else
+#endif
     s = HU_TITLE;
     
   while (*s)
@@ -534,10 +538,12 @@ void HU_Ticker(void)
 	      message_nottobefuckedwith = true;
 	      message_on = true;
 	      message_counter = HU_MSGTIMEOUT;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	      if (commercial)
 	        S_StartSound(0, sfx_radio);
 	      else
 	        S_StartSound(0, sfx_tink);
+#endif
 	    }
 	    HUlib_resetIText(&w_inputbuffer[i]);
 	  }

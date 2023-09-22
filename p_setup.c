@@ -260,7 +260,9 @@ void P_LoadThings (int lump)
 	int				i;
 	mapthing_t		*mt;
 	int				numthings;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	boolean			spawn;
+#endif
 	
 	data = W_CacheLumpNum (lump,PU_STATIC);
 	numthings = W_LumpLength (lump) / sizeof(mapthing_t);
@@ -268,6 +270,7 @@ void P_LoadThings (int lump)
 	mt = (mapthing_t *)data;
 	for (i=0 ; i<numthings ; i++, mt++)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		spawn = true;
 
 		// Do not spawn cool, new monsters if !commercial
@@ -291,6 +294,7 @@ void P_LoadThings (int lump)
 		}
 		if (spawn == false)
 			break;
+#endif
 
 		mt->x = SHORT(mt->x);
 		mt->y = SHORT(mt->y);
@@ -558,6 +562,9 @@ void P_SetupLevel (int episode, int map, int playermask, skill_t skill)
 	int		i;
 	char	lumpname[9];
 	int		lumpnum;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	mobj_t	*mobj;
+#endif
 	
 	totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
 	wminfo.partime = 180;
@@ -584,12 +591,15 @@ else
 	// W_Profile ();
 	P_InitThinkers ();
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// if working with a devlopment map, reload it
 	W_Reload ();	
+#endif
 	
 //
 // find map name
 //
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		if (map<10)
@@ -598,6 +608,7 @@ else
 			sprintf (lumpname,"map%i", map);
 	}
 	else
+#endif
 	{
 		lumpname[0] = 'E';
 		lumpname[1] = '0' + episode;
@@ -636,13 +647,23 @@ else
 		for (i=0 ; i<MAXPLAYERS ; i++)
 			if (playeringame[i])
 			{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				mobj = P_SpawnMobj (playerstarts[i].x<<16,
+				playerstarts[i].y<<16,0, MT_PLAYER);
+				players[i].mo = mobj;
+				G_DeathMatchSpawnPlayer (i);
+				P_RemoveMobj (mobj);
+#else
 				players[i].mo = NULL;
 				G_DeathMatchSpawnPlayer (i);
+#endif
 			}
 	}
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 // clear special respawning que
 	iquehead = iquetail = 0;	
+#endif
 
 // set up world state
 	P_SpawnSpecials ();

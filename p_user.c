@@ -264,9 +264,11 @@ void P_PlayerThink (player_t *player)
 		if (newweapon == wp_fist && player->weaponowned[wp_chainsaw] &&
 			!(player->readyweapon == wp_chainsaw && player->powers[pw_strength]))
 			newweapon = wp_chainsaw;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (commercial && newweapon == wp_shotgun && player->weaponowned[wp_supershotgun] &&
 			player->readyweapon != wp_supershotgun)
 			newweapon = wp_supershotgun;
+#endif
 	
 		if (player->weaponowned[newweapon]
 			&& newweapon != player->readyweapon)

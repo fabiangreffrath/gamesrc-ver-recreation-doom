@@ -60,12 +60,16 @@ void	T_PlatRaise(plat_t	*plat)
 				S_StartSound((mobj_t *)&plat->sector->soundorg, sfx_pstop);
 				switch(plat->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case blazeDWUS:
+#endif
 					case downWaitUpStay:
 						P_RemoveActivePlat(plat);
 						break;
 					case raiseAndChange:
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case raiseToNearestAndChange:
+#endif
 						P_RemoveActivePlat(plat);
 						break;
 					default:
@@ -172,6 +176,7 @@ int	EV_DoPlat(line_t *line,plattype_e type,int amount)
 				plat->status = down;
 				S_StartSound((mobj_t *)&sec->soundorg, sfx_pstart);
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case blazeDWUS:
 				plat->speed = PLATSPEED * 8;
 				plat->low = P_FindLowestFloorSurrounding(sec);
@@ -182,6 +187,7 @@ int	EV_DoPlat(line_t *line,plattype_e type,int amount)
 				plat->status = down;
 				S_StartSound((mobj_t *)&sec->soundorg, sfx_pstart);
 				break;
+#endif
 			case perpetualRaise:
 				plat->speed = PLATSPEED;
 				plat->low = P_FindLowestFloorSurrounding(sec);

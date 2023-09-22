@@ -124,16 +124,22 @@ boolean P_GiveAmmo (player_t *player, ammotype_t ammo, int num)
 boolean P_GiveWeapon (player_t *player, weapontype_t weapon, boolean dropped)
 {
 	boolean		gaveammo, gaveweapon;
-	
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (netgame && !dropped)
+#else
 	if (netgame && (deathmatch!=2) && !dropped)
+#endif
 	{	// leave placed weapons forever on cooperative net games
 		if (player->weaponowned[weapon])
 			return false;
 		player->bonuscount += BONUSADD;
 		player->weaponowned[weapon] = true;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (deathmatch)
 			P_GiveAmmo (player, weaponinfo[weapon].ammo, 5);
 		else
+#endif
 			P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
 		player->pendingweapon = weapon;
 		if (player == &players[consoleplayer])
@@ -321,27 +327,42 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 //
 	case SPR_BON1:
 		player->health++;		// can go over 100%
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if (player->health > 199)
+			player->health = 199;
+#else
 		if (player->health > 200)
 			player->health = 200;
+#endif
 		player->mo->health = player->health;
 		player->message = GOTHTHBONUS;
 		break;
 	case SPR_BON2:
 		player->armorpoints++;		// can go over 100%
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (player->armorpoints > 200)
 			player->armorpoints = 200;
+#endif
 		if (!player->armortype)
 			player->armortype = 1;
 		player->message = GOTARMBONUS;
 		break;
 	case SPR_SOUL:
 		player->health += 100;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if (player->health > 199)
+			player->health = 199;
+#else
 		if (player->health > 200)
 			player->health = 200;
+#endif
 		player->mo->health = player->health;
 		player->message = GOTSUPER;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	case SPR_MEGA:
 		if (!commercial)
 			return;
@@ -351,6 +372,7 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 		player->message = GOTMSPHERE;
 		sound = sfx_getpow;
 		break;
+#endif
 				
 
 //
@@ -425,7 +447,9 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 		if (!P_GivePower (player, pw_invulnerability))
 			return;
 		player->message = GOTINVUL;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
 	case SPR_PSTR:
 		if (!P_GivePower (player, pw_strength))
@@ -433,31 +457,41 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 		player->message = GOTBERSERK;
 		if (player->readyweapon != wp_fist)
 			player->pendingweapon = wp_fist;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
 	case SPR_PINS:
 		if (!P_GivePower (player, pw_invisibility))
 			return;
 		player->message = GOTINVIS;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
 	case SPR_SUIT:
 		if (!P_GivePower (player, pw_ironfeet))
 			return;
 		player->message = GOTSUIT;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
 	case SPR_PMAP:
 		if (!P_GivePower (player, pw_allmap))
 			return;
 		player->message = GOTMAP;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
 	case SPR_PVIS:
 		if (!P_GivePower (player, pw_infrared))
 			return;
 		player->message = GOTVISOR;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		sound = sfx_getpow;
+#endif
 		break;
 		
 
@@ -535,7 +569,11 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 		sound = sfx_wpnup;	
 		break;
 	case SPR_MGUN:
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if (!P_GiveWeapon (player, wp_chaingun, false) )
+#else
 		if (!P_GiveWeapon (player, wp_chaingun, special->flags&MF_DROPPED) )
+#endif
 			return;
 		player->message = GOTCHAINGUN;
 		sound = sfx_wpnup;	
@@ -564,12 +602,14 @@ void P_TouchSpecialThing (mobj_t *special, mobj_t *toucher)
 		player->message = GOTSHOTGUN;
 		sound = sfx_wpnup;	
 		break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	case SPR_SGN2:
 		if (!P_GiveWeapon (player, wp_supershotgun, special->flags&MF_DROPPED ) )
 			return;
 		player->message = GOTSHOTGUN2;
 		sound = sfx_wpnup;	
 		break;
+#endif
 		
 	default:
 		I_Error ("P_SpecialThing: Unknown gettable thing");
@@ -616,8 +656,10 @@ void P_KillMobj (mobj_t *source, mobj_t *target)
 	
 	if (target->player)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (!source)	// count environment kills against you
 			target->player->frags[target->player-players]++;
+#endif
 		target->flags &= ~MF_SOLID;
 		target->player->playerstate = PST_DEAD;
 		P_DropWeapon (target->player);
@@ -633,8 +675,10 @@ void P_KillMobj (mobj_t *source, mobj_t *target)
 	else
 		P_SetMobjState (target, target->info->deathstate);
 	target->tics -= P_Random()&3;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (target->tics < 1)
 		target->tics = 1;
+#endif
 //	I_StartSound(&actor->r, actor->info->deathsound);
 		
 #if !APPVER_CHEX
@@ -643,16 +687,20 @@ void P_KillMobj (mobj_t *source, mobj_t *target)
 //
 	switch (target->type)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	case MT_WOLFSS:
+#endif
 	case MT_POSSESSED:
 		item = MT_CLIP;
 		break;
 	case MT_SHOTGUY:
 		item = MT_SHOTGUN;
 		break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	case MT_CHAINGUY:
 		item = MT_CHAINGUN;
 		break;
+#endif
 	default:
 		return;
 	}
@@ -705,8 +753,12 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 //
 // kick away unless using the chainsaw
 //
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (inflictor && (!source || !source->player || source->player->readyweapon != wp_chainsaw))
+#else
 	if (inflictor && !(target->flags & MF_NOCLIP) && (!source || !source->player
 	|| source->player->readyweapon != wp_chainsaw))
+#endif
 	{
 		ang = R_PointToAngle2 ( inflictor->x, inflictor->y
 			,target->x, target->y);
@@ -788,8 +840,12 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 	}
 			
 	target->reactiontime = 0;		// we're awake now...	
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if ( !target->threshold && source )
+#else
 	if ( (!target->threshold || target->type == MT_VILE)
 		&& source && source != target && source->type != MT_VILE )
+#endif
 	{	// if not intent on another player, chase after this one
 		target->target = source;
 		target->threshold = BASETHRESHOLD;

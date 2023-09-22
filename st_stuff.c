@@ -37,12 +37,21 @@ void ST_refreshBackground(void)
 
   if (st_statusbaron)
   {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+    V_DrawPatch(ST_X, ST_Y, BG, sbar);
+
+    if (netgame)
+      V_DrawPatch(ST_FX, ST_Y+1, BG, faceback);
+	
+    V_CopyRect(ST_X, ST_Y, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
+#else
     V_DrawPatch(ST_X, 0, BG, sbar);
 
     if (netgame)
       V_DrawPatch(ST_FX, 0, BG, faceback);
-
+	
     V_CopyRect(ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
+#endif
   }
 
 }
@@ -93,6 +102,7 @@ boolean ST_Responder (event_t *ev)
 	  else 
 	    plyr->message = STSTR_DQDOFF;
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// 'fa' cheat for killer fucking arsenal
 	else if (cht_CheckCheat(&cheat_ammonokey, ev->data1))
 	{
@@ -107,6 +117,7 @@ boolean ST_Responder (event_t *ev)
 	
 	  plyr->message = STSTR_FAADDED;
 	}
+#endif
 	// 'kfa' cheat for key full ammo
 	else if (cht_CheckCheat(&cheat_ammo, ev->data1))
 	{
@@ -124,6 +135,7 @@ boolean ST_Responder (event_t *ev)
 	
 	  plyr->message = STSTR_KFAADDED;
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// 'mus' cheat for changing music
 	else if (cht_CheckCheat(&cheat_mus, ev->data1))
 	{
@@ -159,7 +171,12 @@ boolean ST_Responder (event_t *ev)
 	  }
 #endif
 	}
+#endif
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	else if (cht_CheckCheat(&cheat_noclip, ev->data1) )
+#else
 	else if (!commercial && cht_CheckCheat(&cheat_noclip, ev->data1) )
+#endif
 	{	
 	  plyr->cheats ^= CF_NOCLIP;
 	
@@ -168,6 +185,7 @@ boolean ST_Responder (event_t *ev)
 	  else
 	    plyr->message = STSTR_NCOFF;
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	else if (commercial && cht_CheckCheat(&cheat_commercial_noclip, ev->data1) )
 	{	
 	  plyr->cheats ^= CF_NOCLIP;
@@ -177,6 +195,7 @@ boolean ST_Responder (event_t *ev)
 	  else
 	    plyr->message = STSTR_NCOFF;
 	}
+#endif
 	// 'behold?' power-up cheats
 	for (i=0;i<6;i++)
 	{
@@ -226,12 +245,14 @@ boolean ST_Responder (event_t *ev)
       
 	cht_GetParam(&cheat_clev, buf);
       
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 	  epsd = 0;
 	  map = (buf[0] - '0')*10 + buf[1] - '0';
 	}
 	else
+#endif
 	{
 	  epsd = buf[0] - '0';
 	  map = buf[1] - '0';
@@ -243,7 +264,9 @@ boolean ST_Responder (event_t *ev)
 #endif
 	}
 
-#if (APPVER_DOOMREV < AV_DR_DM19UP)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if ( epsd > 0 && epsd < 4 && map > 0 && map < 10 )
+#elif (APPVER_DOOMREV < AV_DR_DM19UP)
 	if ( (!commercial && epsd > 0 && epsd < 4 && map > 0 && map < 10)
 	  || (commercial && map > 0 && map <= 40 ) )
 #else
@@ -454,7 +477,11 @@ void ST_updateFaceWidget(void)
 
 void ST_updateWidgets(void)
 {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  static int largeammo = -1; // means "n/a"
+#else
   static int largeammo = 1994; // means "n/a"
+#endif
   int i;
 
 // must redirect the pointer if the ready weapon has changed.
@@ -506,8 +533,10 @@ void ST_updateWidgets(void)
   {
     if (i != consoleplayer)
       st_fragscount += plyr->frags[i];
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     else
       st_fragscount -= plyr->frags[i];
+#endif
   }
 
   // get rid of chat window if up because of message
@@ -910,5 +939,7 @@ void ST_Init (void)
 {
   veryfirsttime = 0;
   ST_loadData();
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   screens[4] = (byte *) Z_Malloc(ST_WIDTH*ST_HEIGHT, PU_STATIC, 0);
+#endif
 }

@@ -38,9 +38,11 @@ int test;
 boolean P_SetMobjState (mobj_t *mobj, statenum_t state)
 {
 	state_t	*st;
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     do
     {
+#endif
 		if (state == S_NULL)
 		{
 			mobj->state = S_NULL;
@@ -58,8 +60,10 @@ boolean P_SetMobjState (mobj_t *mobj, statenum_t state)
 		if (st->action)		// call action functions when the state is set
 			st->action (mobj);	
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		state = st->nextstate;
 	} while (!mobj->tics);
+#endif
 	
 	return true;
 }
@@ -77,8 +81,10 @@ void P_ExplodeMissile (mobj_t *mo)
 	mo->momx = mo->momy = mo->momz = 0;
 	P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 	mo->tics -= P_Random()&3;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (mo->tics < 1)
 		mo->tics = 1;
+#endif
 	mo->flags &= ~MF_MISSILE;
 	if (mo->info->deathsound)
 		S_StartSound (mo, mo->info->deathsound);
@@ -274,7 +280,11 @@ void P_ZMovement (mobj_t *mo)
 			mo->momz = -mo->momz;
 		}
 #endif
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if ( mo->flags & MF_MISSILE )
+#else
 		if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
+#endif
 		{
 			P_ExplodeMissile (mo);
 			return;
@@ -297,7 +307,11 @@ void P_ZMovement (mobj_t *mo)
 		{	// the skull slammed into something
 			mo->momz = -mo->momz;
 		}
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if ( mo->flags & MF_MISSILE )
+#else
 		if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
+#endif
 		{
 			P_ExplodeMissile(mo);
 			return;
@@ -392,7 +406,11 @@ void P_MobjThinker (mobj_t *mobj)
 	{
 		mobj->tics--;
 		// you can cycle through multiple states in a tic
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		while (!mobj->tics)
+#else
 		if (!mobj->tics)
+#endif
 			if (!P_SetMobjState (mobj, mobj->state->nextstate))
 				return;		// freed itself
 	}
@@ -476,13 +494,16 @@ mobj_t *P_SpawnMobj (fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
 =
 ===============
 */
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 mapthing_t	itemrespawnque[ITEMQUESIZE];
 int			itemrespawntime[ITEMQUESIZE];
 int			iquehead, iquetail;
+#endif
 
 
 void P_RemoveMobj(mobj_t *mobj)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if ((mobj->flags & MF_SPECIAL)
 		&& !(mobj->flags & MF_DROPPED)
 		&& (mobj->type != MT_INV)
@@ -496,6 +517,7 @@ void P_RemoveMobj(mobj_t *mobj)
 		if (iquehead == iquetail)
 			iquetail = (iquetail+1)&(ITEMQUESIZE-1);
 	}
+#endif
 // unlink from sector and block lists
 	P_UnsetThingPosition (mobj);
 // stop any playing sound
@@ -504,6 +526,7 @@ void P_RemoveMobj(mobj_t *mobj)
 	P_RemoveThinker ((thinker_t *)mobj);
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ===============
 =
@@ -557,6 +580,7 @@ void P_RespawnSpecials (void)
 // pull it from the que
 	iquetail = (iquetail+1)&(ITEMQUESIZE-1);
 }
+#endif
 
 //=============================================================================
 
@@ -689,7 +713,11 @@ void P_SpawnMapThing (mapthing_t *mthing)
 		return;
 		
 // don't spawn any monsters if -nomonsters
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (nomonsters && (mobjinfo[i].flags & MF_COUNTKILL) )
+#else
 	if (nomonsters && ( i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)) )
+#endif
 		return;
 		
 	
@@ -741,8 +769,10 @@ void P_SpawnPuff (fixed_t x, fixed_t y, fixed_t z)
 	th = P_SpawnMobj (x,y,z, MT_PUFF);
 	th->momz = FRACUNIT;
 	th->tics -= P_Random()&3;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (th->tics < 1)
 		th->tics = 1;
+#endif
 		
 // don't make punches spark on the wall
 	if (attackrange == MELEERANGE)
@@ -765,8 +795,10 @@ void P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage)
 	th = P_SpawnMobj (x,y,z, MT_BLOOD);
 	th->momz = FRACUNIT*2;
 	th->tics -= P_Random()&3;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (th->tics<1)
 		th->tics = 1;
+#endif
 	if (damage <= 12 && damage >= 9)
 		P_SetMobjState (th,S_BLOOD2);
 	else if (damage < 9)
@@ -786,8 +818,10 @@ void P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage)
 void P_CheckMissileSpawn (mobj_t *th)
 {
 	th->tics -= P_Random()&3;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (th->tics < 1)
 		th->tics = 1;
+#endif
 	th->x += (th->momx>>1);
 	th->y += (th->momy>>1);	// move a little forward so an angle can
 							// be computed if it immediately explodes
@@ -804,7 +838,11 @@ void P_CheckMissileSpawn (mobj_t *th)
 ================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+void	P_SpawnMissile (mobj_t *source, mobj_t *dest, mobjtype_t type)
+#else
 mobj_t *P_SpawnMissile (mobj_t *source, mobj_t *dest, mobjtype_t type)
+#endif
 {
 	mobj_t		*th;
 	angle_t		an;
@@ -829,7 +867,9 @@ mobj_t *P_SpawnMissile (mobj_t *source, mobj_t *dest, mobjtype_t type)
 		dist = 1;
 	th->momz = (dest->z - source->z) / dist;
 	P_CheckMissileSpawn (th);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	return th;
+#endif
 }
 
 

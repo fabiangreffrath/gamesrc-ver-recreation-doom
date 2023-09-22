@@ -57,6 +57,7 @@ musicinfo_t S_music[] =
 	{ "bunny", 0 },
 	{ "victor", 0 },
 	{ "introa", 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "runnin", 0 },
 	{ "stalks", 0 },
 	{ "countd", 0 },
@@ -92,6 +93,7 @@ musicinfo_t S_music[] =
 	{ "read_m", 0 },
 	{ "dm2ttl", 0 },
 	{ "dm2int", 0 }
+#endif
 };
 
 // Sound info
@@ -102,10 +104,12 @@ sfxinfo_t S_sfx[] =
 	{ "pistol", false, 64, 0, -1, -1, 0 },
 	{ "shotgn", false, 64, 0, -1, -1, 0 },
 	{ "sgcock", false, 64, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "dshtgn", false, 64, 0, -1, -1, 0 },
 	{ "dbopn", false, 64, 0, -1, -1, 0 },
 	{ "dbcls", false, 64, 0, -1, -1, 0 },
 	{ "dbload", false, 64, 0, -1, -1, 0 },
+#endif
 	{ "plasma", false, 64, 0, -1, -1, 0 },
 	{ "bfg", false, 64, 0, -1, -1, 0 },
 	{ "sawup", false, 64, 0, -1, -1, 0 },
@@ -126,9 +130,11 @@ sfxinfo_t S_sfx[] =
 	{ "plpain", false, 96, 0, -1, -1, 0 },
 	{ "dmpain", false, 96, 0, -1, -1, 0 },
 	{ "popain", false, 96, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "vipain", false, 96, 0, -1, -1, 0 },
 	{ "mnpain", false, 96, 0, -1, -1, 0 },
 	{ "pepain", false, 96, 0, -1, -1, 0 },
+#endif
 	{ "slop", false, 78, 0, -1, -1, 0 },
 	{ "itemup", true, 78, 0, -1, -1, 0 },
 	{ "wpnup", true, 78, 0, -1, -1, 0 },
@@ -144,19 +150,27 @@ sfxinfo_t S_sfx[] =
 	{ "brssit", true, 94, 0, -1, -1, 0 },
 	{ "cybsit", true, 92, 0, -1, -1, 0 },
 	{ "spisit", true, 90, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "bspsit", true, 90, 0, -1, -1, 0 },
 	{ "kntsit", true, 90, 0, -1, -1, 0 },
 	{ "vilsit", true, 90, 0, -1, -1, 0 },
 	{ "mansit", true, 90, 0, -1, -1, 0 },
 	{ "pesit", true, 90, 0, -1, -1, 0 },
+#endif
 	{ "sklatk", false, 70, 0, -1, -1, 0 },
 	{ "sgtatk", false, 70, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "skepch", false, 70, 0, -1, -1, 0 },
 	{ "vilatk", false, 70, 0, -1, -1, 0 },
+#endif
 	{ "claw", false, 70, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "skeswg", false, 70, 0, -1, -1, 0 },
+#endif
 	{ "pldeth", false, 32, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "pdiehi", false, 32, 0, -1, -1, 0 },
+#endif
 	{ "podth1", false, 70, 0, -1, -1, 0 },
 	{ "podth2", false, 70, 0, -1, -1, 0 },
 	{ "podth3", false, 70, 0, -1, -1, 0 },
@@ -168,23 +182,28 @@ sfxinfo_t S_sfx[] =
 	{ "brsdth", false, 32, 0, -1, -1, 0 },
 	{ "cybdth", false, 32, 0, -1, -1, 0 },
 	{ "spidth", false, 32, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "bspdth", false, 32, 0, -1, -1, 0 },
 	{ "vildth", false, 32, 0, -1, -1, 0 },
 	{ "kntdth", false, 32, 0, -1, -1, 0 },
 	{ "pedth", false, 32, 0, -1, -1, 0 },
 	{ "skedth", false, 32, 0, -1, -1, 0 },
+#endif
 	{ "posact", true, 120, 0, -1, -1, 0 },
 	{ "bgact", true, 120, 0, -1, -1, 0 },
 	{ "dmact", true, 120, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "bspact", true, 100, 0, -1, -1, 0 },
 	{ "bspwlk", true, 100, 0, -1, -1, 0 },
 	{ "vilact", true, 100, 0, -1, -1, 0 },
+#endif
 	{ "noway", false, 78, 0, -1, -1, 0 },
 	{ "barexp", false, 60, 0, -1, -1, 0 },
 	{ "punch", false, 64, 0, -1, -1, 0 },
 	{ "hoof", false, 70, 0, -1, -1, 0 },
 	{ "metal", false, 70, 0, -1, -1, 0 },
 	{ "chgun", false, 64, &S_sfx[sfx_pistol], 150, 0, 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "tink", false, 60, 0, -1, -1, 0 },
 	{ "bdopn", false, 100, 0, -1, -1, 0 },
 	{ "bdcls", false, 100, 0, -1, -1, 0 },
@@ -207,4 +226,5 @@ sfxinfo_t S_sfx[] =
 	{ "skesit", false, 70, 0, -1, -1, 0 },
 	{ "skeatk", false, 70, 0, -1, -1, 0 },
 	{ "radio", false, 60, 0, -1, -1, 0 } 
+#endif
 };

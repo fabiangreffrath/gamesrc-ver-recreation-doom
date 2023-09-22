@@ -52,11 +52,13 @@ typedef struct
 
 extern	anim_t	anims[MAXANIMS], *lastanim;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 //
 // End-level timer (-TIMER option)
 //
 extern	boolean levelTimer;
 extern	int	levelTimeCount;
+#endif
 
 //
 //	Animating line specials
@@ -79,7 +81,11 @@ void	P_SpawnSpecials (void);
 void 	P_UpdateSpecials (void);
 
 // when needed
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+boolean	P_UseSpecialLine ( mobj_t *thing, line_t *line);
+#else
 boolean	P_UseSpecialLine ( mobj_t *thing, line_t *line, int side);
+#endif
 void	P_ShootSpecialLine ( mobj_t *thing, line_t *line);
 void 	P_CrossSpecialLine (int linenum, int side, mobj_t *thing);
 
@@ -109,6 +115,7 @@ int EV_DoDonut(line_t *line);
 
 ===============================================================================
 */
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 typedef struct
 {
 	thinker_t	thinker;
@@ -117,6 +124,7 @@ typedef struct
 	int			maxlight;
 	int			minlight;
 } fireflicker_t;
+#endif
 
 typedef struct
 {
@@ -154,7 +162,9 @@ typedef struct
 #define	FASTDARK		15
 #define	SLOWDARK		35
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void    P_SpawnFireFlicker (sector_t *sector);
+#endif
 void	T_LightFlash (lightflash_t *flash);
 void	P_SpawnLightFlash (sector_t *sector);
 void	T_StrobeFlash (strobe_t *flash);
@@ -225,7 +235,9 @@ typedef enum
 	downWaitUpStay,
 	raiseAndChange,
 	raiseToNearestAndChange,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	blazeDWUS
+#endif
 } plattype_e;
 
 typedef struct
@@ -271,9 +283,11 @@ typedef enum
 	close,
 	open,
 	raiseIn5Mins,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	blazeRaise,
 	blazeOpen,
 	blazeClose
+#endif
 } vldoor_e;
 
 typedef struct
@@ -294,7 +308,9 @@ typedef struct
 
 void	EV_VerticalDoor (line_t *line, mobj_t *thing);
 int		EV_DoDoor (line_t *line, vldoor_e type);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 int		EV_DoLockedDoor (line_t *line, vldoor_e type, mobj_t *thing);
+#endif
 void	T_VerticalDoor (vldoor_t *door);
 void	P_SpawnDoorCloseIn30 (sector_t *sec);
 void	P_SpawnDoorRaiseIn5Mins (sector_t *sec, int secnum);
@@ -376,7 +392,9 @@ typedef enum
 	lowerAndCrush,
 	crushAndRaise,
 	fastCrushAndRaise,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	silentCrushAndRaise
+#endif
 } ceiling_e;
 
 typedef struct
@@ -425,16 +443,22 @@ typedef enum
 	raiseFloor24,
 	raiseFloor24AndChange,
 	raiseFloorCrush,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	raiseFloorTurbo,	// raise to next highest floor, turbo-speed
+#endif
 	donutRaise,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	raiseFloor512
+#endif
 } floor_e;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 typedef enum
 {
 	build8,	// slowly build by 8
 	turbo16	// quickly build by 16
 } stair_e;
+#endif
 
 typedef struct
 {
@@ -461,7 +485,11 @@ typedef enum
 result_e	T_MovePlane(sector_t *sector,fixed_t speed,
 			fixed_t dest,boolean crush,int floorOrCeiling,int direction);
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+int		EV_BuildStairs(line_t *line);
+#else
 int		EV_BuildStairs(line_t *line, stair_e type);
+#endif
 int		EV_DoFloor(line_t *line,floor_e floortype);
 void	T_MoveFloor(floormove_t *floor);
 

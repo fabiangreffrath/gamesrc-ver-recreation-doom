@@ -9,6 +9,7 @@
 // in order to have an impact in any place where it's expected to.
 
 // APPVER_DOOMREV definitions
+#define AV_DR_DM12 199402170
 #define AV_DR_DM1666P 199408250
 #define AV_DR_DM1666E 199408300
 #define AV_DR_DM1666 199409010

@@ -30,6 +30,9 @@ planefunction_t		floorfunc, ceilingfunc;
 int			skyflatnum;
 int			skytexture;
 int			skytexturemid;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+fixed_t		skyiscale;
+#endif
 
 //
 // opening
@@ -85,6 +88,9 @@ void R_InitSkyMap (void)
 {
 	skyflatnum = R_FlatNumForName ("F_SKY1");
 	skytexturemid = 100*FRACUNIT;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	skyiscale = FRACUNIT;
+#endif
 }
 
 
@@ -389,7 +395,11 @@ void R_DrawPlanes (void)
 	//
 		if (pl->picnum == skyflatnum)
 		{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			dc_iscale = skyiscale;
+#else
 			dc_iscale = pspriteiscale>>detailshift;
+#endif
 			dc_colormap = colormaps;// sky is allways drawn full bright
 			dc_texturemid = skytexturemid;
 			for (x=pl->minx ; x <= pl->maxx ; x++)

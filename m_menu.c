@@ -32,7 +32,9 @@ extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10, _wp11;
 extern patch_t *hu_font[HU_FONTSIZE];
 extern boolean message_dontfuckwithme;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 extern boolean chat_on;		// in heads-up code
+#endif
 
 //
 // defaulted values
@@ -101,6 +103,7 @@ char endmsg[8][80] =
 #endif
 };
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 char endmsg2[8][80] =
 {
 	QUITMSG,
@@ -122,6 +125,7 @@ char endmsg2[8][80] =
 	"you're lucky i don't smack\nyou for thinking about leaving."
 #endif
 };
+#endif
 
 // we are going to be entering a savegame string
 int saveStringEnter;              
@@ -208,7 +212,9 @@ void M_QuickLoad(void);
 void M_DrawMainMenu(void);
 void M_DrawReadThis1(void);
 void M_DrawReadThis2(void);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void M_DrawReadThisRetail(void);
+#endif
 void M_DrawNewGame(void);
 void M_DrawEpisode(void);
 void M_DrawOptions(void);
@@ -786,11 +792,13 @@ void M_DrawReadThis2(void)
 #endif
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void M_DrawReadThisRetail(void)
 {
 	inhelpscreens = true;
 	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP",PU_CACHE));
 }
+#endif
 
 
 //
@@ -871,7 +879,11 @@ void M_DrawNewGame(void)
 
 void M_NewGame(int choice)
 {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (netgame)
+#else
 	if (netgame && !demoplayback)
+#endif
 	{
 		M_StartMessage(NEWGAME,NULL,false);
 		return;
@@ -880,9 +892,11 @@ void M_NewGame(int choice)
 #if APPVER_CHEX
 	M_SetupNextMenu(&NewDef);
 #else
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 		M_SetupNextMenu(&NewDef);
 	else
+#endif
 		M_SetupNextMenu(&EpiDef);
 #endif
 }
@@ -1056,6 +1070,7 @@ int     quitsounds[8] =
 	sfx_sgtatk
 };
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 int     quitsounds2[8] =
 {
 	sfx_vilact,
@@ -1067,6 +1082,7 @@ int     quitsounds2[8] =
 	sfx_bspact,
 	sfx_sgtatk
 };
+#endif
 
 
 
@@ -1076,9 +1092,11 @@ void M_QuitResponse(int ch)
 		return;
 	if (!netgame)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (commercial)
 			S_StartSound(NULL,quitsounds2[(gametic>>2)&7]);
 		else
+#endif
 			S_StartSound(NULL,quitsounds[(gametic>>2)&7]);
 		I_WaitVBL(105);
 	}
@@ -1090,6 +1108,7 @@ void M_QuitResponse(int ch)
 
 void M_QuitDOOM(int choice)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 #if (APPVER_DOOMREV >= AV_DR_DM18FR)
@@ -1100,6 +1119,7 @@ void M_QuitDOOM(int choice)
 			sprintf(endstring,"%s\n\n"DOSY,endmsg2[(gametic>>2)&7]);
 	}
 	else
+#endif
 		sprintf(endstring,"%s\n\n"DOSY,endmsg[(gametic>>2)&7]);
 
 	M_StartMessage(endstring,M_QuitResponse,true);
@@ -1447,16 +1467,25 @@ boolean M_Responder (event_t* ev)
 				break;
 				
 			default:
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				if (
+#else
 				ch = toupper(ch);
 				if (ch != 32)
 					if (ch-HU_FONTSTART < 0 || ch-HU_FONTSTART >= HU_FONTSIZE)
 						break;
 				if (ch >= 32 && ch <= 127 &&
+#endif
 					saveCharIndex < SAVESTRINGSIZE-1 &&
 					M_StringWidth(savegamestrings[saveSlot]) <
 					(SAVESTRINGSIZE-2)*8)
 				{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+					ch = toupper(ch);
 					savegamestrings[saveSlot][saveCharIndex++] = ch;
+#else
+					savegamestrings[saveSlot][saveCharIndex++] = ch;
+#endif
 					savegamestrings[saveSlot][saveCharIndex] = 0;
 				}
 				break;
@@ -1493,14 +1522,22 @@ boolean M_Responder (event_t* ev)
 		switch(ch)
 		{
 			case KEY_MINUS:         // Screen size down
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				if (automapactive)
+#else
 				if (automapactive || chat_on)
+#endif
 					return false;
 				M_SizeDisplay(0);
 				S_StartSound(NULL,sfx_stnmov);
 				return true;
 				
 			case KEY_EQUALS:        // Screen size up
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				if (automapactive)
+#else
 				if (automapactive || chat_on)
+#endif
 					return false;
 				M_SizeDisplay(1);
 				S_StartSound(NULL,sfx_stnmov);
@@ -1831,6 +1868,7 @@ void M_Init (void)
 	messageLastMenuActive = menuactive;
 	quickSaveSlot = -1;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		MainMenu[readthis] = MainMenu[quitdoom];
@@ -1842,4 +1880,5 @@ void M_Init (void)
 		ReadDef1.y = 165;
 		ReadMenu1[0].routine = M_FinishReadThis;
 	}
+#endif
 }

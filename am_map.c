@@ -88,7 +88,9 @@ static unsigned char cheat_amap_seq[] = { 0xb2, 0x26, 0x26, 0x2e, 0xff };
 static cheatseq_t cheat_amap = { cheat_amap_seq, 0 };
 
 extern boolean viewactive;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
 extern boolean singledemo;
+#endif
 //extern byte screens[][SCREENWIDTH*SCREENHEIGHT];
 void V_MarkRect (int x, int y, int width, int height);
 
@@ -849,7 +851,11 @@ void AM_drawPlayers(void)
   {
     their_color++;
     p = &players[i];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+    if (deathmatch && p != plr)
+#else
     if (deathmatch && !singledemo && p != plr)
+#endif
       continue;
     if (!playeringame[i]) continue;
     if (p->powers[pw_invisibility]) color = 246; // *close* to black
@@ -884,10 +890,15 @@ void AM_drawMarks(void)
   {
     if (markpoints[i].x != -1)
     {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+      w = SHORT(marknums[i]->width);
+      h = SHORT(marknums[i]->height);
+#else
 //      w = SHORT(marknums[i]->width);
 //      h = SHORT(marknums[i]->height);
       w = 5; // because something's wrong with the wad, i guess
       h = 6; // because something's wrong with the wad, i guess
+#endif
       fx = CXMTOF(markpoints[i].x);
       fy = CYMTOF(markpoints[i].y);
       if (fx >= f_x && fx <= f_w - w && fy >= f_y && fy <= f_h - h)

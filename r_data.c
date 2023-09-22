@@ -114,7 +114,8 @@ void R_DrawColumnInCache (column_t *patch, byte *cache, int originy, int cachehe
 		if (count > 0)
 			memcpy (cache + position, source, count);
 		
-		patch = (column_t *)(  (byte *)patch + patch->length+ 4);
+		patch = (column_t *)(  (byte *)patch + patch->length
++ 4);
 	}
 }
 
@@ -302,7 +303,9 @@ void R_InitTextures (void)
 	int			offset, maxoff, maxoff2;
 	int			numtextures1, numtextures2;
 	int			*directory;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int			temp1, temp2, temp3;
+#endif
 
 //
 // load the patch names from pnames.lmp
@@ -350,7 +353,8 @@ void R_InitTextures (void)
 	textureheight = Z_Malloc (numtextures*4, PU_STATIC, 0);
 
 	totalwidth = 0;
-    
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	temp1 = W_GetNumForName ("S_START");
 	temp2 = W_GetNumForName ("S_END") - 1;
 	temp3 = ((temp2-temp1+63)/64) + ((numtextures+63)/64);
@@ -361,6 +365,7 @@ void R_InitTextures (void)
 	for (i = 0; i < temp3; i++)
 		printf("\x8");
 	printf("\x8\x8\x8\x8\x8\x8\x8\x8\x8\x8");	
+#endif
 
 	for (i=0 ; i<numtextures ; i++, directory++)
 	{
@@ -587,11 +592,17 @@ int	R_CheckTextureNumForName (char *name)
 int	R_TextureNumForName (char *name)
 {
 	int		i;
-	//char	namet[9];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	char	namet[9];
+#endif
 	
 	i = R_CheckTextureNumForName (name);
 	if (i==-1)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		I_Error ("R_TextureNumForName: %s not found",namet);
+#else
 		I_Error ("R_TextureNumForName: %s not found",name);
+#endif
 	
 	return i;
 }

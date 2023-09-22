@@ -82,7 +82,11 @@ void R_RenderMaskedSegRange (drawseg_t *ds, int x1, int x2)
 	curline = ds->curline;
 	frontsector = curline->frontsector;
 	backsector = curline->backsector;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	texnum = curline->sidedef->midtexture;
+#else
 	texnum = texturetranslation[curline->sidedef->midtexture];
+#endif
 
 	lightnum = (frontsector->lightlevel >> LIGHTSEGSHIFT)+extralight;
 	if (curline->v1->y == curline->v2->y)
@@ -167,7 +171,11 @@ void R_RenderMaskedSegRange (drawseg_t *ds, int x1, int x2)
 ================
 */
 
+#if (APPVER_DOOMREV << AV_DR_DM1666P)
+#define HEIGHTBITS      16
+#else
 #define HEIGHTBITS      12
+#endif
 #define HEIGHTUNIT      (1<<HEIGHTBITS)
 
 void R_RenderSegLoop (void)
@@ -591,28 +599,48 @@ void R_StoreWallRange (int start, int stop)
 //
 // calculate incremental stepping values for texture edges
 //
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	worldtop >>= 4;
 	worldbottom >>= 4;
+#endif
 
 	topstep = -FixedMul (rw_scalestep, worldtop);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	topfrac = centeryfrac - FixedMul (worldtop, rw_scale);
+#else
 	topfrac = (centeryfrac>>4) - FixedMul (worldtop, rw_scale);
+#endif
 
 	bottomstep = -FixedMul (rw_scalestep,worldbottom);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	bottomfrac = centeryfrac - FixedMul (worldbottom, rw_scale);
+#else
 	bottomfrac = (centeryfrac>>4) - FixedMul (worldbottom, rw_scale);
+#endif
 
 	if (backsector)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		worldhigh >>= 4;
 		worldlow >>= 4;
+#endif
 
 		if (worldhigh < worldtop)
 		{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			pixhigh = centeryfrac - FixedMul (worldhigh, rw_scale);
+#else
 			pixhigh = (centeryfrac>>4) - FixedMul (worldhigh, rw_scale);
+#endif
 			pixhighstep = -FixedMul (rw_scalestep,worldhigh);
 		}
 		if (worldlow > worldbottom)
 		{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			pixlow = centeryfrac - FixedMul (worldlow, rw_scale);
+#else
 			pixlow = (centeryfrac>>4) - FixedMul (worldlow, rw_scale);
+#endif
 			pixlowstep = -FixedMul (rw_scalestep,worldlow);
 		}
 	}

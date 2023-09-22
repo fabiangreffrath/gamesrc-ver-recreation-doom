@@ -119,7 +119,11 @@ boolean P_CheckMeleeRange(mobj_t *actor)
 	pl = actor->target;
 	dist = P_AproxDistance (pl->x-actor->x, pl->y-actor->y);
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (dist >= MELEERANGE)
+#else
 	if (dist >= MELEERANGE-20*FRACUNIT+pl->info->radius)
+#endif
 		return false;
 
 	if (! P_CheckSight (actor, actor->target) )
@@ -158,6 +162,7 @@ boolean P_CheckMissileRange(mobj_t *actor)
 
 	dist >>= 16;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (actor->type == MT_VILE)
 	{
 		if (dist > 14*64)	
@@ -171,6 +176,7 @@ boolean P_CheckMissileRange(mobj_t *actor)
 			return false;	// close for fist attack
 		dist >>= 1;
 	}
+#endif
 
 
 	if (actor->type == MT_CYBORG || actor->type == MT_SPIDER || actor->type == MT_SKULL)
@@ -210,20 +216,30 @@ boolean P_Move(mobj_t *actor)
 {
 	fixed_t tryx, tryy;
 	line_t *ld;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	boolean good;
+#else
 	boolean try, good;
+#endif
 
 	if (actor->movedir == DI_NODIR)
 		return false;
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if ((unsigned)actor->movedir >= 8)
 		I_Error ("Weird actor->movedir!");
+#endif
 
 	tryx = actor->x+actor->info->speed*xspeed[actor->movedir];
 	tryy = actor->y+actor->info->speed*yspeed[actor->movedir];
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (!P_TryMove (actor, tryx, tryy))
+#else
 	try = P_TryMove (actor, tryx, tryy);
 
 	if (!try)
+#endif
 	{ // open any specials
 		if (actor->flags&MF_FLOAT && floatok)
 		{ // must adjust height
@@ -244,7 +260,11 @@ boolean P_Move(mobj_t *actor)
 		{
 			ld = spechit[numspechit];
 			// if the special isn't a door that can be opened, return false
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			if (P_UseSpecialLine (actor, ld))
+#else
 			if (P_UseSpecialLine (actor, ld,0))
+#endif
 				good = true;
 		}
 		return good;
@@ -385,7 +405,11 @@ void P_NewChaseDir (mobj_t *actor)
 	}
 	else
 	{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		for (tdir=DI_SOUTHEAST ; tdir >= DI_EAST;tdir--)
+#else
 		for (tdir=DI_SOUTHEAST ; tdir != (DI_EAST-1);tdir--)
+#endif
 		{
 			if (tdir!=turnaround)
 			{
@@ -462,6 +486,7 @@ boolean P_LookForPlayers(mobj_t *actor, boolean allaround)
 	return false;
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ==============
 =
@@ -499,6 +524,7 @@ void A_KeenDie (mobj_t *mo)
 	junk.tag = 666;
 	EV_DoDoor(&junk,open);
 }
+#endif
 
 /*
 ===============================================================================
@@ -596,11 +622,13 @@ void A_Chase (mobj_t *actor)
 //
 	if (actor->threshold)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (!actor->target || actor->target->health <= 0)
 		{
 			actor->threshold = 0;
 		}
 		else
+#endif
 			actor->threshold--;
 	}
 
@@ -632,7 +660,11 @@ void A_Chase (mobj_t *actor)
 	if (actor->flags & MF_JUSTATTACKED)
 	{
 		actor->flags &= ~MF_JUSTATTACKED;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if (gameskill != sk_nightmare)
+#else
 		if (gameskill != sk_nightmare && !fastparm)
+#endif
 			P_NewChaseDir (actor);
 		return;
 	}
@@ -653,7 +685,11 @@ void A_Chase (mobj_t *actor)
 //
 	if (actor->info->missilestate)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if (gameskill < sk_nightmare && actor->movecount)
+#else
 		if (gameskill < sk_nightmare && !fastparm && actor->movecount)
+#endif
 		{
 			goto nomissile;
 		}
@@ -761,6 +797,7 @@ void A_SPosAttack (mobj_t *actor)
 	}
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void A_CPosAttack (mobj_t *actor)
 {
 	int		angle, bangle, damage, slope;
@@ -789,6 +826,7 @@ void A_CPosRefire (mobj_t *actor)
 		P_SetMobjState (actor, actor->info->seestate);
 	}
 }
+#endif
 
 void A_SpidRefire (mobj_t *actor)
 {	
@@ -802,6 +840,7 @@ void A_SpidRefire (mobj_t *actor)
 	}
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void A_BspiAttack (mobj_t *actor)
 {	
 	if (!actor->target)
@@ -812,6 +851,7 @@ void A_BspiAttack (mobj_t *actor)
 // launch a missile
 	P_SpawnMissile (actor, actor->target, MT_ARACHPLAZ);
 }
+#endif
 
 
 /*
@@ -852,11 +892,16 @@ void A_SargAttack (mobj_t *actor)
 		return;
 		
 	A_FaceTarget (actor);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	damage = ((P_Random()%10)+1)*4;
+	P_LineAttack (actor, actor->angle, MELEERANGE, 0, damage);
+#else
 	if (P_CheckMeleeRange (actor))
 	{
 		damage = ((P_Random()%10)+1)*4;
 		P_DamageMobj (actor->target, actor, actor, damage);
 	}
+#endif
 }
 
 void A_HeadAttack (mobj_t *actor)
@@ -909,6 +954,7 @@ void A_BruisAttack (mobj_t *actor)
 }
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ==============
 =
@@ -1345,7 +1391,7 @@ void A_FatAttack3 (mobj_t *actor)
 	mo->momx = FixedMul (mo->info->speed, finecosine[an]);
 	mo->momy = FixedMul (mo->info->speed, finesine[an]);
 }
-
+#endif
 
 /*
 ==================
@@ -1385,6 +1431,7 @@ void A_SkullAttack (mobj_t* actor)
 }
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ==================
 =
@@ -1475,7 +1522,7 @@ void A_PainDie (mobj_t *actor)
 	A_PainShootSkull (actor, actor->angle+ANG180);
 	A_PainShootSkull (actor, actor->angle+ANG270);
 }
-
+#endif
 
 
 
@@ -1565,6 +1612,7 @@ void A_BossDeath (mobj_t *mo)
 	line_t		junk;
 	int			i;
 		
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		if (gamemap != 7)
@@ -1574,6 +1622,7 @@ void A_BossDeath (mobj_t *mo)
 			return;
 	}
 	else
+#endif
 	{
 #if (APPVER_DOOMREV < AV_DR_DM19U)
 		if (gamemap != 8)
@@ -1662,6 +1711,7 @@ void A_BossDeath (mobj_t *mo)
 //
 // victory!
 //
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		if (gamemap == 7)
@@ -1682,6 +1732,7 @@ void A_BossDeath (mobj_t *mo)
 		}
 	}
 	else
+#endif
 	{
 #if (APPVER_DOOMREV < AV_DR_DM19U)
 		if (gameepisode == 1)
@@ -1734,6 +1785,7 @@ void A_Metal (mobj_t *mo)
 	A_Chase (mo);
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void A_BabyMetal (mobj_t *mo)
 {
 	S_StartSound (mo, sfx_bspwlk);
@@ -1960,3 +2012,4 @@ void A_PlayerScream (mobj_t *mo)
     
 	S_StartSound (mo, sound);
 }
+#endif

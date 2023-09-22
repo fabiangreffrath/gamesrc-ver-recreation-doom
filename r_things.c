@@ -82,8 +82,12 @@ char			*spritename;
 void R_InstallSpriteLump (int lump, unsigned frame, unsigned rotation, boolean flipped)
 {
 	int		r;
-
+	
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (frame >= 26 || rotation > 8)
+#else
 	if (frame >= 29 || rotation > 8)
+#endif
 		I_Error ("R_InstallSpriteLump: Bad frame characters in lump %i", lump);
 
 	if ((int)frame > maxframe)
@@ -132,7 +136,8 @@ void R_InstallSpriteLump (int lump, unsigned frame, unsigned rotation, boolean f
 = Pass a null terminated list of sprite names (4 chars exactly) to be used
 = Builds the sprite rotation matrixes to account for horizontally flipped
 = sprites.  Will report an error if the lumps are inconsistant
-=Only called at startup
+=
+Only called at startup
 =
 = Sprite lump names are 4 characters for the actor, a letter for the frame,
 = and a number for the rotation, A sprite that is flippable will have an
@@ -146,7 +151,9 @@ void R_InitSpriteDefs (char **namelist)
 	char		**check;
 	int		i, l, intname, frame, rotation;
 	int		start, end;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int		patched;
+#endif
 
 // count the number of sprite names
 	check = namelist;
@@ -182,12 +189,16 @@ void R_InitSpriteDefs (char **namelist)
 				frame = lumpinfo[l].name[4] - 'A';
 				rotation = lumpinfo[l].name[5] - '0';
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				R_InstallSpriteLump (l, frame, rotation, false);
+#else
 				if (modifiedgame)
 					patched = W_GetNumForName (lumpinfo[l].name);
 				else
 					patched = l;
 
 				R_InstallSpriteLump (patched, frame, rotation, false);
+#endif
 				if (lumpinfo[l].name[6])
 				{
 					frame = lumpinfo[l].name[6] - 'A';
@@ -202,7 +213,14 @@ void R_InitSpriteDefs (char **namelist)
 		if (maxframe == -1)
 		{
 			sprites[i].numframes = 0;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			if (shareware)
+				continue;
+			I_Error ("R_InitSprites: No lumps found for sprite %s"
+			,namelist[i]);
+#else
 			continue;
+#endif
 		}
 
 		maxframe++;

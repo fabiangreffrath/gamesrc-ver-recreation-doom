@@ -29,7 +29,9 @@ CCOPTS = /dAPPVER_EXEDEF=$(appver_exedef) /omaxet /zp1 /4r /ei /j /zq
 GAMEVEROPTS = /DFRENCH
 !endif
 
-!ifeq appver_exedef DM1666P
+!ifeq appver_exedef DM12
+DMXVER=rap10
+!else ifeq appver_exedef DM1666P
 DMXVER=dmx34af1
 !else ifeq appver_exedef DM1666E
 DMXVER=dmx34af1
@@ -97,17 +99,17 @@ GLOBOBJS = &
  r_segs.obj &
  r_things.obj &
  w_wad.obj &
- wi_stuff.obj &
  v_video.obj &
- st_lib.obj &
+ z_zone.obj &
  st_stuff.obj &
+ st_lib.obj &
  hu_stuff.obj &
  hu_lib.obj &
+ wi_stuff.obj &
  s_sound.obj &
- z_zone.obj &
- info.obj &
  sounds.obj &
- dutils.obj
+ dutils.obj &
+ info.obj
 
 $(appver_exedef)\newdoom.exe : $(GLOBOBJS)
  cd $(appver_exedef)

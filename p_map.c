@@ -109,7 +109,11 @@ boolean PIT_StompThing (mobj_t *thing)
 	if (thing == tmthing)
 		return true;		// don't clip against self
 	
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if ( !tmthing->player )
+#else
 	if ( !tmthing->player && gamemap != 30)
+#endif
 		return false;		// monsters don't stomp things except on boss level
 		
 	P_DamageMobj (thing, tmthing, tmthing, 10000);
@@ -305,9 +309,13 @@ boolean PIT_CheckThing (mobj_t *thing)
 			return true;		// overhead
 		if (tmthing->z+tmthing->height < thing->z)
 			return true;		// underneath
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		if (tmthing->target && tmthing->target->type == thing->type )
+#else
 		if (tmthing->target && (tmthing->target->type == thing->type || 
 			(tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER)||
 			(tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT) ) )
+#endif
 		{		// Don't hit same species as originator
 			if (thing == tmthing->target)
 				return true;
@@ -1051,7 +1059,9 @@ mobj_t		*usething;
 
 boolean		PTR_UseTraverse (intercept_t *in)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int		side;
+#endif
 	if (!in->d.line->special)
 	{
 		P_LineOpening (in->d.line);
@@ -1063,12 +1073,19 @@ boolean		PTR_UseTraverse (intercept_t *in)
 		return true ;		// not a special line, but keep checking
 	}
 		
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (P_PointOnLineSide (usething->x, usething->y, in->d.line) == 1)
+		return false;
+
+	P_UseSpecialLine (usething, in->d.line);
+#else
 	side = 0;
 	if (P_PointOnLineSide (usething->x, usething->y, in->d.line) == 1)
 		side = 1;
 //		return false;		// don't use back sides
-		
+
 	P_UseSpecialLine (usething, in->d.line, side);
+#endif
 
 	return false;			// can't use for than one special line in a row
 }
@@ -1213,7 +1230,9 @@ boolean PIT_ChangeSector (mobj_t *thing)
 	if (thing->health <= 0)
 	{
 		P_SetMobjState (thing, S_GIBS);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		thing->flags &= ~MF_SOLID;
+#endif
 		thing->height = 0;
 		thing->radius = 0;
 		return true;		// keep checking

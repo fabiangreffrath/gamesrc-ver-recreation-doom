@@ -31,7 +31,9 @@
 // This *must* be included (near) the beginning for every compilation unit
 #include "GAMEVER.H"
 
-#if (APPVER_DOOMREV < AV_DR_DM17)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define VERSION 102
+#elif (APPVER_DOOMREV < AV_DR_DM17)
 #define VERSION 106
 #elif (APPVER_DOOMREV < AV_DR_DM18FR)
 #define VERSION 107
@@ -371,7 +373,9 @@ typedef enum
 	wp_plasma,
 	wp_bfg,
 	wp_chainsaw,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	wp_supershotgun,
+#endif
 	NUMWEAPONS,
 	wp_nochange
 } weapontype_t;
@@ -549,9 +553,12 @@ extern int _dp1, _dp2, _dp3, _dp4, _dp5, _dp6, _dp7; // align for d_main.c
 
 extern boolean nomonsters; // checkparm of -nomonsters
 extern boolean respawnparm; // checkparm of -respawn
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 extern boolean fastparm; // checkparm of -fastparm
+#endif
 
 extern boolean shareware; // true if main WAD is the shareware version
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 extern boolean registered;
 extern boolean commercial;
 #if (APPVER_DOOMREV >= AV_DR_DM18FR)
@@ -559,6 +566,7 @@ extern boolean french;
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
 extern boolean plutonia;
 extern boolean tnt;
+#endif
 #endif
 #endif
 
@@ -591,7 +599,9 @@ extern	boolean		singletics;			// debug flag to cancel adaptiveness
 extern	int			maxammo[NUMAMMO];
 
 extern	boolean		demoplayback;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 extern	boolean		demorecording;
+#endif
 extern	int			skytexture;
 
 extern	gamestate_t	gamestate;
@@ -634,7 +644,11 @@ extern gamestate_t wipegamestate;
 
 extern boolean precache; // if true, load all graphics at level load
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+extern byte *screens[4]; // off screen work buffer, from V_video.c
+#else
 extern byte *screens[5]; // off screen work buffer, from V_video.c
+#endif
 
 extern int _dp8, _dp9, _dp10, _dp11; // align for d_main.c
 
@@ -650,8 +664,12 @@ extern boolean noblit;
 extern boolean viewactive;
 extern boolean singledemo; // quit after playing a demo from cmdline
 extern boolean modifiedgame;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+extern char *basedefault;
+#else
 extern char wadfile[1024];
 extern char basedefault[1024];
+#endif
 extern FILE *debugfile;
 extern int bodyqueslot;
 extern skill_t startskill;
@@ -756,7 +774,9 @@ extern lumpinfo_t *lumpinfo;
 extern	int			numlumps;
 
 void	W_InitMultipleFiles (char **filenames);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void	W_Reload (void);
+#endif
 
 int		W_CheckNumForName (char *name);
 int		W_GetNumForName (char *name);
@@ -882,11 +902,13 @@ byte	*I_AllocLow (int length);
 
 void I_Tactile (int on, int off, int total);
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 ticcmd_t *I_BaseTiccmd(void);
 // Either returns a null ticcmd,
 // or calls a loadable driver to build it.
 // This ticcmd will then be modified by the gameloop
 // for normal input.
+#endif
 
 //----
 //GAME
@@ -910,10 +932,17 @@ void G_DoLoadGame (void);
 void G_SaveGame (int slot, char *description);
 // called by M_Responder
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+void G_RecordDemo (skill_t skill, int numplayers, int episode
+	, int map, char *name);
+#else
 void G_RecordDemo (char *name);
+#endif
 // only called by startup code
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void G_BeginRecording (void);
+#endif
 
 void G_PlayDemo (char *name);
 void G_TimeDemo (char *name);

@@ -119,6 +119,7 @@ void	P_PlayerThink (player_t *player);
 #define ONFLOORZ	MININT
 #define	ONCEILINGZ	MAXINT
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 // Time interval for item respawning.
 #define ITEMQUESIZE		128
 
@@ -128,6 +129,7 @@ extern int		iquehead, iquetail;
 
 
 void P_RespawnSpecials (void);
+#endif
 
 mobj_t *P_SpawnMobj (fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
 
@@ -137,7 +139,11 @@ void 	P_MobjThinker (mobj_t *mobj);
 
 void	P_SpawnPuff (fixed_t x, fixed_t y, fixed_t z);
 void 	P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+void	P_SpawnMissile (mobj_t *source, mobj_t *dest, mobjtype_t type);
+#else
 mobj_t *P_SpawnMissile (mobj_t *source, mobj_t *dest, mobjtype_t type);
+#endif
 void	P_SpawnPlayerMissile (mobj_t *source, mobjtype_t type);
 
 /*

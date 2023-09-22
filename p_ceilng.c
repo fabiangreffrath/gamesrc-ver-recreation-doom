@@ -47,12 +47,16 @@ void T_MoveCeiling (ceiling_t *ceiling)
 					ceiling->topheight,false,1,ceiling->direction);
 			if(!(leveltime&7))
 			{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_stnmov);
+#else
 				switch(ceiling->type)
 				{
 					case silentCrushAndRaise: break;
 					default:
 						S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_stnmov);
 				}
+#endif
 			}
 			if (res == pastdest)
 				switch(ceiling->type)
@@ -60,8 +64,10 @@ void T_MoveCeiling (ceiling_t *ceiling)
 					case raiseToHighest:
 						P_RemoveActiveCeiling(ceiling);
 						break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case silentCrushAndRaise:
 						S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_pstop);
+#endif
 					case fastCrushAndRaise:
 					case crushAndRaise:
 						ceiling->direction = -1;
@@ -75,18 +81,24 @@ void T_MoveCeiling (ceiling_t *ceiling)
 				ceiling->bottomheight,ceiling->crush,1,ceiling->direction);
 			if (!(leveltime&7))
 			{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_stnmov);
+#else
 				switch(ceiling->type)
 				{
 					case silentCrushAndRaise: break;
 					default:
 						S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_stnmov);
 				}
+#endif
 			}
 			if (res == pastdest)
 				switch(ceiling->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case silentCrushAndRaise:
 						S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_pstop);
+#endif
 					case crushAndRaise:
 						ceiling->speed = CEILSPEED;
 					case fastCrushAndRaise:
@@ -103,7 +115,9 @@ void T_MoveCeiling (ceiling_t *ceiling)
 			if (res == crushed)
 				switch(ceiling->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case silentCrushAndRaise:
+#endif
 					case crushAndRaise:
 					case lowerAndCrush:
 						ceiling->speed = CEILSPEED / 8;
@@ -136,7 +150,9 @@ int EV_DoCeiling (line_t *line, ceiling_e  type)
 	switch(type)
 	{
 		case fastCrushAndRaise:
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case silentCrushAndRaise:
+#endif
 		case crushAndRaise:
 			P_ActivateInStasisCeiling(line);
 		default:
@@ -168,7 +184,9 @@ int EV_DoCeiling (line_t *line, ceiling_e  type)
 				ceiling->direction = -1;
 				ceiling->speed = CEILSPEED * 2;
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case silentCrushAndRaise:
+#endif
 			case crushAndRaise:
 				ceiling->crush = true;
 				ceiling->topheight = sec->ceilingheight;

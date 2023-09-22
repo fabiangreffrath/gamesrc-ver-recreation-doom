@@ -300,11 +300,13 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   {
     rc = S_AdjustSoundParams(players[consoleplayer].mo, origin,
 			     &volume, &sep, &pitch);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     if ( origin->x == players[consoleplayer].mo->x
 	 && origin->y == players[consoleplayer].mo->y)
     {	
       sep 	= NORM_SEP;
     }
+#endif
 
     if (!rc)
       return;
@@ -323,7 +325,11 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
     else if (pitch>255)
       pitch = 255;
   }
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  else if (sfx_id != sfx_itemup)
+#else
   else if (sfx_id != sfx_itemup && sfx_id != sfx_tink)
+#endif
   {
     pitch += 16 - (M_Random()&31);
     if (pitch<0)
@@ -365,8 +371,13 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   
   // Assigns the handle to one of the channels in the
   //  mix/output buffer.
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  channels[cnum].handle = I_StartSound(sfx->data, volume,
+    sep, pitch, priority);
+#else
   channels[cnum].handle = I_StartSound(sfx_id, sfx->data, volume,
     sep, pitch, priority);
+#endif
 }
 
 void S_StartSound (void *origin, int sfx_id)
@@ -493,7 +504,11 @@ void S_UpdateSounds(void* listener_p)
 	    S_StopChannel(cnum);
 	  }
 	  else
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	    I_UpdateSoundParams(c->handle, volume, sep);
+#else
 	    I_UpdateSoundParams(c->handle, volume, sep, pitch);
+#endif
 	}
       }
       else
@@ -564,10 +579,12 @@ void S_Start(void)
   
   // start new music for the level
   mus_paused = 0;
-  
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
     mnum = mus_runnin + gamemap - 1;
   else
+#endif
 #if (APPVER_DOOMREV < AV_DR_DM19UP)
     mnum = mus_e1m1 + (gameepisode-1)*9 + gamemap-1;
 #else

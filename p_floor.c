@@ -209,7 +209,9 @@ void T_MoveFloor(floormove_t *floor)
 					break;
 			}
 		P_RemoveThinker(&floor->thinker);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
+#endif
 	}
 
 }
@@ -267,10 +269,15 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 				floor->direction = -1;
 				floor->sector = sec;
 				floor->speed = FLOORSPEED * 4;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				floor->floordestheight = (8*FRACUNIT) + 
+						P_FindHighestFloorSurrounding(sec);
+#else
 				floor->floordestheight =
 						P_FindHighestFloorSurrounding(sec);
 				if (floor->floordestheight != sec->floorheight)
 					floor->floordestheight += 8*FRACUNIT;
+#endif
 				break;
 			case raiseFloorCrush:
 				floor->crush = true;
@@ -285,6 +292,7 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 				floor->floordestheight -= (8*FRACUNIT)*
 					(floortype == raiseFloorCrush);
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case raiseFloorTurbo:
 				floor->direction = 1;
 				floor->sector = sec;
@@ -292,6 +300,7 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 				floor->floordestheight = 
 					P_FindNextHighestFloor(sec,sec->floorheight);
 				break;
+#endif
 			case raiseFloorToNearest:
 				floor->direction = 1;
 				floor->sector = sec;
@@ -306,6 +315,7 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 				floor->floordestheight = floor->sector->floorheight +
 						24 * FRACUNIT;
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case raiseFloor512:
 				floor->direction = 1;
 				floor->sector = sec;
@@ -313,6 +323,7 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 				floor->floordestheight = floor->sector->floorheight +
 						512 * FRACUNIT;
 				break;
+#endif
 			case raiseFloor24AndChange:
 				floor->direction = 1;
 				floor->sector = sec;
@@ -363,7 +374,9 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 						if (getSide(secnum,i,0)->sector-sectors == secnum)
 						{
 							sec = getSector(secnum,i,1);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 							if (sec->floorheight == floor->floordestheight)
+#endif
 							{
 								floor->texture = sec->floorpic;
 								floor->newspecial = sec->special;
@@ -373,7 +386,9 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 						else
 						{
 							sec = getSector(secnum,i,0);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 							if (sec->floorheight == floor->floordestheight)
+#endif
 							{
 								floor->texture = sec->floorpic;
 								floor->newspecial = sec->special;
@@ -393,7 +408,11 @@ int EV_DoFloor(line_t *line,floor_e floortype)
 //	BUILD A STAIRCASE!
 //
 //==================================================================
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+int EV_BuildStairs(line_t *line)
+#else
 int EV_BuildStairs(line_t *line, stair_e type)
+#endif
 {
 	int		secnum;
 	int		height;
@@ -404,7 +423,9 @@ int EV_BuildStairs(line_t *line, stair_e type)
 	int		rtn;
 	sector_t	*sec, *tsec;
 	floormove_t	*floor;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	fixed_t	stairsize, speed;
+#endif
 
 	secnum = -1;
 	rtn = 0;
@@ -420,12 +441,18 @@ int EV_BuildStairs(line_t *line, stair_e type)
 		// new floor thinker
 		//
 		rtn = 1;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		height = sec->floorheight + 8*FRACUNIT;
+#endif
 		floor = Z_Malloc (sizeof(*floor), PU_LEVSPEC, 0);
 		P_AddThinker (&floor->thinker);
 		sec->specialdata = floor;
 		floor->thinker.function = T_MoveFloor;
 		floor->direction = 1;
 		floor->sector = sec;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		floor->speed = FLOORSPEED/4;
+#else
 		switch(type)
 		{
 			case build8:
@@ -439,6 +466,7 @@ int EV_BuildStairs(line_t *line, stair_e type)
 		}
 		floor->speed = speed;
 		height = sec->floorheight + stairsize;
+#endif
 		floor->floordestheight = height;
 		
 		texture = sec->floorpic;
@@ -465,7 +493,11 @@ int EV_BuildStairs(line_t *line, stair_e type)
 				if (tsec->floorpic != texture)
 					continue;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				height += 8*FRACUNIT;
+#else
 				height += stairsize;
+#endif
 				if (tsec->specialdata)
 					continue;
 
@@ -477,7 +509,11 @@ int EV_BuildStairs(line_t *line, stair_e type)
 				floor->thinker.function = T_MoveFloor;
 				floor->direction = 1;
 				floor->sector = sec;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+				floor->speed = FLOORSPEED/4;
+#else
 				floor->speed = speed;
+#endif
 				floor->floordestheight = height;
 				ok = 1;
 				break;

@@ -431,19 +431,25 @@ void R_FillBackScreen (void)
 	int			i, j;
 	int			x, y;
 	patch_t		*patch;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	char		name1[] = "FLOOR7_2";
 	char		name2[] = "GRNROCK";	
 	char		*name;
+#endif
 	
 	if (scaledviewwidth == 320)
 		return;
-	
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	src = W_CacheLumpName ("FLOOR7_2", PU_CACHE);
+#else
 	if (commercial)
 		name = name2;
 	else
 		name = name1;
     
 	src = W_CacheLumpName (name, PU_CACHE);
+#endif
 	dest = screens[1];
 	 
 	for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++)

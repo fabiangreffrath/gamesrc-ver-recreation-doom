@@ -34,7 +34,10 @@
 #include "soundst.h"
 #include "DUtils.h"
 
-#if (APPVER_DOOMREV < AV_DR_DM19)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define	BGCOLOR		1
+#define	FGCOLOR		14
+#elif (APPVER_DOOMREV < AV_DR_DM19)
 #define	BGCOLOR		4
 #define	FGCOLOR		15
 #elif (APPVER_DOOMREV < AV_DR_DM19UP)
@@ -51,11 +54,17 @@
 extern int _wp1, _wp2, _wp3, _wp4;
 
 #define MAXWADFILES 20
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+char *wadfiles[MAXWADFILES] = { "doom.wad" };
+#else
 char *wadfiles[MAXWADFILES];
+#endif
 
 boolean shareware;		// true if only episode 1 present
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 boolean registered;
 boolean commercial;
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM18FR)
 boolean french;
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
@@ -67,7 +76,9 @@ boolean tnt;
 boolean devparm;            // started game with -devparm
 boolean nomonsters;			// checkparm of -nomonsters
 boolean respawnparm;			// checkparm of -respawn
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 boolean fastparm;				// checkparm of -fastparm
+#endif
 
 boolean drone;
 
@@ -95,9 +106,13 @@ boolean advancedemo;
 
 
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+char *basedefault = "default.cfg"; // default file
+#else
 char wadfile[1024];		// primary wad file
 char mapdir[1024];      // directory of development maps
 char basedefault[1024]; // default file
+#endif
 
 
 void D_CheckNetGame(void);
@@ -272,6 +287,11 @@ void D_Display (void)
     
 	// draw buffered stuff to screen
 	I_UpdateNoBlit ();
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (noblit)
+		return;
+#endif
 	
 	// draw the view directly
 	if (gamestate == GS_LEVEL && !automapactive && gametic)
@@ -281,7 +301,11 @@ void D_Display (void)
 		HU_Drawer ();
 	
 	// clean up border stuff
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (gamestate != oldgamestate)
+#else
 	if (gamestate != oldgamestate && gamestate != GS_LEVEL)
+#endif
 		I_SetPalette (W_CacheLumpName ("PLAYPAL",PU_CACHE));
 	
 	// see if the border needs to be initially drawn
@@ -364,14 +388,18 @@ void D_Display (void)
 
 void D_DoomLoop (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (demorecording)
 		G_BeginRecording ();
+#endif
 
 	if (M_CheckParm ("-debugfile"))
 	{
 		char	filename[20];
 		sprintf (filename, "debug%i.txt", consoleplayer);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		printf ("debug output to: %s\n", filename);
+#endif
 		debugfile = fopen (filename,"w");
 	}
 	I_InitGraphics ();
@@ -477,15 +505,19 @@ void D_DoAdvanceDemo (void)
 	switch (demosequence)
 	{
 		case 0:
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			if ( commercial )
 				pagetic = 35 * 11;
 			else
+#endif
 				pagetic = 170;
 			gamestate = GS_DEMOSCREEN;
 			pagename = "TITLEPIC";
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			if ( commercial )
 				S_StartMusic(mus_dm2ttl);
 			else
+#endif
 				S_StartMusic (mus_intro);
 			break;
 		case 1:
@@ -501,6 +533,7 @@ void D_DoAdvanceDemo (void)
 			break;
 		case 4:
 			gamestate = GS_DEMOSCREEN;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			if ( commercial )
 			{
 				pagetic = 35 * 11;
@@ -508,6 +541,7 @@ void D_DoAdvanceDemo (void)
 				S_StartMusic(mus_dm2ttl);
 			}
 			else
+#endif
 			{
 				pagetic = 200;
 #if (APPVER_DOOMREV < AV_DR_DM19U)
@@ -545,6 +579,45 @@ void D_StartTitle (void)
 	D_AdvanceDemo ();
 }
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+
+void tprintf(char *msg, int fgcolor, int bgcolor)
+{
+	union REGS regs;
+	byte attr;
+	int x;
+	int y;
+	int i;
+
+	attr = (bgcolor << 4) | fgcolor;
+	regs.h.ah = 3;
+	regs.h.bh = 0;
+	int386(0x10, &regs, &regs);
+	x = regs.h.dl;
+	y = regs.h.dh;
+
+	for (i = 0; i < strlen(msg); i++)
+	{
+		regs.h.ah = 9;
+		regs.h.al = msg[i];
+		regs.w.cx = 1;
+		regs.h.bl = attr;
+		regs.h.bh = 0;
+		int386(0x10, &regs, &regs);
+		if (++x > 79)
+			x = 0;
+
+		regs.h.ah = 2;
+		regs.h.bh = 0;
+		regs.h.dl = x;
+		regs.h.dh = y;
+		int386(0x10, &regs, &regs);
+	}
+}
+
+#define mprintf printf
+
+#else
 char title[128]; //      print title for every printed line
 
 int GetTextX(void)
@@ -616,6 +689,35 @@ void mprintf(char *msg)
 
 	SetTextPos(x, y);
 }
+#endif
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+/*
+==============
+=
+= D_CheckRecordFrom
+=
+= -recordfrom <savegame num> <demoname>
+==============
+*/
+
+void D_CheckRecordFrom (void)
+{
+	int     p;
+	char    file[256];
+
+	p = M_CheckParm ("-recordfrom");
+	if (!p || p > myargc-2)
+		return;
+
+	sprintf(file, SAVEGAMENAME"%c.dsg",myargv[p+1][0]);
+	G_LoadGame (file);
+	G_DoLoadGame ();    // load the gameskill etc info from savegame
+
+	G_RecordDemo (gameskill, 1, gameepisode, gamemap, myargv[p+2]);
+	D_DoomLoop ();  // never returns
+}
+#endif
 
 /*
 ===============
@@ -634,6 +736,10 @@ void D_AddFile(char *file)
 	new = malloc(strlen(file)+1);
 	strcpy(new, file);
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	printf ("Adding external file %s.\n", file);
+#endif
+
 	wadfiles[numwadfiles] = new;
 }
 
@@ -651,6 +757,7 @@ void CheckBetaTest(void)
 #endif
 #define DEVDATA "c:/localid/"
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 =================
 =
@@ -804,13 +911,15 @@ void IdentifyVersion (void)
 	exit(1);
 #endif
 }
+#endif
 
-#if (APPVER_DOOMREV < AV_DR_DM18FR) // Doom 95 debug info shows that it moved
+#if (APPVER_DOOMREV >= AV_DR_DM1666P) && (APPVER_DOOMREV < AV_DR_DM18FR) // Doom 95 debug info shows that it moved
 void CheckBetaTest(void)
 {
 }
 #endif
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 =================
 =
@@ -891,6 +1000,7 @@ void FindResponseFile (void)
 			break;
 		}
 }
+#endif
 
 /*
 =================
@@ -906,6 +1016,7 @@ void D_DoomMain (void)
 	int p;
 	char file[256];
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	FindResponseFile ();
 
 	IdentifyVersion ();
@@ -998,9 +1109,19 @@ void D_DoomMain (void)
 #endif
 				 VERSION/100,VERSION%100);
 	}
+#endif
 
 	regs.w.ax = 3;
 	int386 (0x10, &regs, &regs);
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define title file
+	sprintf (title,
+			 "                        "
+			 "DOOM Operating System v%i.%i"
+			 "                         ",
+			 VERSION/100,VERSION%100);
+#endif
 
 	tprintf (title, FGCOLOR, BGCOLOR);
 
@@ -1009,10 +1130,28 @@ void D_DoomMain (void)
 #else
 	printf ("\nP_Init: Checking cmd-line parameters...\n");
 #endif
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	setbuf(stdout, NULL);
+	modifiedgame = false;
+
+	nomonsters = M_CheckParm("-nomonsters");
+	respawnparm = M_CheckParm("-respawn");
+	devparm = M_CheckParm("-devparm");
+#endif
 	
 	if (devparm)
 		mprintf(D_DEVSTR);
-	
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (devparm)
+	{
+		extern char __begtext;
+		printf ("program loaded at: 0x%p\n", &__begtext - 3);
+	}
+#endif
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (M_CheckParm("-cdrom"))
 	{
 		printf(D_CDROM);
@@ -1045,6 +1184,7 @@ void D_DoomMain (void)
 		sidemove[0] = sidemove[0]*scale/100;
 		sidemove[1] = sidemove[1]*scale/100;
 	}
+#endif
 	
 	// add any files specified on the command line with -file wadfile
 	// to the wad list
@@ -1057,6 +1197,13 @@ void D_DoomMain (void)
 		myargv[p][4] = 'p';     // big hack, change to -warp
 
 		// Map name handling.
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		sprintf (file,"E%cM%c.wad",
+			myargv[p+1][0], myargv[p+2][0]);
+		D_AddFile(file);
+		printf("Warping to Episode %s, Map %s.\n",
+			myargv[p+1],myargv[p+2]);
+#else
 		if (commercial)
 		{
 			p = atoi (myargv[p+1]);
@@ -1073,6 +1220,7 @@ void D_DoomMain (void)
 				myargv[p+1],myargv[p+2]);
 		}
 		D_AddFile (file);
+#endif
 	}
 	
 	p = M_CheckParm ("-file");
@@ -1102,6 +1250,11 @@ void D_DoomMain (void)
 	startepisode = 1;
 	startmap = 1;
 	autostart = false;
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (M_CheckParm("-deathmatch"))
+		deathmatch = true;
+#endif
 	
 		
 	p = M_CheckParm ("-skill");
@@ -1118,7 +1271,8 @@ void D_DoomMain (void)
 		startmap = 1;
 		autostart = true;
 	}
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	p = M_CheckParm ("-timer");
 	if (p && p < myargc-1 && deathmatch)
 	{
@@ -1133,13 +1287,20 @@ void D_DoomMain (void)
 	p = M_CheckParm ("-avg");
 	if (p && p < myargc-1 && deathmatch)
 		printf("Austin Virtual Gaming: Levels will end after 20 minutes\n");
+#endif
 	
 	p = M_CheckParm ("-warp");
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (devparm && p && p < myargc-2)
+#else
 	if (p && p < myargc-1)
+#endif
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (commercial)
 			startmap = atoi (myargv[p+1]);
 		else
+#endif
 		{
 			startepisode = myargv[p+1][0]-'0';
 			startmap = myargv[p+2][0]-'0';
@@ -1160,7 +1321,8 @@ void D_DoomMain (void)
 	printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
 	
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// Check for -file in shareware
 	if (modifiedgame)
 	{
@@ -1207,6 +1369,7 @@ void D_DoomMain (void)
 				I_Error("\nThis is not the DOOM 2 wadfile.");
 	}
 #endif
+#endif
 	
 #if !APPVER_CHEX
 	// Iff additonal PWAD files are used, print modified banner
@@ -1226,6 +1389,24 @@ void D_DoomMain (void)
 	
 	
 	// Check and print which version is executed.
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (W_CheckNumForName("E2M1") != -1)
+	{
+		printf("\tcommercial version.\n");
+		printf (
+			"===========================================================================\n"
+			"             This version is NOT SHAREWARE, do not distribute!\n"
+			"         Please report software piracy to the SPA: 1-800-388-PIR8\n"
+			"===========================================================================\n"
+		);
+		shareware = false;
+	}
+	else
+	{
+		printf("\tshareware version.\n");
+		shareware = true;
+	}
+#else
 	if (registered)
 	{
 		mprintf("\tregistered version.\n");
@@ -1254,6 +1435,7 @@ void D_DoomMain (void)
 		);
 #endif
 	}
+#endif
 	
 	mprintf ("M_Init: Init miscellaneous info.\n");
 	M_Init ();
@@ -1261,7 +1443,11 @@ void D_DoomMain (void)
 #if APPVER_CHEX
 	mprintf ("R_Init: Init Chex(R) Quest refresh daemon - ");
 #else
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	mprintf ("R_Init: Init DOOM refresh daemon.");
+#else
 	mprintf ("R_Init: Init DOOM refresh daemon - ");
+#endif
 #endif
 	R_Init ();
 	
@@ -1282,7 +1468,12 @@ void D_DoomMain (void)
 	
 	mprintf ("ST_Init: Init status bar.\n");
 	ST_Init ();
-	
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	D_CheckRecordFrom ();
+#endif
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// check for a driver that wants intermission stats
 	p = M_CheckParm ("-statcopy");
 	if (p && p<myargc-1)
@@ -1293,15 +1484,24 @@ void D_DoomMain (void)
 		statcopy = (void*)atoi(myargv[p+1]);
 		mprintf ("External statistics registered.\n");
 	}
+#endif
 	
 	// start the apropriate game based on parms
 	p = M_CheckParm ("-record");
-	
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (devparm && p && p < myargc-1)
+	{
+		G_RecordDemo (startskill, 1, startepisode, startmap, myargv[p+1]);
+		D_DoomLoop ();
+	}
+#else
 	if (p && p < myargc-1)
 	{
 		G_RecordDemo (myargv[p+1]);
 		autostart = true;
 	}
+#endif
 	
 	p = M_CheckParm ("-playdemo");
 	if (p && p < myargc-1)

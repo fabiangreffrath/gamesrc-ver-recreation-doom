@@ -23,11 +23,15 @@
 // in AM_map.c
 extern boolean		automapactive; 
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 patch_t *sttminus;
+#endif
 
 void STlib_init(void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
  sttminus = (patch_t *) W_CacheLumpName("STTMINUS", PU_STATIC);
+#endif
 }
 
 
@@ -45,6 +49,52 @@ void STlib_initNum (st_number_t *n, int x, int y, patch_t **pl, int *num, boolea
 
 void STlib_drawNum (st_number_t *n, boolean refresh)
 {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  int numdigits = n->width;
+
+  int oldnum = n->oldnum;
+  int num = *n->num;
+    
+  int w = SHORT(n->p[0]->width);
+  int h = SHORT(n->p[0]->height);
+  int x = n->x;
+
+  int v14 = oldnum < 0;
+  int v10 = num < 0;
+
+  int d1;
+  int d2;
+
+// draw the new number
+  while (numdigits--)
+  {
+    if (v14 || refresh)
+      d1 = -1;
+    else
+      d1 = oldnum % 10;
+    if (v10)
+      d2 = -1;
+    else
+      d2 = num % 10;
+    x -= SHORT(n->p[0]->width);
+    if (d1 != d2)
+    {
+      V_CopyRect(x, n->y, BG, w, h, x, n->y, FG);
+      if (d2 >= 0)
+        V_DrawPatch(x, n->y, FG, n->p[ d2 ]);
+    }
+    if (!v14)
+      oldnum /= 10;
+    if (!v10)
+      num /= 10;
+    if (num == 0)
+      v10 = 1;
+    if (oldnum == 0)
+      v14 = 1;
+  }
+
+  n->oldnum = *n->num;
+#else
 
   int numdigits = n->width;
   int num = *n->num;
@@ -98,6 +148,7 @@ void STlib_drawNum (st_number_t *n, boolean refresh)
 // draw a minus sign if necessary
   if (neg)
     V_DrawPatch(x - 8, n->y, FG, sttminus);
+#endif
 }
 
 
@@ -151,10 +202,14 @@ void STlib_updateMultIcon (st_multicon_t *mi, boolean refresh)
       w = SHORT(mi->p[mi->oldinum]->width);
       h = SHORT(mi->p[mi->oldinum]->height);
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+      V_CopyRect(x, y, BG, w, h, x, y, FG);
+#else
       if (y - ST_Y < 0)
 	I_Error("updateMultIcon: y - ST_Y < 0");
 
       V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG);
+#endif
     }
     V_DrawPatch(mi->x, mi->y, FG, mi->p[*mi->inum]);
     mi->oldinum = *mi->inum;
@@ -186,13 +241,19 @@ void STlib_updateBinIcon (st_binicon_t *bi, boolean refresh)
     w = SHORT(bi->p->width);
     h = SHORT(bi->p->height);
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     if (y - ST_Y < 0)
       I_Error("updateBinIcon: y - ST_Y < 0");
+#endif
 
     if (*bi->val)
       V_DrawPatch(bi->x, bi->y, FG, bi->p);
     else
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+      V_CopyRect(x, y, BG, w, h, x, y, FG);
+#else
       V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG);
+#endif
 
     bi->oldval = *bi->val;
   }

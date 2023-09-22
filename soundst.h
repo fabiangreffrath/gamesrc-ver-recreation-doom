@@ -162,12 +162,20 @@ int I_GetSfxLumpNum (sfxinfo_t*);
 
 
 // Starts a sound in a particular sound channel.
-int I_StartSound(int id, void *data, int vol, int sep, int pitch, int priority);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+int I_StartSound(void *data, int vol, int sep, int pitch, int priority);
+#else
+int I_StartSound(int id, void* data, int vol, int sep, int pitch, int priority);
+#endif
 
 
 // Updates the volume, separation,
 //  and pitch of a sound channel.
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+void I_UpdateSoundParams(int handle, int vol, int sep);
+#else
 void I_UpdateSoundParams(int handle, int vol, int sep, int pitch);
+#endif
 
 
 // Stops a sound channel.

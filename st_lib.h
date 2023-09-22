@@ -21,7 +21,11 @@
 //
 // Background and foreground screen numbers
 //
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define BG 1
+#else
 #define BG 4
+#endif
 #define FG 0
 
 //

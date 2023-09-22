@@ -18,6 +18,7 @@
 #include "DoomDef.h"
 #include "P_local.h"
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 //==================================================================
 //==================================================================
 //
@@ -31,21 +32,21 @@
 //	T_FireFlicker
 //
 //==================================================================
-void T_FireFlicker (lightflash_t *flash)
+void T_FireFlicker (fireflicker_t *flick)
 {
 	int	amount;
 
-	if (--flash->count)
+	if (--flick->count)
 		return;
 	
 	amount = (P_Random()&3)*16;
 	
-	if (flash->sector->lightlevel - amount < flash->minlight)
-		flash->sector->lightlevel = flash->minlight;
+	if (flick->sector->lightlevel - amount < flick->minlight)
+		flick->sector->lightlevel = flick->minlight;
 	else
-		flash->sector->lightlevel = flash->maxlight - amount;
+		flick->sector->lightlevel = flick->maxlight - amount;
 
-	flash->count = 4;
+	flick->count = 4;
 }
 
 //==================================================================
@@ -67,6 +68,7 @@ void P_SpawnFireFlicker  (sector_t *sector)
 	flick->minlight = P_FindMinSurroundingLight(sector,sector->lightlevel)+16;
 	flick->count = 4;
 }
+#endif
 
 
 //==================================================================

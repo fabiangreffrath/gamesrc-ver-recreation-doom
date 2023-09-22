@@ -204,6 +204,8 @@ byte        scantokey[128] =
 
 //==========================================================================
 
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ===================
 =
@@ -229,6 +231,7 @@ ticcmd_t *I_BaseTiccmd (void)
 	DPMIInt (doomcon->f_0);
 	return &doomcon->f_4;
 }
+#endif
 
 /*
 ===================
@@ -729,6 +732,22 @@ void   I_ReadKeys (void)
 }
 
 /*
+===============
+=
+= I_StartFrame
+=
+===============
+*/
+
+void I_StartFrame (void)
+{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	_inbyte(0x60);
+#endif
+	I_JoystickEvents ();
+}
+
+/*
 ============================================================================
 
 					TIMER INTERRUPT
@@ -1032,12 +1051,12 @@ void I_StartupJoystick (void)
 /*
 ===============
 =
-= I_StartFrame
+= I_JoystickEvents
 =
 ===============
 */
 
-void I_StartFrame (void)
+void I_JoystickEvents (void)
 {
 	event_t ev;
 
@@ -1254,16 +1273,20 @@ void IO_ShutdownTimer (void)
 
 void I_Init (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int i;
+#endif
 	extern void I_StartupTimer(void);
 
 	novideo = M_CheckParm("novideo");
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	i = M_CheckParm("-control");
 	if (i)
 	{
 		doomcon = (doomcontrol_t*)atoi(myargv[i+1]);
 		printf("Using external control API\n");
 	}
+#endif
 	printf ("I_StartupDPMI\n");
 	I_StartupDPMI ();
 	printf ("I_StartupMouse\n");
@@ -1336,9 +1359,11 @@ void I_Quit (void)
 	char *lumpName;
 	int r;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (demorecording)
 		G_CheckDemoStatus ();
 	else
+#endif
 		D_QuitNetGame ();
 	M_SaveDefaults ();
 	scr = (byte *)W_CacheLumpName ("ENDOOM", PU_CACHE);
@@ -1349,7 +1374,9 @@ void I_Quit (void)
 	regs.h.dl = 0;
 	regs.h.dh = 23;
 	int386 (0x10, (const union REGS *)&regs, &regs); // Set text pos
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	printf ("\n");
+#endif
 	exit (0);
 }
 
@@ -1381,7 +1408,11 @@ byte *I_ZoneBase (int *size)
 
 	do
 	{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		heap -= 0x10000;                // leave 64k alone
+#else
 		heap -= 0x20000;                // leave 64k alone
+#endif
 		if (heap > 0x800000)
 			heap = 0x800000;
 		ptr = malloc (heap);
@@ -1390,6 +1421,9 @@ byte *I_ZoneBase (int *size)
 	printf (", 0x%x allocated for zone\n", heap);
 	if (heap < 0x180000)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		I_Error ("Insufficient DPMI memory!");
+#else
 		printf ("\n");
 		printf ("Insufficient memory!  You need to have at least 3.7 megabytes of total\n");
 #if APPVER_CHEX
@@ -1413,6 +1447,7 @@ byte *I_ZoneBase (int *size)
 		exit (1);
 #endif
 #endif // APPVER_CHEX
+#endif
 	}
 #if 0
 	regs.w.ax = 0x501;      // allocate linear block
@@ -1442,9 +1477,11 @@ void I_InitDiskFlash (void)
 	void    *pic;
 	byte    *temp;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (M_CheckParm ("-cdrom"))
 		pic = W_CacheLumpName ("STCDROM",PU_CACHE);
 	else
+#endif
 		pic = W_CacheLumpName ("STDISK",PU_CACHE);
 	temp = destscreen;
 	destscreen = (byte *)0xac000;
@@ -1637,8 +1674,10 @@ void I_InitNetwork (void)
 	// single player game
 	//
 		doomcom = malloc (sizeof (*doomcom) );
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (!doomcom)
 			I_Error("malloc() in I_InitNetwork() failed");
+#endif
 		memset (doomcom, 0, sizeof(*doomcom) );
 		netgame = false;
 		doomcom->id = DOOMCOM_ID;

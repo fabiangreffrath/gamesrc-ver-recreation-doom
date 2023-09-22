@@ -166,7 +166,9 @@ void *Z_Malloc (int size, int tag, void *user)
 	int		extra;
 	memblock_t	*start, *rover, *new, *base;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	size = (size + 3) & ~3;
+#endif
 //
 // scan through the block list looking for the first free block
 // of sufficient size, throwing out any purgable blocks along the way

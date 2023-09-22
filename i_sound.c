@@ -79,6 +79,8 @@ const char *dnames[] = {"None",
 #endif
 
 #if (APPVER_DOOMREV < AV_DR_DM18)
+const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M' };
+#elif (APPVER_DOOMREV < AV_DR_DM18)
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
   'M', 'M', 'S'};
 #else
@@ -205,7 +207,11 @@ int I_GetSfxLumpNum(sfxinfo_t *sound)
 
 }
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+int I_StartSound (void *data, int vol, int sep, int pitch, int priority)
+#else
 int I_StartSound (int id, void *data, int vol, int sep, int pitch, int priority)
+#endif
 {
   // hacks out certain PC sounds
   if (snd_SfxDevice == snd_PC
@@ -217,7 +223,11 @@ int I_StartSound (int id, void *data, int vol, int sep, int pitch, int priority)
 	||  data == S_sfx[sfx_sawidl].data)) return -1;
 
   else
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	return SFX_PlayPatch(data, sep, pitch, vol, priority);
+#else
 	return SFX_PlayPatch(data, sep, pitch, vol, 0, 100);
+#endif
 
 }
 
@@ -235,10 +245,17 @@ int I_SoundIsPlaying(int handle)
   return SFX_Playing(handle);
 }
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+void I_UpdateSoundParams(int handle, int vol, int sep)
+{
+  SFX_SetOrigin(handle, sep, vol);
+}
+#else
 void I_UpdateSoundParams(int handle, int vol, int sep, int pitch)
 {
   SFX_SetOrigin(handle, pitch, sep, vol);
 }
+#endif
 
 /*
  *
@@ -272,17 +289,28 @@ void I_sndArbitrateCards(void)
   if (M_CheckParm("-nosfx")) snd_SfxDevice = snd_none;
   if (M_CheckParm("-nomusic")) snd_MusicDevice = snd_none;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  if (snd_MusicDevice == snd_SB || snd_MusicDevice == snd_PAS)
+	snd_MusicDevice = snd_Adlib;
+  if (snd_MusicDevice > snd_MPU)
+	snd_MusicDevice = snd_MPU;
+#else
   if (snd_MusicDevice > snd_MPU && snd_MusicDevice <= snd_MPU3)
 	snd_MusicDevice = snd_MPU;
   if (snd_MusicDevice == snd_SB)
 	snd_MusicDevice = snd_Adlib;
   if (snd_MusicDevice == snd_PAS)
 	snd_MusicDevice = snd_Adlib;
+#endif
 
   // figure out what i've got to initialize
   //
   gus = snd_MusicDevice == snd_GUS || snd_SfxDevice == snd_GUS;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  sb = snd_SfxDevice == snd_SB;
+#else
   sb = snd_SfxDevice == snd_SB || snd_MusicDevice == snd_SB;
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM18)
   ensoniq = snd_SfxDevice == snd_ENS ;
   codec = snd_SfxDevice == snd_CODEC ;
@@ -313,14 +341,18 @@ void I_sndArbitrateCards(void)
   {
 	if (devparm)
 	  printf("GUS\n");
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	fprintf(stderr, "GUS1\n");
+#endif
 	if (GF1_Detect()) printf("Dude.  The GUS ain't responding.\n");
 	else
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	  fprintf(stderr, "GUS2\n");
 	  if (commercial)
 	    dmxlump = W_GetNumForName("dmxgusc");
 	  else
+#endif
 	    dmxlump = W_GetNumForName("dmxgus");
 	  GF1_SetMap(W_CacheLumpNum(dmxlump, PU_CACHE), lumpinfo[dmxlump].size);
 	}
@@ -388,14 +420,18 @@ void I_StartupSound (void)
   dmxCodes[snd_PAS] = AHW_MEDIA_VISION;
   dmxCodes[snd_GUS] = AHW_ULTRA_SOUND;
   dmxCodes[snd_MPU] = AHW_MPU_401;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   dmxCodes[snd_AWE] = AHW_AWE32;
 #if (APPVER_DOOMREV >= AV_DR_DM18)
   dmxCodes[snd_ENS] = AHW_ENSONIQ;
   dmxCodes[snd_CODEC] = AHW_CODEC;
 #endif
+#endif
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   // inits sound library timer stuff
   I_StartupTimer();
+#endif
 
   // pick the sound cards i'm going to use
   //
@@ -408,6 +444,11 @@ void I_StartupSound (void)
 	printf("  Sfx device #%d & dmxCode=%d\n", snd_SfxDevice,
 	  dmxCodes[snd_SfxDevice]);
   }
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  // inits sound library timer stuff
+  I_StartupTimer();
+#endif
 
   // inits DMX sound library
   printf("  calling DMX_Init\n");
@@ -423,12 +464,14 @@ void I_StartupSound (void)
 
 void I_ShutdownSound (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   S_PauseSound();
   {
 	int s;
 	extern volatile int ticcount;
 	for (s=ticcount + 30; s != ticcount ; );
   }
+#endif
   DMX_DeInit();
 }
 

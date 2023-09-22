@@ -59,6 +59,7 @@ typedef enum
 	mus_bunny,
 	mus_victor,
 	mus_introa,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	mus_runnin,
 	mus_stalks,
 	mus_countd,
@@ -94,6 +95,7 @@ typedef enum
 	mus_read_m,
 	mus_dm2ttl,
 	mus_dm2int,
+#endif
 	NUMMUSIC
 } musicenum_t;
 
@@ -105,10 +107,12 @@ typedef enum
 	sfx_pistol,
 	sfx_shotgn,
 	sfx_sgcock,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_dshtgn,
 	sfx_dbopn,
 	sfx_dbcls,
 	sfx_dbload,
+#endif
 	sfx_plasma,
 	sfx_bfg,
 	sfx_sawup,
@@ -129,9 +133,11 @@ typedef enum
 	sfx_plpain,
 	sfx_dmpain,
 	sfx_popain,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_vipain,
 	sfx_mnpain,
 	sfx_pepain,
+#endif
 	sfx_slop,
 	sfx_itemup,
 	sfx_wpnup,
@@ -147,19 +153,27 @@ typedef enum
 	sfx_brssit,
 	sfx_cybsit,
 	sfx_spisit,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_bspsit,
 	sfx_kntsit,
 	sfx_vilsit,
 	sfx_mansit,
 	sfx_pesit,
+#endif
 	sfx_sklatk,
 	sfx_sgtatk,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_skepch,
 	sfx_vilatk,
+#endif
 	sfx_claw,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_skeswg,
+#endif
 	sfx_pldeth,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_pdiehi,
+#endif
 	sfx_podth1,
 	sfx_podth2,
 	sfx_podth3,
@@ -171,23 +185,28 @@ typedef enum
 	sfx_brsdth,
 	sfx_cybdth,
 	sfx_spidth,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_bspdth,
 	sfx_vildth,
 	sfx_kntdth,
 	sfx_pedth,
 	sfx_skedth,
+#endif
 	sfx_posact,
 	sfx_bgact,
 	sfx_dmact,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_bspact,
 	sfx_bspwlk,
 	sfx_vilact,
+#endif
 	sfx_noway,
 	sfx_barexp,
 	sfx_punch,
 	sfx_hoof,
 	sfx_metal,
 	sfx_chgun,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	sfx_tink,
 	sfx_bdopn,
 	sfx_bdcls,
@@ -210,6 +229,7 @@ typedef enum
 	sfx_skesit,
 	sfx_skeatk,
 	sfx_radio,
+#endif
 	NUMSFX
 } sfxenum_t;
 

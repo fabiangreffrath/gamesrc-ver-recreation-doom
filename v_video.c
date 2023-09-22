@@ -21,7 +21,11 @@
 
 #define SC_INDEX			0x3c4
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+byte		*screens[4];
+#else
 byte		*screens[5];
+#endif
 int			dirtybox[4];
 
 
@@ -108,7 +112,8 @@ void V_DrawPatch (int x, int y, int scrn, patch_t *patch)
 	y -= SHORT(patch->topoffset);
 	x -= SHORT(patch->leftoffset);
 #ifdef RANGECHECK
-	if (x<0||x+SHORT(patch->width) >SCREENWIDTH || y<0 || y+SHORT(patch->height)>SCREENHEIGHT|| (unsigned)scrn>4)
+	if (x<0||x+SHORT(patch->width) >SCREENWIDTH || y<0 || y+SHORT(patch->height)>SCREENHEIGHT
+|| (unsigned)scrn>4)
 		I_Error("Bad V_DrawPatch");
 #endif
 	if (!scrn)
@@ -139,6 +144,7 @@ void V_DrawPatch (int x, int y, int scrn, patch_t *patch)
 	}			
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 ==================
 =
@@ -159,7 +165,8 @@ void V_DrawPatchFlipped (int x, int y, int scrn, patch_t *patch)
 	y -= SHORT(patch->topoffset);
 	x -= SHORT(patch->leftoffset);
 #ifdef RANGECHECK
-	if (x<0||x+SHORT(patch->width) >SCREENWIDTH || y<0 || y+SHORT(patch->height)>SCREENHEIGHT|| (unsigned)scrn>4)
+	if (x<0||x+SHORT(patch->width) >SCREENWIDTH || y<0 || y+SHORT(patch->height)>SCREENHEIGHT
+|| (unsigned)scrn>4)
 		I_Error("Bad V_DrawPatch");
 #endif
 	if (!scrn)
@@ -189,6 +196,7 @@ void V_DrawPatchFlipped (int x, int y, int scrn, patch_t *patch)
 		}
 	}			
 }
+#endif
 
 /*
 ==================
@@ -213,7 +221,8 @@ void V_DrawPatchDirect (int x, int y, int scrn, patch_t *patch)
 	y -= SHORT(patch->topoffset);
 	x -= SHORT(patch->leftoffset);
 #ifdef RANGECHECK
-	if (x<0||x+SHORT(patch->width) >SCREENWIDTH || y<0 || y+SHORT(patch->height)>SCREENHEIGHT|| (unsigned)scrn>4)
+	if (x<0||x+SHORT(patch->width) >SCREENWIDTH || y<0 || y+SHORT(patch->height)>SCREENHEIGHT
+|| (unsigned)scrn>4)
 		I_Error ("Bad V_DrawPatchDirect");
 #endif
 
@@ -263,7 +272,8 @@ void V_DrawBlock (int x, int y, int scrn, int width, int height, byte *src)
 	byte		*dest;
 	
 #ifdef RANGECHECK
-	if (x<0||x+width >SCREENWIDTH || y<0 || y+height>SCREENHEIGHT|| (unsigned)scrn>4)
+	if (x<0||x+width >SCREENWIDTH || y<0 || y+height>SCREENHEIGHT
+|| (unsigned)scrn>4)
 		I_Error ("Bad V_DrawBlock");
 #endif
 
@@ -293,7 +303,8 @@ void V_GetBlock (int x, int y, int scrn, int width, int height, byte *dest)
 	byte		*src;
 	
 #ifdef RANGECHECK
-	if (x<0||x+width >SCREENWIDTH || y<0 || y+height>SCREENHEIGHT|| (unsigned)scrn>4)
+	if (x<0||x+width >SCREENWIDTH || y<0 || y+height>SCREENHEIGHT
+|| (unsigned)scrn>4)
 		I_Error ("Bad V_DrawBlock");
 #endif
 

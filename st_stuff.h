@@ -350,10 +350,12 @@ static int st_randomnumber;
 // Massive bunches of cheat shit
 //  to keep it from being easy to figure them out.
 // Yeah, right...
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 unsigned char cheat_mus_seq[] =
 {
   0xb2, 0x26, 0xb6, 0xae, 0xea, 1, 0, 0, 0xff
 };
+#endif
 
 #if APPVER_CHEX
 unsigned char cheat_choppers_seq[] =
@@ -441,10 +443,12 @@ unsigned char cheat_ammo_seq[] =
   0xb2, 0x26, 0xf2, 0x66, 0xa2, 0xff	// idkfa
 };
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 unsigned char cheat_ammonokey_seq[] =
 {
   0xb2, 0x26, 0x66, 0xa2, 0xff	// idfa
 };
+#endif
 
 
 // Smashing Pumpkins Into Samml Piles Of Putried Debris. 
@@ -455,10 +459,12 @@ unsigned char cheat_noclip_seq[] =
 };
 
 //
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 unsigned char cheat_commercial_noclip_seq[] =
 {
   0xb2, 0x26, 0xe2, 0x36, 0xb2, 0x2a, 0xff	// idclip
 }; 
+#endif
 
 
 
@@ -489,12 +495,18 @@ unsigned char cheat_mypos_seq[] =
 
 
 // Now what?
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 cheatseq_t cheat_mus = { cheat_mus_seq, 0 };
+#endif
 cheatseq_t cheat_god = { cheat_god_seq, 0 };
 cheatseq_t cheat_ammo = { cheat_ammo_seq, 0 };
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 cheatseq_t cheat_ammonokey = { cheat_ammonokey_seq, 0 };
+#endif
 cheatseq_t cheat_noclip = { cheat_noclip_seq, 0 };
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 cheatseq_t cheat_commercial_noclip = { cheat_commercial_noclip_seq, 0 };
+#endif
 
 cheatseq_t cheat_powerup[7] =
 {

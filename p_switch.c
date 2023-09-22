@@ -58,7 +58,8 @@ switchlist_t alphSwitchList[] =
 	{"SW1SKIN",	"SW2SKIN",	2},
 	{"SW1VINE",	"SW2VINE",	2},
 	{"SW1WOOD",	"SW2WOOD",	2},
-    
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// Doom II switches
 	{"SW1PANEL",	"SW2PANEL",	3},
 	{"SW1ROCK",	"SW2ROCK",	3},
@@ -71,6 +72,7 @@ switchlist_t alphSwitchList[] =
 	{"SW1TEK",		"SW2TEK",	3},
 	{"SW1MARB",	"SW2MARB",	3},
 	{"SW1SKULL",	"SW2SKULL",	3},
+#endif
 	
 	{"\0",			"\0",		0}
 };
@@ -96,11 +98,16 @@ void P_InitSwitchList(void)
 	int		episode;
 	
 	episode = 1;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (!shareware)
+		episode = 2;
+#else
 	if (registered)
 		episode = 2;
 	else
 		if (commercial)
 			episode = 3;
+#endif
 		
 	for (index = 0,i = 0;i < MAXSWITCHES;i++)
 	{
@@ -139,10 +146,12 @@ void P_StartButton(line_t *line,bwhere_e w,int texture,int time)
 {
 	int		i;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 // See if button is already pressed
 	for (i = 0; i < MAXBUTTONS; i++)
 		if (buttonlist[i].btimer && buttonlist[i].line == line)
 			return;
+#endif
 	
 	for (i = 0;i < MAXBUTTONS;i++)
 		if (!buttonlist[i].btimer)
@@ -222,8 +231,13 @@ void P_ChangeSwitchTexture(line_t *line,int useAgain)
 ===============================================================================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+boolean	P_UseSpecialLine ( mobj_t *thing, line_t *line)
+#else
 boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
-{	
+#endif
+{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	//
     // Use the back sides of VERY SPECIAL lines...
 	//
@@ -238,6 +252,7 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 				return false;
 		}
 	}
+#endif
 
 	//
 	//	Switches that other things can activate
@@ -275,9 +290,11 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 		case 32:		// Blue locked door open
 		case 33:		// Red locked door open
 		case 34:		// Yellow locked door open
-
+			
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 117:		// Blazing door raise
 		case 118:		// Blazing door open
+#endif
 			EV_VerticalDoor (line, thing);
 			break;
 //		case 124:		// Door Slide Open&Close
@@ -287,7 +304,11 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 		//	SWITCHES
 		//===============================================
 		case 7:			// Build Stairs
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			if (EV_BuildStairs(line))
+#else
 			if (EV_BuildStairs(line,build8))
+#endif
 				P_ChangeSwitchTexture(line,0);
 			break;
 		case 9:			// Change Donut
@@ -362,6 +383,7 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 			if (EV_DoDoor(line,open))
 				P_ChangeSwitchTexture(line,0);
 			break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 111:		// Blazing Door Raise (faster than TURBO!)
 			if (EV_DoDoor (line,blazeRaise))
 				P_ChangeSwitchTexture(line,0);
@@ -396,6 +418,7 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 			if (EV_DoFloor(line,raiseFloor512))
 				P_ChangeSwitchTexture(line,0);
 			break;
+#endif
 		//===============================================
 		//	BUTTONS
 		//===============================================
@@ -455,6 +478,7 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 			if (EV_DoFloor(line,turboLower))
 				P_ChangeSwitchTexture(line,1);
 			break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 114:		// Blazing Door Raise (faster than TURBO!)
 			if (EV_DoDoor (line,blazeRaise))
 				P_ChangeSwitchTexture(line,1);
@@ -489,6 +513,7 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 			EV_LightTurnOn(line,35);
 			P_ChangeSwitchTexture(line,1);
 			break;
+#endif
 	}
 	
 	return true;

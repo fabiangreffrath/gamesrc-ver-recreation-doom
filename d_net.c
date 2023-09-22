@@ -18,6 +18,9 @@
 // d_net.c
 
 #include "DoomDef.h"
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#include "d_net12.c"
+#else
 
 #define NCMD_EXIT               0x80000000
 #define NCMD_RETRANSMIT 0x40000000
@@ -798,3 +801,5 @@ if (debugfile)
 		NetUpdate ();                                   // check for new console commands
 	}
 }
+
+#endif

@@ -58,11 +58,13 @@ void T_VerticalDoor(vldoor_t *door)
 			if(!--door->topcountdown)
 				switch(door->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case blazeRaise:
 						door->direction = -1; // time to go back down
 						S_StartSound((mobj_t *)
 							&door->sector->soundorg, sfx_bdcls);
 						break;
+#endif
 					case normal:
 						door->direction = -1; // time to go back down
 						S_StartSound((mobj_t *)
@@ -100,6 +102,7 @@ void T_VerticalDoor(vldoor_t *door)
 			{
 				switch(door->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case blazeRaise:
 					case blazeClose:
 						door->sector->specialdata = NULL;
@@ -107,6 +110,7 @@ void T_VerticalDoor(vldoor_t *door)
 						S_StartSound((mobj_t *)
 							&door->sector->soundorg, sfx_bdcls);
 						break;
+#endif
 					case normal:
 					case close:
 						door->sector->specialdata = NULL;
@@ -124,7 +128,9 @@ void T_VerticalDoor(vldoor_t *door)
 			{
 				switch(door->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case blazeClose:
+#endif
 					case close: // DON'T GO BACK UP!
 						break;
 					default:
@@ -142,13 +148,17 @@ void T_VerticalDoor(vldoor_t *door)
 			{
 				switch(door->type)
 				{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case blazeRaise:
+#endif
 					case normal:
 						door->direction = 0; // wait at top
 						door->topcountdown = door->topwait;
 						break;
 					case close30ThenOpen:
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 					case blazeOpen:
+#endif
 					case open:
 						door->sector->specialdata = NULL;
 						P_RemoveThinker (&door->thinker); // unlink and free
@@ -161,6 +171,7 @@ void T_VerticalDoor(vldoor_t *door)
 	}
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 //----------------------------------------------------------------------------
 //
 // EV_DoLockedDoor
@@ -219,6 +230,7 @@ int EV_DoLockedDoor (line_t *line, vldoor_e type, mobj_t *thing)
 
 	return EV_DoDoor(line,type);
 }
+#endif
 
 //----------------------------------------------------------------------------
 //
@@ -251,11 +263,14 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 		sec->specialdata = door;
 		door->thinker.function = T_VerticalDoor;
 		door->sector = sec;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		door->type = type;
 		door->topwait = VDOORWAIT;
 		door->speed = VDOORSPEED;
+#endif
 		switch(type)
 		{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case blazeClose:
 				door->topheight = P_FindLowestCeilingSurrounding(sec);
 				door->topheight -= 4*FRACUNIT;
@@ -263,6 +278,7 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 				door->speed = VDOORSPEED * 4;
 				S_StartSound((mobj_t *)&door->sector->soundorg, sfx_bdcls);
 				break;
+#endif
 			case close:
 				door->topheight = P_FindLowestCeilingSurrounding(sec);
 				door->topheight -= 4*FRACUNIT;
@@ -274,6 +290,7 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 				door->direction = -1;
 				S_StartSound((mobj_t *)&door->sector->soundorg, sfx_dorcls);
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case blazeRaise:
 			case blazeOpen:
 				door->direction = 1;
@@ -286,6 +303,7 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 						sfx_bdopn);
 				}
 				break;
+#endif
 			case normal:
 			case open:
 				door->direction = 1;
@@ -300,6 +318,11 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 			default:
 				break;
 		}
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		door->type = type;
+		door->topwait = VDOORWAIT;
+		door->speed = VDOORSPEED;
+#endif
 	}
 	return(retcode);
 }
@@ -377,7 +400,9 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			case 26:
 			case 27:
 			case 28:
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case 117:
+#endif
 				if(door->direction == -1)
 				{
 					door->direction = 1; // go back up
@@ -397,10 +422,12 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 	// for proper sound
 	switch(line->special)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 117: // BLAZING DOOR RAISE
 		case 118: // BLAZING DOOR OPEN
 			S_StartSound((mobj_t *)&sec->soundorg, sfx_bdopn);
 			break;
+#endif
 		case 1: // NORMAL DOOR SOUND
 		case 31:
 			S_StartSound((mobj_t *)&sec->soundorg, sfx_doropn);
@@ -438,6 +465,7 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			door->type = open;
 			line->special = 0;
 			break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 117: // blazing door raise
 			door->type = blazeRaise;
 			door->speed = VDOORSPEED*4;
@@ -447,6 +475,7 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			line->special = 0;
 			door->speed = VDOORSPEED*4;
 			break;
+#endif
 	}
 	
 	//

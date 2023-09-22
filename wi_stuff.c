@@ -60,7 +60,9 @@ static int bcnt;// used for timing of background animation
 static int firstrefresh; // signals to refresh everything for one frame
 static int cnt_kills[MAXPLAYERS], cnt_items[MAXPLAYERS], cnt_secret[MAXPLAYERS];
 static int cnt_time, cnt_par, cnt_pause;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 static int NUMCMAPS; // # of commercial levels
+#endif
 
 //
 //	GRAPHICS
@@ -70,7 +72,9 @@ static patch_t *yah[2]; // You Are Here graphic
 static patch_t *splat;// splat
 static patch_t *percent, *colon; // %, : graphics
 static patch_t *num[10]; // 0-9 graphic
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 static patch_t *wiminus; // minus sign
+#endif
 static patch_t *finished; // "Finished!" graphics
 static patch_t *entering; // "Entering" graphic
 static patch_t *sp_secret; // "secret"
@@ -80,7 +84,11 @@ static patch_t *killers, *victims; // "killers", "victims"
 static patch_t *total, *star, *bstar;// "Total", your face, your dead face
 static patch_t *p[MAXPLAYERS];// "red P[1..MAXPLAYERS]"
 static patch_t *bp[MAXPLAYERS];// "gray P[1..MAXPLAYERS]"
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+static patch_t *lnames[NUMMAPS]; // Name graphics of each level (centered)
+#else
 static patch_t **lnames; // Name graphics of each level (centered)
+#endif
 
 //
 // CODE
@@ -88,11 +96,15 @@ static patch_t **lnames; // Name graphics of each level (centered)
 
 // slam background
 static unsigned char *background=0;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define WI_slamBackground() V_DrawPatch(0,0,0,bg);
+#else
 void WI_slamBackground(void)
 {
   memcpy(screens[0], screens[1], SCREENWIDTH * SCREENHEIGHT);
   V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
 }
+#endif
 
 // The ticker is used to detect keys
 //  because of timing issues in netgames.
@@ -167,8 +179,10 @@ void WI_initAnimatedBack(void)
   int i;
   anim_t *a;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
     return;
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd > 2)
     return;
@@ -193,8 +207,10 @@ void WI_updateAnimatedBack(void)
   int i;
   anim_t *a;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
     return;
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd > 2)
     return;
@@ -240,9 +256,11 @@ void WI_drawAnimatedBack(void)
 {
     int i;
     anim_t *a;
-
+    
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     if (commercial)
 	return;
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM19UP)
     if (wbs->epsd > 2)
 	return;
@@ -265,6 +283,28 @@ void WI_drawAnimatedBack(void)
 
 int WI_drawNum (int x, int y, int n, int digits)
 {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+    int vdi;
+    int digits2 = digits;
+    int v;
+
+    if (n < 0)
+        return -1;
+
+    vdi = 1;
+    while (n / vdi != 0 || vdi == 1 || (digits2 && digits))
+    {
+        v = (n / vdi) % 10;
+        vdi *= 10;
+
+        x -= SHORT(num[0]->width);
+        
+        V_DrawPatch(x, y, FB, num[ v ]);
+        if (digits)
+            digits--;
+    }
+    return x;
+#else
   int fontwidth = SHORT(num[0]->width);
   int neg, temp;
 
@@ -306,6 +346,7 @@ int WI_drawNum (int x, int y, int n, int digits)
     V_DrawPatch(x-=8, y, FB, wiminus);
 
   return x;
+#endif
 }
 
 void WI_drawPercent (int x, int y, int p)
@@ -313,7 +354,11 @@ void WI_drawPercent (int x, int y, int p)
   if (p < 0)
     return;
   V_DrawPatch(x, y, FB, percent);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  WI_drawNum(x, y, p, 0);
+#else
   WI_drawNum(x, y, p, -1);
+#endif
 }
 
 //
@@ -392,8 +437,10 @@ void WI_drawShowNextLoc(void)
 
   WI_slamBackground();
   // draw animated background
-  WI_drawAnimatedBack(); 
+  WI_drawAnimatedBack();
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (!commercial)
+#endif
   {
 #if (APPVER_DOOMREV >= AV_DR_DM19UP)
     if (wbs->epsd > 2)
@@ -415,7 +462,9 @@ void WI_drawShowNextLoc(void)
   }
 
   // draws which level you are entering..
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (!commercial || wbs->next != 30)
+#endif
     WI_drawEL();  
 }
 
@@ -433,11 +482,13 @@ int WI_fragSum(int playernum)
   for (i=0 ; i<MAXPLAYERS ; i++)
     if (playeringame[i] && i!=playernum)
       frags += plrs[playernum].frags[i];
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 // JDC hack - negative frags.
   frags -= plrs[playernum].frags[playernum];
 //if (frags < 0)
 //  frags = 0;
+#endif
 
   return frags;
 }
@@ -459,8 +510,13 @@ void WI_initDeathmatchStats(void)
     {
       for (j=0 ; j<MAXPLAYERS ; j++)
 	if (playeringame[j])
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	  dm_frags[i][j] = -1;
+      dm_totals[i] = -1;
+#else
 	  dm_frags[i][j] = 0;
       dm_totals[i] = 0;
+#endif
     }
     
   WI_initAnimatedBack();
@@ -500,7 +556,12 @@ void WI_updateDeathmatchStats(void)
       {
 	for (j=0 ; j<MAXPLAYERS ; j++)
 	  if (playeringame[j] && dm_frags[i][j] != plrs[i].frags[j])
-	  {
+      {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	    dm_frags[i][j]++;
+	    if (dm_frags[i][j] > 99)
+	      dm_frags[i][j] = 99;
+#else
 	    if (plrs[i].frags[j] < 0)
 	      dm_frags[i][j]--;
 	    else
@@ -509,13 +570,16 @@ void WI_updateDeathmatchStats(void)
 	      dm_frags[i][j] = 99;
 	    if (dm_frags[i][j] < -99)
               dm_frags[i][j] = -99;	
+#endif
 	    stillticking = true;
 	  }
 	dm_totals[i] = WI_fragSum(i);
 	if (dm_totals[i] > 99)
 	  dm_totals[i] = 99;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (dm_totals[i] < -99)
 	  dm_totals[i] = -99;
+#endif
       }
 
     if (!stillticking)
@@ -529,9 +593,11 @@ void WI_updateDeathmatchStats(void)
     if (acceleratestage)
     {
       S_StartSound(0, sfx_slop);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
       if (commercial)
 	WI_initNoState();
       else
+#endif
 	WI_initShowNextLoc();
     }
   }
@@ -744,9 +810,11 @@ void WI_updateNetgameStats(void)
     if (acceleratestage)
     {
       S_StartSound(0, sfx_sgcock);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
       if (commercial)
 	WI_initNoState();
       else
+#endif
 	WI_initShowNextLoc();
     }
   }
@@ -794,7 +862,11 @@ void WI_drawNetgameStats(void)
     WI_drawPercent(x-pwidth, y+10, cnt_items[i]);	x += NG_SPACINGX;
     WI_drawPercent(x-pwidth, y+10, cnt_secret[i]);	x += NG_SPACINGX;
     if (dofrags)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+      WI_drawNum(x, y+10, cnt_frags[i], 0);
+#else
       WI_drawNum(x, y+10, cnt_frags[i], -1);
+#endif
     y += WI_SPACINGY;
   }
 }
@@ -886,9 +958,11 @@ void WI_updateStats(void)
     if (acceleratestage)
     {
       S_StartSound(0, sfx_sgcock);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
       if (commercial)
 	WI_initNoState();
       else
+#endif
 	WI_initShowNextLoc();
     }
   }
@@ -964,9 +1038,11 @@ void WI_Ticker(void)
   if (bcnt == 1)
   {
     // intermission music
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     if (commercial)
       S_ChangeMusic(mus_dm2int, true);
     else
+#endif
       S_ChangeMusic(mus_inter, true); 
   }
   WI_checkForAccelerate();
@@ -992,17 +1068,21 @@ void WI_loadData(void)
   int i, j;
   char name[9];
   anim_t *a;
-
+  
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
     strcpy(name, "INTERPIC");
   else 
+#endif
     sprintf(name, "WIMAP%d", wbs->epsd);
 #if (APPVER_DOOMREV >= AV_DR_DM19UP)
   if (wbs->epsd == 3)
     strcpy(name,"INTERPIC");
 #endif
   bg = W_CacheLumpName(name, PU_CACHE);    // background
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   V_DrawPatch(0, 0, 1, bg);
+#endif
 // unsigned char *pic = screens[1];
 // if (commercial)
 // {
@@ -1013,6 +1093,7 @@ void WI_loadData(void)
 //   pic++;
 // }
 //}
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
   {
     NUMCMAPS = 32;								
@@ -1024,8 +1105,11 @@ void WI_loadData(void)
     }					
   }
   else
+#endif
   {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS, PU_STATIC, 0);
+#endif
 #if (APPVER_DOOMREV == AV_DR_DM19UP)
     if (wbs->epsd == 3)
       for (i=0 ; i<6 ; i++)
@@ -1035,14 +1119,24 @@ void WI_loadData(void)
       }
     else
 #endif
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     for (i=0 ; i<NUMMAPS ; i++)
     {
       sprintf(name, "WILV%d%d", wbs->epsd, i);
       lnames[i] = W_CacheLumpName(name, PU_STATIC);
     }
+#endif
     yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);// you are here
     yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);// you are here (alt.)
     splat = W_CacheLumpName("WISPLAT", PU_STATIC); // splat
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+    for (i=0 ; i<NUMMAPS ; i++)
+    {
+      sprintf(name, "WILV%d%d", wbs->epsd, i);
+      lnames[i] = W_CacheLumpName(name, PU_STATIC);
+    }
+#endif
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 #if (APPVER_DOOMREV >= AV_DR_DM19UP)
     if (wbs->epsd < 3)
 #endif
@@ -1058,8 +1152,11 @@ void WI_loadData(void)
           else
             a->p[i] = anims[1][4].p[i]; // HACK ALERT!
       }
+#endif
   }
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   wiminus = W_CacheLumpName("WIMINUS", PU_STATIC); // More hacks on minus sign.
+#endif
   for (i=0;i<10;i++)
   {
     sprintf(name, "WINUM%d", i);     // numbers 0-9
@@ -1098,23 +1195,49 @@ void WI_loadData(void)
     sprintf(name, "WIBP%d", i+1);     // "1,2,3,4"
     bp[i] = W_CacheLumpName(name, PU_STATIC);
   }
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+      for (j=0;j<NUMANIMS[wbs->epsd];j++)
+      {
+	a = &anims[wbs->epsd][j];
+	for (i=0;i<a->nanims;i++)
+	  if (wbs->epsd != 1 || j != 8) // MONDO HACK!
+	  {			
+	    sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);  // animations
+	    a->p[i] = W_CacheLumpName(name, PU_STATIC);
+          }
+          else
+            a->p[i] = anims[1][4].p[i]; // HACK ALERT!
+      }
+#endif
 }
 
 void WI_unloadData(void)
 {
   int i, j;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  Z_ChangeTag(bg, PU_CACHE);
+  Z_ChangeTag(yah[0], PU_CACHE); Z_ChangeTag(yah[1], PU_CACHE);
+  Z_ChangeTag(splat, PU_CACHE);
+#endif
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   Z_ChangeTag(wiminus, PU_CACHE);
+#endif
   for (i=0 ; i<10 ; i++) Z_ChangeTag(num[i], PU_CACHE);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (commercial)
   {
     for (i=0 ; i<NUMCMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE);
   }
   else
+#endif
   {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
     Z_ChangeTag(yah[0], PU_CACHE); Z_ChangeTag(yah[1], PU_CACHE);
     Z_ChangeTag(splat, PU_CACHE);
+#endif
     for (i=0 ; i<NUMMAPS ; i++) Z_ChangeTag(lnames[i], PU_CACHE);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 #if (APPVER_DOOMREV >= AV_DR_DM19U)
     if (wbs->epsd < 3)
 #endif
@@ -1126,8 +1249,11 @@ void WI_unloadData(void)
 	    Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE);
       }
     }
+#endif
   }
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   Z_Free(lnames);
+#endif
   Z_ChangeTag(percent, PU_CACHE);
   Z_ChangeTag(colon, PU_CACHE);
   Z_ChangeTag(finished, PU_CACHE);
@@ -1148,6 +1274,14 @@ void WI_unloadData(void)
 //  Z_ChangeTag(bstar, PU_CACHE);
   for (i=0 ; i<MAXPLAYERS ; i++) Z_ChangeTag(p[i], PU_CACHE);
   for (i=0 ; i<MAXPLAYERS ; i++) Z_ChangeTag(bp[i], PU_CACHE);
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+      for (j=0;j<NUMANIMS[wbs->epsd];j++)
+      {
+	if (wbs->epsd != 1 || j != 8)
+	  for (i=0;i<anims[wbs->epsd][j].nanims;i++)
+	    Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE);
+      }
+#endif
 }
 
 
@@ -1177,7 +1311,9 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
   wbs = wbstartstruct;
 
 #ifdef RANGECHECKING
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   if (!commercial)
+#endif
   {
 #if (APPVER_DOOMREV < AV_DR_DM19UP)
     RNGCHECK(wbs->epsd, 0, 2);

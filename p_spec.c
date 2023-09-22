@@ -39,6 +39,7 @@ animdef_t		animdefs[] =
 	{false,	"LAVA4",	"LAVA1",	8},
 	{false,	"BLOOD3",	"BLOOD1",	8},
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// DOOM II flat animations.
 	{false,	"RROCK08",	"RROCK05",	8},		
 	{false,	"SLIME04",	"SLIME01",	8},
@@ -60,6 +61,7 @@ animdef_t		animdefs[] =
 	{true,	"SFALL4",	"SFALL1",	8},
 	{true,	"WFALL4",	"WFALL1",	8},
 	{true,	"DBRAIN4",	"DBRAIN1",	8},
+#endif
 
 	{-1}
 };
@@ -230,8 +232,10 @@ fixed_t	P_FindNextHighestFloor(sector_t *sec,int currentheight)
 	//
 	// Find lowest height in list
 	//
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (!h)
 		return currentheight;
+#endif
 	min = heightlist[0];
 	for (i = 1;i < h;i++)
 		if (heightlist[i] < min)
@@ -363,6 +367,7 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 	//
 	if (!thing->player)
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		// Things that should NOT trigger specials...
 		switch(thing->type)
 		{
@@ -377,14 +382,17 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 	    
 			default: break;
 		}
+#endif
 
 		ok = 0;
 		switch(line->special)
 		{
 			case 39:	// TELEPORT TRIGGER
 			case 97:	// TELEPORT RETRIGGER
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case 125:	// TELEPORT MONSTERONLY TRIGGER
 			case 126:	// TELEPORT MONSTERONLY RETRIGGER
+#endif
 			case 4:	// RAISE DOOR
 			case 10:	// PLAT DOWN-WAIT-UP-STAY TRIGGER
 			case 88:	// PLAT DOWN-WAIT-UP-STAY RETRIGGER
@@ -421,7 +429,11 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 			line->special = 0;
 			break;
 		case 8:			// Build Stairs
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			EV_BuildStairs(line);
+#else
 			EV_BuildStairs(line,build8);
+#endif
 			line->special = 0;
 			break;
 		case 10:		// PlatDownWaitUp
@@ -492,6 +504,9 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 			break;
 		case 52:		// EXIT!
 			G_ExitLevel ();
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			line->special = 0;
+#endif
 			break;
 		case 53:		// Perpetual Platform Raise
 			EV_DoPlat(line,perpetualRaise,0);
@@ -521,6 +536,7 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 			EV_TurnTagLightsOff(line);
 			line->special = 0;
 			break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 108:		// Blazing Door Raise (faster than TURBO!)
 			EV_DoDoor (line,blazeRaise);
 			line->special = 0;
@@ -563,6 +579,7 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 			EV_DoCeiling(line,silentCrushAndRaise);
 			line->special = 0;
 			break;
+#endif
 
 	//====================================================
 	// RE-DOABLE TRIGGERS
@@ -644,6 +661,7 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 		case 98:		// Lower Floor (TURBO)
 			EV_DoFloor(line,turboLower);
 			break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		case 105:		// Blazing Door Raise (faster than TURBO!)
 			EV_DoDoor (line,blazeRaise);
 			break;
@@ -666,6 +684,7 @@ void P_CrossSpecialLine (int linenum, int side, mobj_t *thing)
 		case 129:		// Raise Floor Turbo
 			EV_DoFloor(line,raiseFloorTurbo);
 			break;
+#endif
 	}
 }
 
@@ -785,8 +804,10 @@ void P_PlayerInSpecialSector(player_t *player)
 = Animate planes, scroll walls, etc
 ===============================================================================
 */
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 boolean		levelTimer;
 int		levelTimeCount;
+#endif
 
 void P_UpdateSpecials (void)
 {
@@ -794,7 +815,8 @@ void P_UpdateSpecials (void)
 	int		pic;
 	int		i;
 	line_t	*line;
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	//
 	//	LEVEL TIMER
 	//
@@ -804,6 +826,7 @@ void P_UpdateSpecials (void)
 		if (!levelTimeCount)
 			G_ExitLevel();
 	}
+#endif
 	
 	//
 	//	ANIMATE FLATS AND TEXTURES GLOBALY
@@ -963,7 +986,8 @@ void P_SpawnSpecials (void)
 	episode = 1;
 	if (W_CheckNumForName("texture2") >= 0)
 		episode = 2;
-		
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	//
 	// See if -TIMER needs to be used
 	//
@@ -984,6 +1008,7 @@ void P_SpawnSpecials (void)
 		levelTimer = true;
 		levelTimeCount = time;
 	}
+#endif
 
 	//
 	//	Init special SECTORs
@@ -1026,9 +1051,11 @@ void P_SpawnSpecials (void)
 			case 14:	// DOOR RAISE IN 5 MINUTES
 				P_SpawnDoorRaiseIn5Mins (sector, i);
 				break;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			case 17:
 				P_SpawnFireFlicker(sector);
 				break;
+#endif
 		}
 	}
 		

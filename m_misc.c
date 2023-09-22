@@ -372,6 +372,10 @@ default_t defaults[] =
 	{"snd_mport", &snd_Mport, 816},
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	{"show_messages",&showMessages, 1},
+#endif
+
 	{"usegamma",&usegamma, 0},
 
 	{"chatmacro0", (int *) &chat_macros[0], (int) HUSTR_CHATMACRO0 },
@@ -436,7 +440,11 @@ void M_SaveDefaults (void)
 */
 
 extern byte scantokey[128];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+extern char *basedefault;
+#else
 extern char basedefault[];
+#endif
 
 void M_LoadDefaults (void)
 {

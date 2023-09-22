@@ -81,7 +81,11 @@ char            demoname[32];
 boolean         demorecording;
 boolean         demoplayback;
 boolean			netdemo;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+byte            *demobuffer, *demo_p;
+#else
 byte            *demobuffer, *demo_p, *demoend;
+#endif
 boolean         singledemo;             // quit after playing a demo from cmdline
 
 boolean         precache = true;        // if true, load all graphics at start
@@ -111,7 +115,11 @@ int             joybspeed;
 
 
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#define MAXPLMOVE       0x32
+#else
 #define MAXPLMOVE       (forwardmove[1])
+#endif
  
 #define TURBOTHRESHOLD	0x32
 
@@ -144,8 +152,10 @@ char    savedescription[32];
 
 mobj_t *bodyque[BODYQUESIZE]; 
 int bodyqueslot; 
- 
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void *statcopy;				// for statistics driver
+#endif
 
 
 int G_CmdChecksum(ticcmd_t *cmd)
@@ -182,6 +192,11 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	int             speed, tspeed;
 	int             forward, side;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	memset (cmd,0,sizeof(*cmd));
+	cmd->consistancy =
+	      consistancy[consoleplayer][(maketic*ticdup)%BACKUPTICS];
+#else
 	ticcmd_t		*base;
 
 	base = I_BaseTiccmd ();		// empty, or external driver
@@ -190,6 +205,7 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	//      consistancy[consoleplayer][(maketic*ticdup)%BACKUPTICS];
 	cmd->consistancy =
 		consistancy[consoleplayer][maketic%BACKUPTICS];
+#endif
 	if (isCyberPresent)
 		I_ReadCyberCmd (cmd);
 
@@ -197,7 +213,12 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 
 	strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
 		|| joybuttons[joybstrafe];
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	speed = gamekeydown[key_speed] || joybuttons[joybspeed]
+		|| joybuttons[joybspeed];
+#else
 	speed = gamekeydown[key_speed] || joybuttons[joybspeed];
+#endif
 
 	forward = side = 0;
 
@@ -451,7 +472,11 @@ boolean G_Responder(event_t *ev)
 {
 	// allow spy mode changes even during the demo
 	if(gamestate == GS_LEVEL && ev->type == ev_keydown
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		&& ev->data1 == KEY_F12 && !deathmatch )
+#else
 		&& ev->data1 == KEY_F12 && (singledemo || !deathmatch) )
+#endif
 	{
 		// spy mode 
 		do
@@ -467,7 +492,11 @@ boolean G_Responder(event_t *ev)
 	}
     
 	// any other key pops up menu if in demos
-	if (gameaction == ga_nothing && !singledemo && 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (gameaction == ga_nothing &&
+#else
+	if (gameaction == ga_nothing && !singledemo &&
+#endif
 		(demoplayback || gamestate == GS_DEMOSCREEN) 
 		) 
 	{ 
@@ -620,7 +649,11 @@ void G_Ticker (void)
 //
 // get commands, check consistancy, and build new consistancy check
 //
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	buf = gametic%BACKUPTICS;
+#else
 	buf = (gametic/ticdup)%BACKUPTICS;
+#endif
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
 		if (playeringame[i])
@@ -633,7 +666,8 @@ void G_Ticker (void)
 				G_ReadDemoTiccmd (cmd);
 			if (demorecording)
 				G_WriteDemoTiccmd (cmd);
-	    
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 			//
 			// check for turbo cheats
 			//
@@ -644,6 +678,7 @@ void G_Ticker (void)
 				sprintf (turbomessage, "%s is turbo!",player_names[i]);
 				players[consoleplayer].message = turbomessage;
 			}
+#endif
 
 			if (netgame && !netdemo && !(gametic%ticdup) )
 			{
@@ -835,7 +870,8 @@ boolean G_CheckSpot (int playernum, mapthing_t *mthing)
 	unsigned        an;
 	mobj_t      *mo;
 	int         i;
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (!players[playernum].mo)
 	{
 		// first spawn of level, before corpses
@@ -845,6 +881,7 @@ boolean G_CheckSpot (int playernum, mapthing_t *mthing)
 				return false;	
 		return true;
 	}
+#endif
 
 	x = mthing->x << FRACBITS;
 	y = mthing->y << FRACBITS;
@@ -916,6 +953,11 @@ void G_DeathMatchSpawnPlayer (int playernum)
 void G_DoReborn (int playernum)
 {
 	int                             i;
+
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (G_CheckDemoStatus())
+		return;
+#endif
 
 	if (!netgame)
 		gameaction = ga_loadlevel;                      // reload the level from scratch
@@ -1016,6 +1058,11 @@ void G_DoCompleted(void)
 
 	gameaction = ga_nothing;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (G_CheckDemoStatus())
+		return;
+#endif
+
 	for(i = 0; i < MAXPLAYERS; i++)
 	{
 		if(playeringame[i])
@@ -1027,6 +1074,21 @@ void G_DoCompleted(void)
 	if (automapactive)
 		AM_Stop();
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (gamemap == 8)
+	{
+		// victory 
+		gameaction = ga_victory;
+		return;
+	}
+
+	if (gamemap == 9)
+	{
+		// exit secret level 
+		for (i = 0; i < MAXPLAYERS; i++)
+			players[i].didsecret = true;
+	}
+#else
 	if (!commercial)
 	{
 		switch (gamemap)
@@ -1060,6 +1122,7 @@ void G_DoCompleted(void)
 			players[i].didsecret = true;
 	}
 #endif
+#endif
 
 
 	wminfo.didsecret = players[consoleplayer].didsecret;
@@ -1067,6 +1130,7 @@ void G_DoCompleted(void)
 	wminfo.last = gamemap - 1;
 
 // wminfo.next is 0 biased, unlike gamemap
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		if (secretexit)
@@ -1084,6 +1148,7 @@ void G_DoCompleted(void)
 			}
 	}
 	else
+#endif
 	{
 		if (secretexit)
 			wminfo.next = 8; 	// go to secret level 
@@ -1116,9 +1181,11 @@ void G_DoCompleted(void)
 	wminfo.maxitems = totalitems;
 	wminfo.maxsecret = totalsecret;
 	wminfo.maxfrags = 0;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 		wminfo.partime = 35*cpars[gamemap-1];
 	else
+#endif
 		wminfo.partime = 35*pars[gameepisode][gamemap];
 	wminfo.pnum = consoleplayer;
 
@@ -1137,8 +1204,10 @@ void G_DoCompleted(void)
 	viewactive = false;
 	automapactive = false;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (statcopy)
 		memcpy(statcopy, &wminfo, sizeof(wminfo));
+#endif
 
 	WI_Start(&wminfo);
 }
@@ -1155,6 +1224,7 @@ void G_WorldDone(void)
 	if (secretexit)
 		players[consoleplayer].didsecret = true;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		switch (gamemap)
@@ -1171,6 +1241,7 @@ void G_WorldDone(void)
 				break;
 		}
 	}
+#endif
 }
 
 void G_DoWorldDone(void)
@@ -1252,11 +1323,13 @@ void G_DoLoadGame(void)
 	}
 	Z_Free(savebuffer);
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (setsizeneeded)
 		R_ExecuteSetViewSize ();
 
 	// Draw the pattern into the back screen
 	R_FillBackScreen();
+#endif
 }
 
 
@@ -1303,7 +1376,11 @@ void G_DoSaveGame(void)
 	}
 	description = savedescription;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	save_p = savebuffer = screens[2];
+#else
 	save_p = savebuffer = screens[1]+0x4000;
+#endif
 
 	memcpy(save_p, description, SAVESTRINGSIZE);
 	save_p += SAVESTRINGSIZE;
@@ -1339,8 +1416,10 @@ void G_DoSaveGame(void)
 
 	players[consoleplayer].message = GGSAVED;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// Draw the pattern into the back screen
 	R_FillBackScreen();
+#endif
 }
 
 
@@ -1368,6 +1447,7 @@ void G_DeferedInitNew (skill_t skill, int episode, int map)
 
 void G_DoNewGame (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	demoplayback = false;
 	netdemo = false;
 	netgame = false;
@@ -1377,6 +1457,7 @@ void G_DoNewGame (void)
 	fastparm = false;
 	nomonsters = false;
 	consoleplayer = 0;
+#endif
 	G_InitNew (d_skill, d_episode, d_map);
 	gameaction = ga_nothing;
 }
@@ -1394,6 +1475,10 @@ void G_InitNew(skill_t skill, int episode, int map)
 	}
 
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (skill < sk_baby)
+		skill = sk_baby;
+#endif
 	if(skill > sk_nightmare)
 		skill = sk_nightmare;
 #if (APPVER_DOOMREV < AV_DR_DM19UP)
@@ -1409,7 +1494,11 @@ void G_InitNew(skill_t skill, int episode, int map)
 		episode = 1;
 	if(map < 1)
 		map = 1;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if(map > 9)
+#else
 	if(map > 9 && !commercial)
+#endif
 		map = 9;
 	M_ClearRandom();
 	if(skill == sk_nightmare || respawnparm)
@@ -1421,7 +1510,11 @@ void G_InitNew(skill_t skill, int episode, int map)
 		respawnmonsters = false;
 	}
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (skill == sk_nightmare && gameskill != sk_nightmare)
+#else
 	if (fastparm || (skill == sk_nightmare && gameskill != sk_nightmare))
+#endif
 	{
 		for (i=S_SARG_RUN1 ; i<=S_SARG_PAIN2 ; i++)
 			states[i].tics >>= 1;
@@ -1447,6 +1540,9 @@ void G_InitNew(skill_t skill, int episode, int map)
 
 	usergame = true; // will be set false if a demo
 	paused = false;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	demorecording = false;
+#endif
 	demoplayback = false;
 	automapactive = false;
 	viewactive = true;
@@ -1457,6 +1553,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 	viewactive = true;
 
 	// Set the sky map for the episode
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 		skytexture = R_TextureNumForName("SKY3");
@@ -1467,6 +1564,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 				skytexture = R_TextureNumForName("SKY2");
 	}
 	else
+#endif
 		switch (episode)
 		{
 			case 1:
@@ -1533,15 +1631,21 @@ void G_WriteDemoTiccmd (ticcmd_t *cmd)
 		G_CheckDemoStatus ();
 	*demo_p++ = cmd->forwardmove;
 	*demo_p++ = cmd->sidemove;
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	*demo_p++ = cmd->angleturn>>8;
+#else
 	*demo_p++ = (cmd->angleturn+128)>>8;
+#endif
 	*demo_p++ = cmd->buttons;
 	demo_p -= 4;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (demo_p > demoend - 16)
 	{
 		// no more space 
 		G_CheckDemoStatus();
 		return;
 	}
+#endif
 
 	G_ReadDemoTiccmd (cmd);         // make SURE it is exactly the same
 }
@@ -1556,6 +1660,27 @@ void G_WriteDemoTiccmd (ticcmd_t *cmd)
 ===================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+void G_RecordDemo (skill_t skill, int numplayers, int episode, int map, char *name)
+{
+	int             i;
+
+	G_InitNew (skill, episode, map);
+	usergame = false;
+	strcpy (demoname, name);
+	strcat (demoname, ".lmp");
+	demobuffer = demo_p = Z_Malloc (0x20000,PU_STATIC,NULL);
+	*demo_p++ = skill;
+	*demo_p++ = episode;
+	*demo_p++ = map;
+
+	for (i=0 ; i<MAXPLAYERS ; i++)
+		*demo_p++ = playeringame[i];
+
+	demorecording = true;
+}
+
+#else
 void G_RecordDemo (char *name)
 {
 	int             i;
@@ -1573,8 +1698,10 @@ void G_RecordDemo (char *name)
 
 	demorecording = true;
 }
+#endif
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void G_BeginRecording(void)
 {
 	int             i;
@@ -1594,6 +1721,7 @@ void G_BeginRecording(void)
 	for (i=0 ; i<MAXPLAYERS; i++)
 		*demo_p++ = playeringame[i];
 }
+#endif
 
 
 /*
@@ -1619,17 +1747,21 @@ void G_DoPlayDemo (void)
 
 	gameaction = ga_nothing;
 	demobuffer = demo_p = W_CacheLumpName (defdemoname, PU_STATIC);
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (*demo_p++ != VERSION)
 		I_Error("Demo is from a different game version!");
+#endif
 
 	skill = *demo_p++;
 	episode = *demo_p++;
 	map = *demo_p++;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	deathmatch = *demo_p++;
 	respawnparm = *demo_p++;
 	fastparm = *demo_p++;
 	nomonsters = *demo_p++;
 	consoleplayer = *demo_p++;
+#endif
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
 		playeringame[i] = *demo_p++;
@@ -1657,6 +1789,22 @@ void G_DoPlayDemo (void)
 
 void G_TimeDemo (char *name)
 {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	skill_t skill;
+	int             episode, map;
+	
+	nodrawers = M_CheckParm ("-nodraw");
+	noblit = M_CheckParm ("-noblit");
+	demobuffer = demo_p = W_CacheLumpName (name, PU_STATIC);
+	skill = *demo_p++;
+	episode = *demo_p++;
+	map = *demo_p++;
+	G_InitNew (skill, episode, map);
+	usergame = false;
+	demoplayback = true;
+	timingdemo = true;
+	singletics = true;
+#else
 	nodrawers = M_CheckParm ("-nodraw");
 	noblit = M_CheckParm ("-noblit");
 	timingdemo = true;
@@ -1664,6 +1812,7 @@ void G_TimeDemo (char *name)
 
 	defdemoname = name;
 	gameaction = ga_playdemo;
+#endif
 }
 
 
@@ -1695,6 +1844,7 @@ boolean G_CheckDemoStatus (void)
 
 		Z_ChangeTag (demobuffer, PU_CACHE);
 		demoplayback = false;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		netdemo = false;
 		netgame = false;
 		deathmatch = false;
@@ -1703,6 +1853,7 @@ boolean G_CheckDemoStatus (void)
 		fastparm = false;
 		nomonsters = false;
 		consoleplayer = 0;
+#endif
 		D_AdvanceDemo ();
 		return true;
 	}

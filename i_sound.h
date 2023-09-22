@@ -31,12 +31,14 @@ typedef enum
   snd_PAS,
   snd_GUS,
   snd_MPU,
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   snd_MPU2,
   snd_MPU3,
   snd_AWE,
 #if (APPVER_DOOMREV >= AV_DR_DM18)
   snd_ENS,
   snd_CODEC,
+#endif
 #endif
   NUM_SCARDS
 } cardenum_t;

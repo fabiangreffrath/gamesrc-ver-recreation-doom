@@ -38,12 +38,14 @@ char    *e3text = E3TEXT;
 char    *e4text = E4TEXT;
 #endif
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 char    *c1text = C1TEXT;
 char    *c2text = C2TEXT;
 char    *c3text = C3TEXT;
 char    *c4text = C4TEXT;
 char    *c5text = C5TEXT;
 char    *c6text = C6TEXT;
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
 char    *p1text = P1TEXT;
@@ -64,10 +66,12 @@ char    *t6text = T6TEXT;
 char    *finaletext;
 char    *finaleflat;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void	F_StartCast (void);
 void	F_CastTicker (void);
 boolean F_CastResponder (event_t *ev);
 void	F_CastDrawer (void);
+#endif
 
 /*
 =======================
@@ -83,6 +87,7 @@ void F_StartFinale (void)
     viewactive = false;
     automapactive = false;
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (commercial)
 	{
 #if (APPVER_DOOMREV >= AV_DR_DM19F)
@@ -182,6 +187,7 @@ void F_StartFinale (void)
 	}
 	else
 	{
+#endif
 		switch(gameepisode)
 		{
 			case 1:
@@ -203,12 +209,19 @@ void F_StartFinale (void)
 				break;
 #endif
 		}
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+		finalestage = 0;
+		finalecount = 0;
+
+		S_ChangeMusic(mus_victor, true);
+#else
 
 		S_ChangeMusic(mus_victor, true);
 	}
     
     finalestage = 0;
     finalecount = 0;
+#endif
 	
 }
 
@@ -216,8 +229,10 @@ void F_StartFinale (void)
 
 boolean F_Responder (event_t *event)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (finalestage == 2)
 		return F_CastResponder(event);
+#endif
 
 	return false;
 }
@@ -233,6 +248,7 @@ boolean F_Responder (event_t *event)
 
 void F_Ticker (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	int		i;
 
 	// check for skipping
@@ -251,8 +267,10 @@ void F_Ticker (void)
 		  gameaction = ga_worlddone;
 	  }
 	}
+#endif
 	finalecount++;
-	
+
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (finalestage == 2)
 	{
 		F_CastTicker ();
@@ -261,6 +279,7 @@ void F_Ticker (void)
 	
 	if (commercial)
 		return;
+#endif
 	if (!finalestage && finalecount>strlen (finaletext)*TEXTSPEED + TEXTWAIT)
 	{
 		finalecount = 0;
@@ -317,7 +336,11 @@ void F_TextWrite (void)
 //
 // draw some of the text onto the screen
 //
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	cx = 20;
+#else
 	cx = 10;
+#endif
 	cy = 10;
 	ch = finaletext;
 
@@ -331,7 +354,11 @@ void F_TextWrite (void)
 			break;
 		if (c == '\n')
 		{
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			cx = 20;
+#else
 			cx = 10;
+#endif
 			cy += 11;
 			continue;
 		}
@@ -352,6 +379,7 @@ void F_TextWrite (void)
 
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 /*
 =======================
 =
@@ -648,7 +676,7 @@ void F_CastDrawer (void)
 	else
 		V_DrawPatch (160,170,0,patch);
 }
-
+#endif
 
 /*
 ==================
@@ -753,11 +781,13 @@ void F_BunnyScroll (void)
 
 void F_Drawer (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (finalestage == 2)
 	{
 		F_CastDrawer ();
 		return;
 	}
+#endif
 
 	if (!finalestage)
 		F_TextWrite ();
