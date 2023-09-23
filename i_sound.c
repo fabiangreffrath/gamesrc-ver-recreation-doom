@@ -65,8 +65,8 @@ void I_ShutdownTimer (void)
  *
  */
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
 // sound information
-#if 0
 const char *dnames[] = {"None",
 			"PC_Speaker",
 			"Adlib",
@@ -74,11 +74,11 @@ const char *dnames[] = {"None",
 			"ProAudio_Spectrum16",
 			"Gravis_Ultrasound",
 			"MPU",
-			"AWE32"
+			//"AWE32"
 			};
 #endif
 
-#if (APPVER_DOOMREV < AV_DR_DM18)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M' };
 #elif (APPVER_DOOMREV < AV_DR_DM18)
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',

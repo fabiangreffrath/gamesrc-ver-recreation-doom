@@ -54,9 +54,7 @@
 extern int _wp1, _wp2, _wp3, _wp4;
 
 #define MAXWADFILES 20
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
-char *wadfiles[MAXWADFILES] = { "doom.wad" };
-#else
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 char *wadfiles[MAXWADFILES];
 #endif
 
@@ -106,9 +104,7 @@ boolean advancedemo;
 
 
 
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
-char *basedefault = "default.cfg"; // default file
-#else
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 char wadfile[1024];		// primary wad file
 char mapdir[1024];      // directory of development maps
 char basedefault[1024]; // default file
@@ -710,7 +706,7 @@ void D_CheckRecordFrom (void)
 	if (!p || p > myargc-2)
 		return;
 
-	sprintf(file, SAVEGAMENAME"%c.dsg",myargv[p+1][0]);
+	sprintf(file, "DOOMSAV%c.DSG",myargv[p+1][0]);
 	G_LoadGame (file);
 	G_DoLoadGame ();    // load the gameskill etc info from savegame
 
@@ -726,6 +722,10 @@ void D_CheckRecordFrom (void)
 =
 ===============
 */
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+char *wadfiles[MAXWADFILES] = { "doom.wad" };
+char *basedefault = "default.cfg"; // default file
+#endif
 
 void D_AddFile(char *file)
 {

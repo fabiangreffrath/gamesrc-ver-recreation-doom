@@ -373,7 +373,7 @@ default_t defaults[] =
 #endif
 
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
-	{"show_messages",&showMessages, 1},
+	{"showmessages",&showMessages, 1},
 #endif
 
 	{"usegamma",&usegamma, 0},

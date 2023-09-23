@@ -117,7 +117,11 @@ $(appver_exedef)\newdoom.exe : $(GLOBOBJS)
 !ifeq use_apodmx 1
  copy ..\..\audiolib\origlibs\109\AUDIO_WF.LIB .
 !endif
+!ifeq appver_exedef DM12
+ call ..\linkhl12.bat $(DMXLIBS)
+!else
  call ..\linkhlpr.bat $(DMXLIBS)
+!endif
  copy newdoom.exe strpdoom.exe
  wstrip strpdoom.exe
  cd..

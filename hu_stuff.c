@@ -24,6 +24,18 @@ extern int _wp10, _wp11, _wp12;
 
 char *chat_macros[] =
 {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	HUSTR_CHATMACRO1,
+	HUSTR_CHATMACRO2,
+	HUSTR_CHATMACRO3,
+	HUSTR_CHATMACRO4,
+	HUSTR_CHATMACRO5,
+	HUSTR_CHATMACRO6,
+	HUSTR_CHATMACRO7,
+	HUSTR_CHATMACRO8,
+	HUSTR_CHATMACRO9,
+	HUSTR_CHATMACRO0
+#else
 	HUSTR_CHATMACRO0,
 	HUSTR_CHATMACRO1,
 	HUSTR_CHATMACRO2,
@@ -34,6 +46,7 @@ char *chat_macros[] =
 	HUSTR_CHATMACRO7,
 	HUSTR_CHATMACRO8,
 	HUSTR_CHATMACRO9
+#endif
 };
 
 char *player_names[] =
@@ -118,7 +131,8 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	HUSTR_E4M9,
 #endif
 #endif
-
+	
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	"NEWLEVEL",
 	"NEWLEVEL",
 	"NEWLEVEL",
@@ -140,6 +154,7 @@ char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
 	"NEWLEVEL",
 #endif
 	"NEWLEVEL"
+#endif
 };
 
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
