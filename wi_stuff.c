@@ -95,10 +95,10 @@ static patch_t **lnames; // Name graphics of each level (centered)
 //
 
 // slam background
-static unsigned char *background=0;
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 #define WI_slamBackground() V_DrawPatch(0,0,0,bg);
 #else
+static unsigned char *background=0;
 void WI_slamBackground(void)
 {
   memcpy(screens[0], screens[1], SCREENWIDTH * SCREENHEIGHT);
@@ -665,10 +665,17 @@ void WI_drawDeathmatchStats(void)
     {
       for (j=0 ; j<MAXPLAYERS ; j++)
       {
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (playeringame[j] && dm_frags[i][j] >= 0)
+#else
 	if (playeringame[j])
+#endif
 	  WI_drawNum(x+w, y, dm_frags[i][j], 2);
 	x += DM_SPACINGX;
       }
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	if (dm_totals[i] >= 0)
+#endif
       WI_drawNum(DM_TOTALSX+w, y, dm_totals[i], 2);
     }
     y += WI_SPACINGY;

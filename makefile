@@ -108,10 +108,18 @@ GLOBOBJS = &
  wi_stuff.obj &
  s_sound.obj &
  sounds.obj &
- dutils.obj &
+ dutils.obj
+ 
+!ifeq appver_exedef DM12
+INFOOBJS = &
+ states.obj &
+ mobjinfo.obj
+!else
+INFOOBJS = &
  info.obj
+!endif
 
-$(appver_exedef)\newdoom.exe : $(GLOBOBJS)
+$(appver_exedef)\newdoom.exe : $(GLOBOBJS) $(INFOOBJS)
  cd $(appver_exedef)
  # Workaround for too long path
 !ifeq use_apodmx 1

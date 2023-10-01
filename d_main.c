@@ -737,7 +737,7 @@ void D_AddFile(char *file)
 	strcpy(new, file);
 
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
-	printf ("Adding external file %s.\n", file);
+	printf ("Adding external file %s.\n", new);
 #endif
 
 	wadfiles[numwadfiles] = new;

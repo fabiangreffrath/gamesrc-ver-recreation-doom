@@ -45,6 +45,7 @@ animdef_t		animdefs[] =
 	{false,	"SLIME04",	"SLIME01",	8},
 	{false,	"SLIME08",	"SLIME05",	8},
 	{false,	"SLIME12",	"SLIME09",	8},
+#endif
 
 	{true,	"BLODGR4",	"BLODGR1",	8},
 	{true,	"SLADRIP3",	"SLADRIP1",	8},
@@ -57,6 +58,7 @@ animdef_t		animdefs[] =
 	{true,	"FIREBLU2",	"FIREBLU1",	8},
 	{true,	"ROCKRED3",	"ROCKRED1",	8},
 
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{true,	"BFALL4",	"BFALL1",	8},
 	{true,	"SFALL4",	"SFALL1",	8},
 	{true,	"WFALL4",	"WFALL1",	8},
