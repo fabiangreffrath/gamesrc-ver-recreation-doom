@@ -129,7 +129,7 @@ sfxinfo_t S_sfx[] =
 	{ "doropn", false, 100, 0, -1, -1, 0 },
 	{ "dorcls", false, 100, 0, -1, -1, 0 },
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
-	{ "sawidl", false, 100, 0, -1, -1, 0 },
+	{ "stnmov", false, 100, 0, -1, -1, 0 },
 #else
 	{ "stnmov", false, 119, 0, -1, -1, 0 },
 #endif
