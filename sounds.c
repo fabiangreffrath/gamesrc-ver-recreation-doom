@@ -113,7 +113,11 @@ sfxinfo_t S_sfx[] =
 	{ "plasma", false, 64, 0, -1, -1, 0 },
 	{ "bfg", false, 64, 0, -1, -1, 0 },
 	{ "sawup", false, 64, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	{ "sawidl", false, 128, 0, -1, -1, 0 },
+#else
 	{ "sawidl", false, 118, 0, -1, -1, 0 },
+#endif
 	{ "sawful", false, 64, 0, -1, -1, 0 },
 	{ "sawhit", false, 64, 0, -1, -1, 0 },
 	{ "rlaunc", false, 64, 0, -1, -1, 0 },
@@ -124,7 +128,11 @@ sfxinfo_t S_sfx[] =
 	{ "pstop", false, 100, 0, -1, -1, 0 },
 	{ "doropn", false, 100, 0, -1, -1, 0 },
 	{ "dorcls", false, 100, 0, -1, -1, 0 },
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	{ "sawidl", false, 100, 0, -1, -1, 0 },
+#else
 	{ "stnmov", false, 119, 0, -1, -1, 0 },
+#endif
 	{ "swtchn", false, 78, 0, -1, -1, 0 },
 	{ "swtchx", false, 78, 0, -1, -1, 0 },
 	{ "plpain", false, 96, 0, -1, -1, 0 },
