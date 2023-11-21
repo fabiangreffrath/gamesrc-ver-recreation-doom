@@ -188,7 +188,7 @@ void InitNetwork(void)
     packets[0].ecb.ECBSocket = id;
     packets[0].ecb.FragmentCount = 1;
     packets[0].ecb.fAddress[0] = (unsigned)(&packets[0].ipx) & 15;
-    packets[0].ecb.fAddress[1] = (unsigned)(&packets[0].ipx) >> 14;
+    packets[0].ecb.fAddress[1] = (unsigned)(&packets[0].ipx) >> 4;
     packets[0].ecb.fSize = sizeof(packet_t)-sizeof(ECB);
     for (j=0 ; j<6 ; j++)
     {

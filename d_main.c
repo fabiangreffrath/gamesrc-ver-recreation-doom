@@ -515,7 +515,7 @@ void D_CheckNetGame (void)
 					break;
 			}
 
-			if (i == nodes)
+			if (i != nodes)
 				continue;
 
 			if (netbuffer.player & PL_DRONE)
@@ -548,7 +548,7 @@ void D_CheckNetGame (void)
 				startmap = netbuffer.cmds[0].sidemove;
 				startskill = netbuffer.cmds[0].angleturn;
 				deathmatch = netbuffer.cmds[0].buttons;
-				if (netbuffer.cmds[0].consistancy != VERSION)
+				if (netbuffer.cmds[0].f_18 != VERSION)
 				{
 					I_Error("===========================================================================\n"
 						"    All of the network players are not running the same VERSION of DOOM\n"
@@ -568,7 +568,7 @@ void D_CheckNetGame (void)
 		netbuffer.cmds[0].sidemove = startmap;
 		netbuffer.cmds[0].angleturn = startskill;
 		netbuffer.cmds[0].buttons = deathmatch;
-		netbuffer.cmds[0].consistancy = VERSION;
+		netbuffer.cmds[0].f_18 = VERSION;
 
 		SendPacket();
 	} while (nodes < numnetnodes);
