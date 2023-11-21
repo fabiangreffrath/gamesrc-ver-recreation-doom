@@ -45,9 +45,15 @@ boolean onground;
 
 void P_Thrust (player_t *player, angle_t angle, fixed_t move) 
 {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	angle >>= 24;
+	player->mo->momx += FixedMul(move,costable[angle]); 
+	player->mo->momy += FixedMul(move,sintable[angle]);
+#else
 	angle >>= ANGLETOFINESHIFT;
 	player->mo->momx += FixedMul(move,finecosine[angle]); 
 	player->mo->momy += FixedMul(move,finesine[angle]);
+#endif
 }
 
 
@@ -86,8 +92,13 @@ void P_CalcHeight (player_t *player)
 		return;
 	}
 		
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	angle = (12*leveltime)&255;
+	bob = FixedMul ( player->bob/2, sintable[angle]);
+#else
 	angle = (FINEANGLES/20*leveltime)&FINEMASK;
 	bob = FixedMul ( player->bob/2, finesine[angle]);
+#endif
 	
 //
 // move viewheight
@@ -132,15 +143,26 @@ void P_MovePlayer (player_t *player)
 	ticcmd_t		*cmd;
 	
     cmd = &player->cmd;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	player->mo->angle += cmd->angleturn;
+#else
 	player->mo->angle += (cmd->angleturn<<16);
+#endif
 
 	// don't let the player control movement if not onground
 	onground = (player->mo->z <= player->mo->floorz);
-	
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (cmd->forwardmove && onground)
+		P_Thrust (player, player->mo->angle, cmd->forwardmove);
+	if (cmd->sidemove && onground)
+		P_Thrust (player, player->mo->angle-ANG90, cmd->sidemove);
+#else
 	if (cmd->forwardmove && onground)
 		P_Thrust (player, player->mo->angle, cmd->forwardmove*2048);
 	if (cmd->sidemove && onground)
 		P_Thrust (player, player->mo->angle-ANG90, cmd->sidemove*2048);
+#endif
 
 	if ( (cmd->forwardmove || cmd->sidemove)
 	&& player->mo->state == &states[S_PLAY] )
@@ -221,6 +243,15 @@ void P_PlayerThink (player_t *player)
 //
 // chain saw run forward
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (player->mo->flags & MF_JUSTATTACKED)
+	{
+		player->cmd.angleturn = 0;
+		player->cmd.forwardmove = 0xc800;
+		player->cmd.sidemove = 0;
+		player->mo->flags &= ~MF_JUSTATTACKED;
+	}
+#else
 	cmd = &player->cmd;
 	if (player->mo->flags & MF_JUSTATTACKED)
 	{
@@ -229,6 +260,7 @@ void P_PlayerThink (player_t *player)
 		cmd->sidemove = 0;
 		player->mo->flags &= ~MF_JUSTATTACKED;
 	}
+#endif
 			
 	
 	if (player->playerstate == PST_DEAD)
@@ -248,6 +280,9 @@ void P_PlayerThink (player_t *player)
 	if (player->mo->subsector->sector->special)
 		P_PlayerInSpecialSector (player);
 		
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	cmd = &player->cmd;
+#endif
 //
 // check for weapon change
 //

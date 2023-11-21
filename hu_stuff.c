@@ -538,8 +538,10 @@ void HU_Ticker(void)
 	  chat_dest[i] = c;
 	else
 	{
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	  if (c >= 'a' && c <= 'z')
 	    c = (char) shiftxform[(unsigned char) c];
+#endif
 	  rc = HUlib_keyInIText(&w_inputbuffer[i], c);
 	  if (rc && c == KEY_ENTER)
 	  {
@@ -570,7 +572,11 @@ void HU_Ticker(void)
 
 }
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define QUEUESIZE 32
+#else
 #define QUEUESIZE 128
+#endif
 
 static char chatchars[QUEUESIZE];
 static int head = 0;
@@ -586,7 +592,11 @@ void HU_queueChatChar(char c)
   else
   {
     chatchars[head] = c;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+    head = (head + 2) & (QUEUESIZE-1);
+#else
     head = (head + 1) & (QUEUESIZE-1);
+#endif
   }
 }
 
@@ -614,7 +624,9 @@ boolean HU_Responder(event_t *ev)
   char *macromessage;
   boolean eatkey = false;
   static boolean shiftdown = false;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
   static boolean altdown = false;
+#endif
   unsigned char c;
   int i, numplayers;
     
@@ -637,11 +649,13 @@ boolean HU_Responder(event_t *ev)
     shiftdown = ev->type == ev_keydown;
     return false;
   }
+#if (APPVER_DOOMREV >= AV_DR_DM12)
   else if (ev->data1 == KEY_RALT || ev->data1 == KEY_LALT)
   {
     altdown = ev->type == ev_keydown;
     return false;
   }
+#endif
 
   if (ev->type != ev_keydown)
     return false;
@@ -694,6 +708,7 @@ boolean HU_Responder(event_t *ev)
   else
   {
     c = ev->data1;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
     // send a macro
     if (altdown)
     {
@@ -718,6 +733,7 @@ boolean HU_Responder(event_t *ev)
       eatkey = true;
     }
     else
+#endif
     {
 #if (APPVER_DOOMREV >= AV_DR_DM18FR)
       if (french)
@@ -739,8 +755,12 @@ boolean HU_Responder(event_t *ev)
 	chat_on = false;
 	if (w_chat.l.len)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		plr->message = "[Message Sent]";
+#else
 	  strcpy(lastmessage, w_chat.l.l);
 	  plr->message = lastmessage;
+#endif
 	}
       }
       else if (c == KEY_ESCAPE)

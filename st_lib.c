@@ -50,34 +50,47 @@ void STlib_initNum (st_number_t *n, int x, int y, patch_t **pl, int *num, boolea
 void STlib_drawNum (st_number_t *n, boolean refresh)
 {
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
-  int numdigits = n->width;
-
-  int oldnum = n->oldnum;
-  int num = *n->num;
-    
-  int w = SHORT(n->p[0]->width);
-  int h = SHORT(n->p[0]->height);
-  int x = n->x;
-
-  int v14 = oldnum < 0;
-  int v10 = num < 0;
-
-  int d1;
+#if 0
+  int x;
+  int w;
+  int h;
+  int oldnum;
+  int num;
   int d2;
+  int d1;
+  int numdigits;
+  int v14;
+  int v10;
+#endif
+  int num;
+  int oldnum;
+  int w;
+  int h;
+  int x;
+  int d2;
+  int d1;
+  int v10;
+  int v14;
+  int numdigits;
+  numdigits = n->width;
+
+  num = *n->num;
+  oldnum = n->oldnum;
+    
+  w = SHORT(n->p[0]->width);
+  h = SHORT(n->p[0]->height);
+  x = n->x;
+
+  v14 = oldnum < 0;
+  v10 = num < 0;
 
 // draw the new number
   while (numdigits--)
   {
-    if (v14 || refresh)
-      d1 = -1;
-    else
-      d1 = oldnum % 10;
-    if (v10)
-      d2 = -1;
-    else
-      d2 = num % 10;
+    d1 = (v14 || refresh) ? -1 : oldnum % 10;
+    d2 = v10 ? -1 : num % 10;
     x -= SHORT(n->p[0]->width);
-    if (d1 != d2)
+    if (d2 != d1)
     {
       V_CopyRect(x, n->y, BG, w, h, x, n->y, FG);
       if (d2 >= 0)

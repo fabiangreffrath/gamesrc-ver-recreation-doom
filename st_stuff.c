@@ -38,7 +38,12 @@ void ST_refreshBackground(void)
   if (st_statusbaron)
   {
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+    V_DrawPatch(ST_X, ST_Y, BG, sbarl);
+    V_DrawPatch(ST_X2, ST_Y, BG, sbarr);
+#else
     V_DrawPatch(ST_X, ST_Y, BG, sbar);
+#endif
 
     if (netgame)
       V_DrawPatch(ST_FX, ST_Y+1, BG, faceback);
@@ -74,7 +79,9 @@ boolean ST_Responder (event_t *ev)
 	break;
 	
     case AM_MSGEXITED:
-	//	fprintf(stderr, "AM exited\n");
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	fprintf(stderr, "AM exited\n");
+#endif
 	st_gamestate = FirstPersonState;
 	break;
     }
@@ -85,8 +92,10 @@ boolean ST_Responder (event_t *ev)
   {
     if (!netgame)
     {
+#if (APPVER_DOOMREV >= AV_DR_DM12)
       if (gameskill != sk_nightmare)
       {
+#endif
 	// 'dqd' cheat for toggleable god mode
 	if (cht_CheckCheat(&cheat_god, ev->data1))
 	{
@@ -224,6 +233,9 @@ boolean ST_Responder (event_t *ev)
 	  plyr->powers[pw_invulnerability] = true;
 	  plyr->message = STSTR_CHOPPERS;
 	}
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	else
+#else
 	// 'mypos' for player position
 	else if (cht_CheckCheat(&cheat_mypos, ev->data1))
 	{
@@ -235,6 +247,7 @@ boolean ST_Responder (event_t *ev)
 	  plyr->message = buf;
         }
       }
+#endif
     
       // 'clev' change-level cheat
       if (cht_CheckCheat(&cheat_clev, ev->data1))
@@ -278,6 +291,18 @@ boolean ST_Responder (event_t *ev)
 	  G_DeferedInitNew(gameskill, epsd, map);
 	}
       }
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	// 'mypos' for player position
+	else if (cht_CheckCheat(&cheat_mypos, ev->data1))
+	{
+	  static char	buf[ST_MSGWIDTH];
+	  sprintf(buf, "ang=0x%x;x,y=(0x%x,0x%x)",
+		  players[consoleplayer].mo->angle,
+		  players[consoleplayer].mo->x,
+		  players[consoleplayer].mo->y);
+	  plyr->message = buf;
+        }
+#endif
     }    
   }
   return false;
@@ -485,8 +510,10 @@ void ST_updateWidgets(void)
   int i;
 
 // must redirect the pointer if the ready weapon has changed.
-//  if (w_ready.data != plyr->readyweapon)
-//  {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  if (w_ready.data != plyr->readyweapon)
+  {
+#endif
   if (weaponinfo[plyr->readyweapon].ammo == am_noammo)
     w_ready.num = &largeammo;
   else
@@ -505,7 +532,9 @@ void ST_updateWidgets(void)
 // if (*w_ready.on)
 //  STlib_updateNum(&w_ready, true);
 // refresh weapon change
-//  }
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  }
+#endif
 
 // update keycard multiple widgets
   for (i=0;i<3;i++)
@@ -729,7 +758,12 @@ void ST_loadGraphics(void)
   faceback = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
 
 // status bar background bits
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  sbarl = (patch_t *) W_CacheLumpName("STMBARL", PU_STATIC);
+  sbarr = (patch_t *) W_CacheLumpName("STMBARR", PU_STATIC);
+#else
   sbar = (patch_t *) W_CacheLumpName("STBAR", PU_STATIC);
+#endif
 
 // face states
   facenum = 0;
@@ -786,8 +820,13 @@ int i;
 // unload the key cards
   for (i=0;i<NUMCARDS;i++)
     Z_ChangeTag(keys[i], PU_CACHE);
-
+  
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  Z_ChangeTag(sbarl, PU_CACHE);
+  Z_ChangeTag(sbarr, PU_CACHE);
+#else
   Z_ChangeTag(sbar, PU_CACHE);
+#endif
   Z_ChangeTag(faceback, PU_CACHE);
 
   for (i=0;i<ST_NUMFACES;i++)
@@ -815,9 +854,11 @@ void ST_initData(void)
   st_statusbaron = true;
   st_oldchat = st_chat = false;
   st_cursoron = false;
-
+  
+#if (APPVER_DOOMREV >= AV_DR_DM12)
   st_faceindex = 0;
   st_palette = -1;
+#endif
 
   st_oldhealth = -1;
 

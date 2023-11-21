@@ -325,7 +325,9 @@ enum
 	toorough,
 	hurtme,
 	violence,
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	nightmare,
+#endif
 	newg_end
 } newgame_e;
 
@@ -335,7 +337,9 @@ menuitem_t NewGameMenu[]=
 	{1,"M_ROUGH",	M_ChooseSkill, 'h'},
 	{1,"M_HURT",	M_ChooseSkill, 'h'},
 	{1,"M_ULTRA",	M_ChooseSkill, 'u'},
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	{1,"M_NMARE",	M_ChooseSkill, 'n'}
+#endif
 };
 
 menu_t  NewDef =
@@ -912,6 +916,7 @@ void M_DrawEpisode(void)
 	V_DrawPatchDirect (54,38,0,W_CacheLumpName("M_EPISOD",PU_CACHE));
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 void M_VerifyNightmare(int ch)
 {
 	if (ch != 'y')
@@ -920,14 +925,17 @@ void M_VerifyNightmare(int ch)
 	G_DeferedInitNew(nightmare,epi+1,1);
 	M_ClearMenus ();
 }
+#endif
 
 void M_ChooseSkill(int choice)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (choice == nightmare)
 	{
 		M_StartMessage(NIGHTMARE,M_VerifyNightmare,true);
 		return;
 	}
+#endif
 	
 	G_DeferedInitNew(choice,epi+1,1);
 	M_ClearMenus ();
@@ -1090,7 +1098,9 @@ void M_QuitResponse(int ch)
 {
 	if (ch != 'y')
 		return;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (!netgame)
+#endif
 	{
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 		if (commercial)
@@ -1343,6 +1353,11 @@ boolean M_Responder (event_t* ev)
 {
 	int             ch;
 	int             i;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (ev->type != ev_keydown)
+		return false;
+	ch = ev->data1;
+#else
 	static  int     joywait = 0;
 	static  int     mousewait = 0;
 	static  int     mousey = 0;
@@ -1440,7 +1455,7 @@ boolean M_Responder (event_t* ev)
     
 	if (ch == -1)
 		return false;
-
+#endif
     
 	// Save Game string input
 	if (saveStringEnter)
@@ -1603,8 +1618,9 @@ boolean M_Responder (event_t* ev)
 			case KEY_F10:           // Quit DOOM
 				S_StartSound(NULL,sfx_swtchn);
 				M_QuitDOOM(0);
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 				return true;
-				
+
 			case KEY_F11:           // gamma toggle
 				usegamma++;
 				if (usegamma > 4)
@@ -1612,6 +1628,7 @@ boolean M_Responder (event_t* ev)
 				players[consoleplayer].message = gammamsg[usegamma];
 				I_SetPalette (W_CacheLumpName ("PLAYPAL",PU_CACHE));
 				return true;
+#endif
 				
 		}
 

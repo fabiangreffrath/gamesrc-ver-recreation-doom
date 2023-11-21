@@ -20,6 +20,10 @@
 #include <dos.h>
 #include <stdlib.h>
 
+// VERSIONS RESTORATION
+// This *must* be included (near) the beginning for every compilation unit
+#include "GAMEVER.H"
+
 
 /*
 ====================================================
@@ -44,6 +48,17 @@ normal speed to help aiming.
 ====================================================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+typedef struct
+{
+	int             forwardmove;            // *2048 for move
+	int             sidemove;                       // *2048 for move
+	int             angleturn;                      // <<16 for angle delta
+	int             chatchar;
+	int             buttons;
+	int             consistancy;            // checks for net game
+} ticcmd_t;
+#else
 typedef struct
 {
 	char            forwardmove;            // *2048 for move
@@ -53,6 +68,7 @@ typedef struct
 	unsigned char            chatchar;
 	unsigned char           buttons;
 } ticcmd_t;
+#endif
 
 #define BT_ATTACK               1
 #define BT_USE                  2
@@ -118,7 +134,9 @@ static  union REGS regs;
 static  struct SREGS sregs;
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern  int mousepresent;
+#endif
 
 //===========================================================
 //
@@ -177,7 +195,9 @@ void I_StartupCyberMan(void)
 	  printf("CyberMan: CyberMan %d.%02d connected.\n",
 			 pbuf->majorVersion, pbuf->minorVersion);
 	  isCyberPresent = 1;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	  mousepresent = 0;
+#endif
    }
 }
 
@@ -211,10 +231,17 @@ void I_ReadCyberCmd (ticcmd_t *cmd)
 	sregs.es = FP_SEG(&RMI);
 	int386x( DPMI_INT, &regs, &regs, &sregs );
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (cyberstat->y < -7900)
+		cmd->forwardmove = 0xc800;
+	else if (cyberstat->y > 7900)
+		cmd->forwardmove = -0xc800;
+#else
 	if (cyberstat->y < -7900)
 		cmd->forwardmove = 0xc800/2048;
 	else if (cyberstat->y > 7900)
 		cmd->forwardmove = -0xc800/2048;
+#endif
 
 	if (cyberstat->buttons & 4)
 		cmd->buttons |= BT_ATTACK;
@@ -224,6 +251,27 @@ void I_ReadCyberCmd (ticcmd_t *cmd)
 	delta = cyberstat->x - oldpos;
 	oldpos = cyberstat->x;
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (cyberstat->buttons & 1)
+	{       // strafe
+		if (cyberstat->x < -7900)
+			cmd->sidemove = -0xc800;
+		else if (cyberstat->x > 7900)
+			cmd->sidemove = 0xc800;
+		else
+			cmd->sidemove = delta*40;
+	}
+	else
+	{
+		if (cyberstat->x < -7900)
+			cmd->angleturn = 0x280000;
+		else if (cyberstat->x > 7900)
+			cmd->angleturn = -0x280000;
+		else
+			cmd->angleturn = -delta*0xa000;
+
+	}
+#else
 	if (cyberstat->buttons & 1)
 	{       // strafe
 		if (cyberstat->x < -7900)
@@ -243,10 +291,12 @@ void I_ReadCyberCmd (ticcmd_t *cmd)
 			cmd->angleturn = -delta*0xa/16;
 
 	}
+#endif
 
 }
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 void I_Tactile (int on, int off, int total)
 {
 	if (!isCyberPresent)
@@ -274,3 +324,4 @@ void I_Tactile (int on, int off, int total)
 	sregs.es = FP_SEG(&RMI);
 	int386x( DPMI_INT, &regs, &regs, &sregs );
 }
+#endif

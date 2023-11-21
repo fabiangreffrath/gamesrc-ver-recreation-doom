@@ -355,7 +355,14 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			}
 			if(!player->cards[it_bluecard] && !player->cards[it_blueskull])
 			{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+				if (line->special == 26)
+					player->message = "You need a blue keycard to open this door";
+				else
+					player->message = "You need a blue skull to open this door";
+#else
 				player->message = PD_BLUEK;
+#endif
 				S_StartSound(NULL, sfx_oof);
 				return;
 			}
@@ -368,7 +375,14 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			}
 			if(!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
 			{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+				if (line->special == 26)
+					player->message = "You need a yellow keycard to open this door";
+				else
+					player->message = "You need a yellow skull to open this door";
+#else
 				player->message = PD_YELLOWK;
+#endif
 				S_StartSound(NULL, sfx_oof);
 				return;
 			}
@@ -381,7 +395,14 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			}
 			if(!player->cards[it_redcard] && !player->cards[it_redskull])
 			{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+				if (line->special == 26)
+					player->message = "You need a red keycard to open this door";
+				else
+					player->message = "You need a red skull to open this door";
+#else
 				player->message = PD_REDK;
+#endif
 				S_StartSound(NULL, sfx_oof);
 				return;
 			}

@@ -265,7 +265,12 @@ static boolean st_armson;
 static boolean st_fragson; 
 
 // main bar left
+#if (APPVER_DOOMREV < AV_DR_DM12)
+static patch_t *sbarl;
+static patch_t *sbarr;
+#else
 static patch_t *sbar;
+#endif
 
 // 0-9, tall numbers
 static patch_t *tallnum[10];

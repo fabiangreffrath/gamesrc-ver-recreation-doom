@@ -185,7 +185,7 @@ void T_MoveFloor(floormove_t *floor)
 
 	res = T_MovePlane(floor->sector,floor->speed,
 			floor->floordestheight,floor->crush,0,floor->direction);
-	if (!(leveltime&7))
+	if (!(pleveltime&7))
 		S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_stnmov);
 	if (res == pastdest)
 	{

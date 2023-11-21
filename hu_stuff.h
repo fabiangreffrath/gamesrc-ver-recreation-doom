@@ -54,6 +54,10 @@
 #define HU_MSGWIDTH	64	// in characters
 #define HU_MSGHEIGHT	1	// in lines
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define HU_MSGTIMEOUT	(3*TICRATE)
+#else
 #define HU_MSGTIMEOUT	(4*TICRATE)
+#endif
 
 #endif

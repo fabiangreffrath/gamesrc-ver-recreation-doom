@@ -58,7 +58,9 @@ typedef enum
 	mus_intro,
 	mus_bunny,
 	mus_victor,
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	mus_introa,
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	mus_runnin,
 	mus_stalks,

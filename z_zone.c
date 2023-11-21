@@ -74,7 +74,6 @@ void Z_ClearZone (memzone_t *zone)
 	block->size = zone->size - sizeof(memzone_t);
 }
 
-
 /*
 ========================
 =
@@ -83,6 +82,38 @@ void Z_ClearZone (memzone_t *zone)
 ========================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+
+memzone_t *Z_AllocateZone (int size)
+{
+	memzone_t *zone;
+	memblock_t	*block;
+
+	zone = (memzone_t *)malloc (size);
+	if (!zone)
+		I_Error("Z_AllocateZone: Couldn't malloc %i bytes\n", size + sizeof(memzone_t));
+	zone->size = size;
+
+// set the entire zone to one free block
+
+	zone->blocklist.next = zone->blocklist.prev = block =
+		(memblock_t *)( (byte *)zone + sizeof(memzone_t) );
+	zone->blocklist.user = (void *)zone;
+	zone->blocklist.tag = PU_STATIC;
+	zone->rover = block;
+	
+	block->prev = block->next = &zone->blocklist;
+	block->user = NULL;	// free block
+	block->size = zone->size - sizeof(memzone_t);
+
+	return zone;
+}
+
+void Z_Init (int size)
+{
+	mainzone = Z_AllocateZone(size);
+}
+#else
 void Z_Init (void)
 {
 	memblock_t	*block;
@@ -103,6 +134,7 @@ void Z_Init (void)
 	block->user = NULL;	// free block
 	block->size = mainzone->size - sizeof(memzone_t);
 }
+#endif
 
 
 /*

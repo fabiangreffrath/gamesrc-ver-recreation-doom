@@ -411,9 +411,13 @@ void R_InitTextures (void)
 		totalwidth += texture->width;
 	}
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	Z_Free (maptex);
+#else
 	Z_Free (maptex1);
 	if (maptex2)
 		Z_Free (maptex2);
+#endif
 
 //
 // precalculate whatever possible

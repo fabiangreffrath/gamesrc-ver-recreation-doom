@@ -31,7 +31,9 @@
 // This *must* be included (near) the beginning for every compilation unit
 #include "GAMEVER.H"
 
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define VERSION 99
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
 #define VERSION 102
 #elif (APPVER_DOOMREV < AV_DR_DM17)
 #define VERSION 106
@@ -154,7 +156,9 @@ typedef enum
 	sk_easy,
 	sk_medium,
 	sk_hard,
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	sk_nightmare
+#endif
 } skill_t;
 
 typedef enum
@@ -173,6 +177,18 @@ typedef struct
 	int			data3;		// mouse/joystick y move
 } event_t;
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+typedef struct
+{
+	int         forwardmove;            // *2048 for move
+	int         sidemove;                       // *2048 for move
+	int         angleturn;                      // <<16 for angle delta
+	int         chatchar;
+	int         buttons;
+	int         consistancy;            // checks for net game
+	int f_18;
+} ticcmd_t;
+#else
 typedef struct
 {
 	char		forwardmove;		// *2048 for move
@@ -182,6 +198,7 @@ typedef struct
 	byte		chatchar;
 	byte		buttons;
 } ticcmd_t;
+#endif
 
 #define	BT_ATTACK		1
 #define	BT_USE			2
@@ -274,10 +291,14 @@ typedef struct mobj_s
 	int				threshold;		// if >0, the target will be chased
 									// no matter what (even if shot)
 	struct player_s	*player;		// only valid if type == MT_PLAYER
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	int				lastlook;		// player number last looked for
 
 	mapthing_t		spawnpoint;		// for nightmare respawn
+#endif
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	struct mobj_s	*tracer;		// thing being chased/attacked for tracers
+#endif
 } mobj_t;
 
 // each sector has a degenmobj_t in it's center for sound origin purposes
@@ -476,6 +497,20 @@ typedef struct player_s
 #define	CF_GODMODE		2
 #define	CF_NOMOMENTUM	4 // not really a cheat, just a debug aid
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+
+#define		BACKUPTICS		16
+
+typedef struct
+{
+	int player;
+	int tic;
+	ticcmd_t	cmds[BACKUPTICS];
+} doomdata_t;
+
+extern doomdata_t netbuffer;
+
+#else
 
 #define		BACKUPTICS		12		// CHANGED FROM 12 !?!?
 
@@ -528,6 +563,8 @@ extern	doomdata_t		*netbuffer;		// points inside doomcom
 #define	CMD_SEND	1
 #define	CMD_GET		2
 
+#endif
+
 #define	SBARHEIGHT	32			// status bar height at bottom of screen
 
 
@@ -547,6 +584,10 @@ extern int eventtail;
 
 extern fixed_t finesine[5*FINEANGLES/4];
 extern fixed_t *finecosine;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern fixed_t sintable[256];
+extern fixed_t costable[256];
+#endif
 
 extern gameaction_t gameaction;
 
@@ -556,8 +597,10 @@ extern boolean usergame;
 
 extern int _dp1, _dp2, _dp3, _dp4, _dp5, _dp6, _dp7; // align for d_main.c
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern boolean nomonsters; // checkparm of -nomonsters
 extern boolean respawnparm; // checkparm of -respawn
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 extern boolean fastparm; // checkparm of -fastparm
 #endif
@@ -611,16 +654,25 @@ extern	int			skytexture;
 
 extern	gamestate_t	gamestate;
 extern	skill_t		gameskill;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern	boolean		respawnmonsters;
+#endif
 extern	int			gameepisode;
 extern	int			gamemap;
 extern 	int 			prevmap;
 extern	int			totalkills, totalitems, totalsecret;	// for intermission
 extern	int			levelstarttic;		// gametic at level start
 extern	int			leveltime;			// tics in game play for par
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define pleveltime gametic
+#else
+#define pleveltime leveltime
+#endif
 
 extern	ticcmd_t	netcmds[MAXPLAYERS][BACKUPTICS];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern int ticdup;
+#endif
 
 #define	MAXNETNODES		8
 extern	ticcmd_t		localcmds[BACKUPTICS];
@@ -667,7 +719,9 @@ extern int _dp12;
 
 extern boolean automapactive;
 extern boolean menuactive;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern boolean bodyqueslot;
+#endif
 extern boolean nodrawers;
 extern boolean noblit;
 extern boolean viewactive;
@@ -680,11 +734,15 @@ extern char wadfile[1024];
 extern char basedefault[1024];
 #endif
 extern FILE *debugfile;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern int bodyqueslot;
+#endif
 extern skill_t startskill;
 extern int startepisode;
 extern int startmap;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern boolean autostart;
+#endif
 
 /*
 ===============================================================================
@@ -742,7 +800,11 @@ long LongSwap(long);
 #define	PU_PURGELEVEL	100
 #define	PU_CACHE		101
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+void	Z_Init (int size);
+#else
 void	Z_Init (void);
+#endif
 void 	*Z_Malloc (int size, int tag, void *ptr);
 void 	Z_Free (void *ptr);
 void 	Z_FreeTags (int lowtag, int hightag);
@@ -851,7 +913,11 @@ void D_StartTitle (void);
 #define SCREENHEIGHT 200
 //(int)(SCREEN_MUL*BASE_WIDTH*INV_ASPECT_RATIO) //200
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int I_GetHeapSize (void);
+#else
 byte *I_ZoneBase (int *size);
+#endif
 // called by startup code to get the ammount of memory to malloc
 // for the zone management
 
@@ -880,8 +946,10 @@ void I_Init (void);
 
 void I_InitGraphics (void);
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 void I_InitNetwork (void);
 void I_NetCmd (void);
+#endif
 
 void I_Error (char *error, ...);
 // called by anything that can generate a terminal error
@@ -909,7 +977,9 @@ void I_EndRead (void);
 byte	*I_AllocLow (int length);
 // allocates from low memory under dos, just mallocs under unix
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 void I_Tactile (int on, int off, int total);
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 ticcmd_t *I_BaseTiccmd(void);
@@ -1055,8 +1125,10 @@ int M_DrawText (int x, int y, boolean direct, char *string);
 //------
 
 extern int dirtybox[4];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern byte gammatable[5][256];
 extern int usegamma;
+#endif
 
 void V_Init(void); // Allocates buffer screens, call before R_Init
 void V_CopyRect(int scrx, int scry, int srcscrn, int width, int height, int destx, int desty, int destscrn);

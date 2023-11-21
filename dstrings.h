@@ -135,7 +135,11 @@
 //
 //	HU_stuff.C
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define HUSTR_MSGU	"Chat typeahead full"
+#else
 #define HUSTR_MSGU	"[Message unsent]"
+#endif
 
 #define HUSTR_E1M1	"E1M1: Hangar"
 #define HUSTR_E1M2	"E1M2: Nuclear Plant"
@@ -350,7 +354,11 @@
 #define STSTR_NCOFF		"No Clipping Mode OFF"
 
 #define STSTR_BEHOLD	"inVuln, Str, Inviso, Rad, Allmap, or Lite-amp"
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define STSTR_BEHOLDX	"Powerup toggled"
+#else
 #define STSTR_BEHOLDX	"Power-up Toggled"
+#endif
 
 #define STSTR_CHOPPERS	"... doesn't suck - GM"
 #define STSTR_CLEV		"Changing Level..."
@@ -358,6 +366,24 @@
 //
 //	F_Finale.C
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define E1TEXT \
+"Once you beat the big badasses and\n"\
+"clean out the moon base you're supposed\n"\
+"to win, aren't you? Aren't you? Where's\n"\
+"your fat reward and ticket home? What\n"\
+"the hell is this? It's not supposed to\n"\
+"end this way!\n"\
+"\n" \
+"It stinks like rotten meat, but looks\n"\
+"like the lost Deimos base.  Looks like\n"\
+"you're stuck on The Shores of Hell.\n"\
+"The only way out is through.\n"\
+"\n"\
+"To continue the DOOM experience, buy\n"\
+"The Shores of Hell and its amazing\n"\
+"sequel, Inferno!\n"
+#else
 #define E1TEXT \
 "Once you beat the big badasses and\n"\
 "clean out the moon base you're supposed\n"\
@@ -374,7 +400,7 @@
 "To continue the DOOM experience, play\n"\
 "The Shores of Hell and its amazing\n"\
 "sequel, Inferno!\n"
-
+#endif
 
 #define E2TEXT \
 "You've done it! The hideous cyber-\n"\

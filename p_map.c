@@ -79,6 +79,7 @@ line_t		*ceilingline;
 line_t	*spechit[MAXSPECIALCROSS];
 int			 numspechit;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 /*
 ===============================================================================
 
@@ -190,6 +191,7 @@ boolean P_TeleportMove (mobj_t *thing, fixed_t x, fixed_t y)
 	
 	return true;
 }
+#endif
 
 /*
 ===============================================================================
@@ -772,6 +774,117 @@ stairstep:
 }
 
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+/*
+==============================================================================
+
+							P_CheckSight
+
+==============================================================================
+*/
+
+fixed_t		sightzstart;			// eye z of looker
+fixed_t		topslope, bottomslope;	// slopes to top and bottom of target
+
+int			sightcounts[2];
+
+boolean P_SightReject (subsector_t *t1, subsector_t *t2)
+{
+	int		s1, s2;
+	int		pnum, bytenum, bitnum;
+
+//
+// check for trivial rejection
+//
+	s1 = (t1->sector - sectors);
+	s2 = (t2->sector - sectors);
+	pnum = s1*numsectors + s2;
+	bytenum = pnum>>3;
+	bitnum = 1 << (pnum&7);
+	
+	if (rejectmatrix[bytenum]&bitnum)
+	{
+sightcounts[0]++;
+		return false;		// can't possibly be connected
+	}
+sightcounts[1]++;
+	return true;
+}
+
+/*
+==============
+=
+= PTR_SightTraverse
+=
+==============
+*/
+
+boolean		PTR_SightTraverse (intercept_t *in)
+{
+	line_t	*li;
+	fixed_t	slope;
+
+	if (!in->isaline)
+		I_Error("P_SightTraverse: not a line?");
+	
+	li = in->d.line;
+	
+	if ( !(li->flags & ML_TWOSIDED) )
+		return false;		// stop
+
+//
+// crosses a two sided line
+//
+	P_LineOpening (li);
+
+	if (openbottom >= opentop)	// quick test for totally closed doors
+		return false;	// stop
+
+	if (li->frontsector->floorheight != li->backsector->floorheight)
+	{
+		slope = FixedDiv (openbottom - sightzstart , in->frac);
+		if (slope > bottomslope)
+			bottomslope = slope;
+	}
+	
+	if (li->frontsector->ceilingheight != li->backsector->ceilingheight)
+	{
+		slope = FixedDiv (opentop - sightzstart , in->frac);
+		if (slope < topslope)
+			topslope = slope;
+	}
+	
+	if (topslope <= bottomslope)
+		return false;	// stop
+			
+	return true;	// keep going
+}
+/*
+=====================
+=
+= P_CheckSight
+=
+= Returns true if a straight line between t1 and t2 is unobstructed
+= look from eyes of t1 to any part of t2
+=
+=====================
+*/
+
+boolean P_CheckSight (mobj_t *t1, mobj_t *t2)
+{
+	if (!P_SightReject(t1->subsector, t2->subsector))
+		return false;
+//
+// check precisely
+//		
+	sightzstart = t1->z + t1->height - (t1->height>>2);
+	topslope = (t2->z+t2->height) - sightzstart;
+	bottomslope = (t2->z) - sightzstart;
+
+	return P_PathTraverse ( t1->x, t1->y, t2->x, t2->y, PT_ADDLINES|PT_EARLYOUT, PTR_SightTraverse );
+}
+
+#endif
 
 /*
 ==============================================================================
@@ -791,7 +904,9 @@ fixed_t		attackrange;
 
 fixed_t		aimslope;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern	fixed_t		topslope, bottomslope;	// slopes to top and bottom of target
+#endif
 
 /*
 ===============================================================================
@@ -1107,11 +1222,19 @@ void P_UseLines (player_t *player)
 	
 	usething = player->mo;
 		
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	angle = player->mo->angle >> 24;
+	x1 = player->mo->x;
+	y1 = player->mo->y;
+	x2 = x1 + (USERANGE>>FRACBITS)*costable[angle];
+	y2 = y1 + (USERANGE>>FRACBITS)*sintable[angle];
+#else
 	angle = player->mo->angle >> ANGLETOFINESHIFT;
 	x1 = player->mo->x;
 	y1 = player->mo->y;
 	x2 = x1 + (USERANGE>>FRACBITS)*finecosine[angle];
 	y2 = y1 + (USERANGE>>FRACBITS)*finesine[angle];
+#endif
 	
 	P_PathTraverse ( x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse );
 }
@@ -1249,7 +1372,7 @@ boolean PIT_ChangeSector (mobj_t *thing)
 		return true;				// assume it is bloody gibs or something
 		
 	nofit = true;
-	if (crushchange && !(leveltime&3) )
+	if (crushchange && !(pleveltime&3) )
 	{
 		P_DamageMobj(thing,NULL,NULL,10);
 		// spray blood in a random direction

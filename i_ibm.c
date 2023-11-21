@@ -283,7 +283,9 @@ void I_UnColorBorder (void)
 {
 	int	i;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	I_WaitVBL (1);
+#endif
 	_outbyte (PEL_WRITE_ADR, 0);
 	for (i = 0; i < 3; i++)
 	{
@@ -345,7 +347,11 @@ void I_SetPalette (byte *palette)
 	I_WaitVBL (1);
 	_outbyte (PEL_WRITE_ADR, 0);
 	for (i = 0; i < 768; i++)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		_outbyte (PEL_DATA, *palette++>>2);
+#else
 		_outbyte (PEL_DATA, (gammatable[usegamma][*palette++])>>2);
+#endif
 }
 
 /*
@@ -649,8 +655,11 @@ void   I_StartTic (void)
 {
 	int             k;
 	event_t ev;
-
-
+	
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	extern int isCyberPresent;
+	if (!isCyberPresent)
+#endif
 	I_ReadMouse ();
 
 //
@@ -662,7 +671,11 @@ void   I_StartTic (void)
 		kbdtail++;
 
 		// extended keyboard shift key bullshit
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		if ( (k&0x7f)==KEY_RSHIFT )
+#else
 		if ( (k&0x7f)==SC_LSHIFT || (k&0x7f)==SC_RSHIFT )
+#endif
 		{
 			if ( keyboardque[(kbdtail-2)&(KBDQUESIZE-1)]==0xe0 )
 				continue;
@@ -741,7 +754,7 @@ void   I_ReadKeys (void)
 
 void I_StartFrame (void)
 {
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV >= AV_DR_DM12 && APPVER_DOOMREV < AV_DR_DM1666P)
 	_inbyte(0x60);
 #endif
 	I_JoystickEvents ();
@@ -777,6 +790,35 @@ int I_TimerISR (void)
 	ticcount++;
 	return 0;
 }
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+/*
+===============
+=
+= I_StartupTimer
+=
+===============
+*/
+
+void I_StartupTimer (void)
+{
+#ifndef NOTIMER
+	// installs master timer.  Must be done before StartupTimer()!
+	TSM_Install(140);
+	tsm_ID = TSM_NewService (I_TimerISR, 35, 0, 0); // max priority
+	if (tsm_ID == -1)
+	{
+		I_Error("Can't register 35 Hz timer w/ DMX library");
+	}
+#endif
+}
+
+void I_ShutdownTimer (void)
+{
+	TSM_DelService(tsm_ID);
+	TSM_Remove();
+}
+#endif
 
 /*
 ============================================================================
@@ -887,8 +929,10 @@ void I_StartupMouse (void)
 	printf("Mouse: detected\n");
 
 	mousepresent = 1;
-
+	
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	I_StartupCyberMan();
+#endif
 }
 
 
@@ -950,6 +994,9 @@ void I_ReadMouse (void)
 ============================================================================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int joyx, joyy;
+#else
 int     joyxl, joyxh, joyyl, joyyh;
 
 boolean WaitJoyButton (void)
@@ -993,8 +1040,7 @@ boolean WaitJoyButton (void)
 
 	return true;
 }
-
-
+#endif
 
 /*
 ===============
@@ -1022,6 +1068,12 @@ void I_StartupJoystick (void)
 		printf ("joystick not found\n");
 		return;
 	}
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	joystickpresent = true;
+	joyx = joystickx;
+	joyy = joysticky;
+	printf ("joystick found\n");
+#else
 	printf ("joystick found\n");
 	joystickpresent = true;
 
@@ -1046,6 +1098,7 @@ void I_StartupJoystick (void)
 	joyxh = (centerx + joystickx)/2;
 	joyyh = (centery + joysticky)/2;
 	printf ("\n");
+#endif
 }
 
 /*
@@ -1070,6 +1123,20 @@ void I_JoystickEvents (void)
 	ev.type = ev_joystick;
 	ev.data1 =  ((inp(0x201) >> 4)&15)^15;
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (joyx - joyx / 4 > joystickx)
+		ev.data2 = -1;
+	else if (joyx + joyx / 4 < joystickx)
+		ev.data2 = 1;
+	else
+		ev.data2 = 0;
+	if (joyy - joyy / 4 > joysticky)
+		ev.data3 = -1;
+	else if (joyy + joyy / 4 < joysticky)
+		ev.data3 = 1;
+	else
+		ev.data3 = 0;
+#else
 	if (joystickx < joyxl)
 		ev.data2 = -1;
 	else if (joystickx > joyxh)
@@ -1082,6 +1149,7 @@ void I_JoystickEvents (void)
 		ev.data3 = 1;
 	else
 		ev.data3 = 0;
+#endif
 
 	D_PostEvent (&ev);
 }
@@ -1151,11 +1219,13 @@ void I_StartupDPMI (void)
 //
 	realstackseg = (int)I_AllocLow (1024) >> 4;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 //
 // lock the entire program down
 //
 
 	_dpmi_lockregion (&__begtext, &___argc - &__begtext);
+#endif
 
 
 //
@@ -1295,6 +1365,10 @@ void I_Init (void)
 	I_StartupJoystick ();
 	printf ("I_StartupKeyboard\n");
 	I_StartupKeyboard ();
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	printf ("I_StartupTimer\n");
+	I_StartupTimer ();
+#endif
 	printf ("I_StartupSound\n");
 	I_StartupSound ();
 	//IO_StartupTimer();
@@ -1388,6 +1462,28 @@ void I_Quit (void)
 ===============
 */
 
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int I_GetHeapSize (void)
+{
+	int             meminfo[32];
+	int             heap;
+	memset (meminfo,0,sizeof(meminfo));
+	segread(&segregs);
+	segregs.es = segregs.ds;
+	regs.w.ax = 0x500;      // get memory info
+	regs.x.edi = (int)&meminfo;
+	int386x( 0x31, &regs, &regs, &segregs );
+
+	heap = meminfo[0] - 0x10000;
+	printf ("heap size: 0x%x\n", heap);
+	if (heap < 0x180000)
+		I_Error("Insufficient memory!");
+
+	return heap;
+}
+
+#else
 byte *I_ZoneBase (int *size)
 {
 	int             meminfo[32];
@@ -1463,6 +1559,7 @@ byte *I_ZoneBase (int *size)
 	*size = heap;
 	return ptr;
 }
+#endif
 
 /*
 =============================================================================
@@ -1604,6 +1701,8 @@ byte *I_AllocLow (int length)
 	return mem;
 }
 
+
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 /*
 ============================================================================
 
@@ -1705,3 +1804,4 @@ void I_NetCmd (void)
 		I_Error ("I_NetCmd when not in netgame");
 	DPMIInt (doomcom->intnum);
 }
+#endif

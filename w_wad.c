@@ -221,8 +221,10 @@ void W_AddFile (char *filename)
 // Fill in lumpinfo
 //
 	lumpinfo = realloc (lumpinfo, numlumps*sizeof(lumpinfo_t));
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (!lumpinfo)
 		I_Error ("Couldn't realloc lumpinfo");
+#endif
 	lump_p = &lumpinfo[startlump];
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	storehandle = reloadname ? -1 : handle;
@@ -342,8 +344,10 @@ void W_InitMultipleFiles (char **filenames)
 //
 	size = numlumps * sizeof(*lumpcache);
 	lumpcache = malloc (size);
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (!lumpcache)
 		I_Error ("Couldn't allocate lumpcache");
+#endif
 	memset (lumpcache,0, size);
 }
 
@@ -558,6 +562,7 @@ void	*W_CacheLumpName (char *name, int tag)
 }
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 /*
 ====================
 =
@@ -617,3 +622,4 @@ void W_Profile (void)
 	}
 	fclose (f);
 }
+#endif

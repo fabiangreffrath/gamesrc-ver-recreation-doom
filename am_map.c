@@ -414,7 +414,11 @@ boolean AM_Responder (event_t *ev)
 	plr->message = grid ? AMSTR_GRIDON : AMSTR_GRIDOFF;
 	break;
       case AM_MARKKEY:
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	sprintf(buffer, "Marked spot %d", markpointnum);
+#else
 	sprintf(buffer, "%s %d", AMSTR_MARKEDSPOT, markpointnum);
+#endif
 	plr->message = buffer;
   	AM_addMark();
   	break;
@@ -787,10 +791,17 @@ void AM_rotate(fixed_t *x, fixed_t *y, angle_t a)
 {
   fixed_t tmpx;
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  tmpx = FixedMul(*x,costable[a>>24])
+       - FixedMul(*y,sintable[a>>24]);
+  *y   = FixedMul(*x,sintable[a>>24])
+       + FixedMul(*y,costable[a>>24]);
+#else
   tmpx = FixedMul(*x,finecosine[a>>ANGLETOFINESHIFT])
        - FixedMul(*y,finesine[a>>ANGLETOFINESHIFT]);
   *y   = FixedMul(*x,finesine[a>>ANGLETOFINESHIFT])
        + FixedMul(*y,finecosine[a>>ANGLETOFINESHIFT]);
+#endif
   *x = tmpx;
 }
 
@@ -890,7 +901,10 @@ void AM_drawMarks(void)
   {
     if (markpoints[i].x != -1)
     {
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+      w = SHORT(marknums[0]->width);
+      h = SHORT(marknums[0]->height);
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
       w = SHORT(marknums[i]->width);
       h = SHORT(marknums[i]->height);
 #else

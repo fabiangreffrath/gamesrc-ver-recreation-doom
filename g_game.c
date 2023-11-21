@@ -50,7 +50,9 @@ void D_AdvanceDemo(void);
 gameaction_t    gameaction;
 gamestate_t     gamestate;
 skill_t         gameskill;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 boolean         respawnmonsters;
+#endif
 int             gameepisode;
 int             gamemap;
 
@@ -92,7 +94,11 @@ boolean         precache = true;        // if true, load all graphics at start
  
 wbstartstruct_t wminfo;               	// parms for world map / intermission 
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int             consistancy[MAXPLAYERS][BACKUPTICS];
+#else
 short            consistancy[MAXPLAYERS][BACKUPTICS];
+#endif
 
 byte            *savebuffer, *save_p;
 
@@ -115,7 +121,9 @@ int             joybspeed;
 
 
 
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define MAXPLMOVE       0x19000
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
 #define MAXPLMOVE       0x32
 #else
 #define MAXPLMOVE       (forwardmove[1])
@@ -123,9 +131,15 @@ int             joybspeed;
  
 #define TURBOTHRESHOLD	0x32
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+fixed_t         forwardmove[2] = {0xc800, 0x19000};
+fixed_t         sidemove[2] = {0xc000, 0x14000};
+fixed_t         angleturn[3] = {0x2800000, 0x5000000, 0x1400000};     // + slow turn
+#else
 fixed_t         forwardmove[2] = {0x19, 0x32};
 fixed_t         sidemove[2] = {0x18, 0x28};
 fixed_t         angleturn[3] = {640, 1280, 320};     // + slow turn
+#endif
 #define SLOWTURNTICS    6
 
 #define NUMKEYS 256
@@ -133,25 +147,35 @@ boolean         gamekeydown[NUMKEYS];
 int             turnheld;                   // for accelerative turning
 
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+boolean         mousebuttons[3];
+#else
 boolean         mousearray[4];
 boolean         *mousebuttons = &mousearray[1];
+#endif
 	// allow [-1]
 int             mousex, mousey;             // mouse values are used once
 int             dclicktime, dclickstate, dclicks;
 int             dclicktime2, dclickstate2, dclicks2;
 
 int             joyxmove, joyymove;         // joystick values are repeated
+#if (APPVER_DOOMREV < AV_DR_DM12)
+boolean         joybuttons[4];
+#else
 boolean         joyarray[5];
 boolean         *joybuttons = &joyarray[1];     // allow [-1]
+#endif
 
 int     savegameslot;
 char    savedescription[32];
  
- 
+
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #define	BODYQUESIZE	32
 
 mobj_t *bodyque[BODYQUESIZE]; 
 int bodyqueslot; 
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 void *statcopy;				// for statistics driver
@@ -188,14 +212,25 @@ void I_ReadCyberCmd (ticcmd_t *cmd);
 void G_BuildTiccmd (ticcmd_t *cmd)
 {
 	int             i;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	boolean         strafe;
+#else
 	boolean         strafe, bstrafe;
+#endif
 	int             speed, tspeed;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	int             forward, side;
+#endif
 
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 	memset (cmd,0,sizeof(*cmd));
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	cmd->consistancy =
+	      consistancy[consoleplayer][maketic&(BACKUPTICS-1)];
+#else
 	cmd->consistancy =
 	      consistancy[consoleplayer][(maketic*ticdup)%BACKUPTICS];
+#endif
 #else
 	ticcmd_t		*base;
 
@@ -206,8 +241,10 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	cmd->consistancy =
 		consistancy[consoleplayer][maketic%BACKUPTICS];
 #endif
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (isCyberPresent)
 		I_ReadCyberCmd (cmd);
+#endif
 
 //printf ("cons: %i\n",cmd->consistancy);
 
@@ -220,14 +257,23 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	speed = gamekeydown[key_speed] || joybuttons[joybspeed];
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define forward cmd->forwardmove
+#define side cmd->sidemove
+#else
 	forward = side = 0;
+#endif
 
 //
 // use two stage accelerative turning on the keyboard and joystick
 //
 	if (joyxmove < 0 || joyxmove > 0
 	|| gamekeydown[key_right] || gamekeydown[key_left])
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		turnheld++;
+#else
 		turnheld += ticdup;
+#endif
 	else
 		turnheld = 0;
 	if (turnheld < SLOWTURNTICS)
@@ -279,6 +325,10 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 //
 	cmd->chatchar = HU_dequeueChatChar();
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	cmd->buttons = 0;
+#endif
+
 	if (gamekeydown[key_fire] || mousebuttons[mousebfire]
 		|| joybuttons[joybfire])
 		cmd->buttons |= BT_ATTACK;
@@ -328,7 +378,11 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	}
 	else
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		dclicktime++;
+#else
 		dclicktime += ticdup;
+#endif
 		if (dclicktime > 20)
 		{
 			dclicks = 0;
@@ -339,11 +393,17 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 //
 // strafe double click
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (mousebuttons[mousebstrafe] != dclickstate2 && dclicktime2 > 1 )
+	{
+		dclickstate2 = mousebuttons[mousebstrafe];
+#else
 	bstrafe = mousebuttons[mousebstrafe]
 || joybuttons[joybstrafe];
 	if (bstrafe != dclickstate2 && dclicktime2 > 1 )
 	{
 		dclickstate2 = bstrafe;
+#endif
 		if (dclickstate2)
 			dclicks2++;
 		if (dclicks2 == 2)
@@ -356,7 +416,11 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	}
 	else
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		dclicktime2++;
+#else
 		dclicktime2 += ticdup;
+#endif
 		if (dclicktime2 > 20)
 		{
 			dclicks2 = 0;
@@ -364,11 +428,19 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 		}
 	}
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	cmd->forwardmove += mousey * 2048;
+	if (strafe)
+		side += mousex * 3072;
+	else
+		cmd->angleturn -= mousex << 19;
+#else
 	forward += mousey;
 	if (strafe)
 		side += mousex*2;
 	else
 		cmd->angleturn -= mousex*0x8;
+#endif
 
 	mousex = mousey = 0;
 
@@ -381,8 +453,13 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	else if (side < -MAXPLMOVE)
 		side = -MAXPLMOVE;
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#undef forward
+#undef side
+#else
 	cmd->forwardmove += forward;
 	cmd->sidemove += side;
+#endif
 
 //
 // special buttons
@@ -396,9 +473,16 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	if (sendsave)
 	{
 		sendsave = false;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		cmd->buttons = BT_SPECIAL | BTS_SAVEGAME | (savegameslot<<8);
+#else
 		cmd->buttons = BT_SPECIAL | BTS_SAVEGAME | (savegameslot<<BTS_SAVESHIFT);
+#endif
 	}
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	cmd->f_18 = G_CmdChecksum(cmd);
+#endif
 }
 
 
@@ -492,10 +576,12 @@ boolean G_Responder(event_t *ev)
 	}
     
 	// any other key pops up menu if in demos
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
-	if (gameaction == ga_nothing &&
+	if (
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
+		gameaction == ga_nothing &&
 #else
-	if (gameaction == ga_nothing && !singledemo &&
+		gameaction == ga_nothing && !singledemo &&
 #endif
 		(demoplayback || gamestate == GS_DEMOSCREEN) 
 		) 
@@ -649,7 +735,9 @@ void G_Ticker (void)
 //
 // get commands, check consistancy, and build new consistancy check
 //
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	buf = gametic&(BACKUPTICS-1);
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
 	buf = gametic%BACKUPTICS;
 #else
 	buf = (gametic/ticdup)%BACKUPTICS;
@@ -661,6 +749,11 @@ void G_Ticker (void)
 			cmd = &players[i].cmd;
 
 			memcpy (cmd, &netcmds[i][buf], sizeof(ticcmd_t));
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+			if (cmd->f_18 != G_CmdChecksum(cmd))
+				I_Error ("G_Ticker: failed cmd checksum!");
+#endif
 
 			if (demoplayback)
 				G_ReadDemoTiccmd (cmd);
@@ -680,12 +773,20 @@ void G_Ticker (void)
 			}
 #endif
 
-			if (netgame && !netdemo && !(gametic%ticdup) )
+			if (netgame && !netdemo
+#if (APPVER_DOOMREV >= AV_DR_DM12)
+				&& !(gametic%ticdup)
+#endif
+				)
 			{
 				if (gametic > BACKUPTICS
 				&& consistancy[i][buf] != cmd->consistancy)
 				{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+					I_Error ("consistency failure");
+#else
 					I_Error ("consistency failure (%i should be %i)",cmd->consistancy, consistancy[i][buf]);
+#endif
 				}
 				if (players[i].mo)
 					consistancy[i][buf] = players[i].mo->x;
@@ -721,8 +822,12 @@ void G_Ticker (void)
 					{
 						strcpy (savedescription, "NET GAME");
 					}
+#if (APPVER_DOOMREV < AV_DR_DM12)
+					savegameslot = players[i].cmd.buttons >> 8;
+#else
 					savegameslot =
 						(players[i].cmd.buttons & BTS_SAVEMASK)>>BTS_SAVESHIFT;
+#endif
 					gameaction = ga_savegame;
 					break;
 				}
@@ -890,10 +995,12 @@ boolean G_CheckSpot (int playernum, mapthing_t *mthing)
 		return false;
  
 // flush an old corpse if needed 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (bodyqueslot >= BODYQUESIZE) 
 		P_RemoveMobj (bodyque[bodyqueslot%BODYQUESIZE]); 
 	bodyque[bodyqueslot%BODYQUESIZE] = players[playernum].mo; 
 	bodyqueslot++; 
+#endif
 
 // spawn a teleport fog
 	ss = R_PointInSubsector (x,y);
@@ -902,7 +1009,9 @@ boolean G_CheckSpot (int playernum, mapthing_t *mthing)
 	mo = P_SpawnMobj (x+20*finecosine[an], y+20*finesine[an]
 	, ss->sector->floorheight, MT_TFOG);
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (players[consoleplayer].viewz != 1)
+#endif
 		S_StartSound (mo, sfx_telept);  // don't start sound on first frame
 
 	return true;
@@ -1276,20 +1385,25 @@ void G_LoadGame (char* name)
 	gameaction = ga_loadgame; 
 }
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #define VERSIONSIZE		16
+#endif
 
 void G_DoLoadGame(void)
 {
 	int length;
 	int i;
 	int a, b, c;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	char vcheck[VERSIONSIZE];
+#endif
 
 	gameaction = ga_nothing;
 
 	length = M_ReadFile(savename, &savebuffer);
 	save_p = savebuffer+SAVESTRINGSIZE;
 	// Skip the description field
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	memset(vcheck, 0, sizeof(vcheck));
 	sprintf(vcheck, "version %i", VERSION);
 	if (strcmp (save_p, vcheck))
@@ -1297,6 +1411,7 @@ void G_DoLoadGame(void)
 		return;
 	}
 	save_p += VERSIONSIZE;
+#endif
 	gameskill = *save_p++;
 	gameepisode = *save_p++;
 	gamemap = *save_p++;
@@ -1361,7 +1476,9 @@ void G_SaveGame(int slot, char *description)
 void G_DoSaveGame(void)
 {
 	char name[100];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	char name2[VERSIONSIZE];
+#endif
 	char *description;
 	int length;
 	int i;
@@ -1386,10 +1503,12 @@ void G_DoSaveGame(void)
 
 	memcpy(save_p, description, SAVESTRINGSIZE);
 	save_p += SAVESTRINGSIZE;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	memset (name2,0,sizeof(name2));
 	sprintf (name2,"version %i",VERSION);
 	memcpy (save_p, name2, VERSIONSIZE);
 	save_p += VERSIONSIZE;
+#endif
 
 	*save_p++ = gameskill;
 	*save_p++ = gameepisode;
@@ -1481,8 +1600,13 @@ void G_InitNew(skill_t skill, int episode, int map)
 	if (skill < sk_baby)
 		skill = sk_baby;
 #endif
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (skill > sk_hard)
+		skill = sk_hard;
+#else
 	if(skill > sk_nightmare)
 		skill = sk_nightmare;
+#endif
 #if (APPVER_DOOMREV < AV_DR_DM19UP)
 	if(episode < 1)
 		episode = 1;
@@ -1503,6 +1627,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 #endif
 		map = 9;
 	M_ClearRandom();
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if(skill == sk_nightmare || respawnparm)
 	{
 		respawnmonsters = true;
@@ -1532,6 +1657,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 		mobjinfo[MT_HEADSHOT].speed = 10*FRACUNIT;
 		mobjinfo[MT_TROOPSHOT].speed = 10*FRACUNIT;
 	}
+#endif
 
 
 	// Force players to be initialized upon first level load
@@ -1592,7 +1718,7 @@ void G_InitNew(skill_t skill, int episode, int map)
 //
 // give one null ticcmd_t
 //
-#if 0
+#if (APPVER_DOOMREV < AV_DR_DM12)
 	gametic = 0;
 	maketic = 1;
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1621,16 +1747,31 @@ void G_ReadDemoTiccmd (ticcmd_t *cmd)
 		G_CheckDemoStatus ();
 		return;
 	}
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	cmd->forwardmove = ((signed char)*demo_p++) * 900;
+	cmd->sidemove = ((signed char)*demo_p++) * 900;
+	cmd->angleturn = ((unsigned char)*demo_p++)<<24;
+	cmd->buttons = (unsigned char)*demo_p++;
+	cmd->f_18 = G_CmdChecksum(cmd);
+#else
 	cmd->forwardmove = ((signed char)*demo_p++);
 	cmd->sidemove = ((signed char)*demo_p++);
 	cmd->angleturn = ((unsigned char)*demo_p++)<<8;
 	cmd->buttons = (unsigned char)*demo_p++;
+#endif
 }
 
 void G_WriteDemoTiccmd (ticcmd_t *cmd)
 {
 	if (gamekeydown['q'])           // press q to end demo recording
 		G_CheckDemoStatus ();
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	*demo_p++ = cmd->forwardmove / 900;
+	*demo_p++ = cmd->sidemove / 900;
+	*demo_p++ = cmd->angleturn>>24;
+	*demo_p++ = cmd->buttons;
+	demo_p -= 4;
+#else
 	*demo_p++ = cmd->forwardmove;
 	*demo_p++ = cmd->sidemove;
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
@@ -1647,6 +1788,7 @@ void G_WriteDemoTiccmd (ticcmd_t *cmd)
 		G_CheckDemoStatus();
 		return;
 	}
+#endif
 #endif
 
 	G_ReadDemoTiccmd (cmd);         // make SURE it is exactly the same

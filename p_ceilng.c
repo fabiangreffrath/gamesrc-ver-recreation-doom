@@ -45,7 +45,7 @@ void T_MoveCeiling (ceiling_t *ceiling)
 		case 1:		// UP
 			res = T_MovePlane(ceiling->sector,ceiling->speed,
 					ceiling->topheight,false,1,ceiling->direction);
-			if(!(leveltime&7))
+			if(!(pleveltime&7))
 			{
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 				S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_stnmov);
@@ -79,7 +79,7 @@ void T_MoveCeiling (ceiling_t *ceiling)
 		case -1:	// DOWN
 			res = T_MovePlane(ceiling->sector,ceiling->speed,
 				ceiling->bottomheight,ceiling->crush,1,ceiling->direction);
-			if (!(leveltime&7))
+			if (!(pleveltime&7))
 			{
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 				S_StartSound((mobj_t *)&ceiling->sector->soundorg, sfx_stnmov);

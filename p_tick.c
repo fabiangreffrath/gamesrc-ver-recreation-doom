@@ -497,10 +497,12 @@ void P_UnArchiveSpecials (void)
 				memcpy (ceiling, save_p, sizeof(*ceiling));
 				save_p += sizeof(*ceiling);
 				ceiling->sector = &sectors[(int)ceiling->sector];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 				ceiling->sector->specialdata = T_MoveCeiling;
 #else
 				ceiling->sector->specialdata = ceiling;
+#endif
 #endif
 				if (ceiling->thinker.function)
 					ceiling->thinker.function = T_MoveCeiling;
@@ -514,10 +516,12 @@ void P_UnArchiveSpecials (void)
 				memcpy (door, save_p, sizeof(*door));
 				save_p += sizeof(*door);
 				door->sector = &sectors[(int)door->sector];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 				door->sector->specialdata = T_VerticalDoor;
 #else
 				door->sector->specialdata = door;
+#endif
 #endif
 				door->thinker.function = T_VerticalDoor;
 				P_AddThinker (&door->thinker);
@@ -529,10 +533,12 @@ void P_UnArchiveSpecials (void)
 				memcpy (floor, save_p, sizeof(*floor));
 				save_p += sizeof(*floor);
 				floor->sector = &sectors[(int)floor->sector];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 				floor->sector->specialdata = T_MoveFloor;
 #else
 				floor->sector->specialdata = floor;
+#endif
 #endif
 				floor->thinker.function = T_MoveFloor;
 				P_AddThinker (&floor->thinker);
@@ -544,10 +550,12 @@ void P_UnArchiveSpecials (void)
 				memcpy (plat, save_p, sizeof(*plat));
 				save_p += sizeof(*plat);
 				plat->sector = &sectors[(int)plat->sector];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 				plat->sector->specialdata = T_PlatRaise;
 #else
 				plat->sector->specialdata = plat;
+#endif
 #endif
 				if (plat->thinker.function)
 					plat->thinker.function = T_PlatRaise;
@@ -726,6 +734,10 @@ void P_Ticker (void)
 	if ( !netgame && menuactive && !demoplayback && players[consoleplayer].viewz != 1)
 		return;
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	leveltime++;	// for par times
+#endif
+
 	for (i=0 ; i<MAXPLAYERS ; i++)
 		if (playeringame[i])
 			P_PlayerThink (&players[i]);
@@ -736,5 +748,7 @@ void P_Ticker (void)
 	P_RespawnSpecials ();
 #endif
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	leveltime++;	// for par times
+#endif
 }

@@ -376,6 +376,7 @@ default_t defaults[] =
 	{"showmessages",&showMessages, 1},
 #endif
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	{"usegamma",&usegamma, 0},
 
 	{"chatmacro0", (int *) &chat_macros[0], (int) HUSTR_CHATMACRO0 },
@@ -388,6 +389,7 @@ default_t defaults[] =
 	{"chatmacro7", (int *) &chat_macros[7], (int) HUSTR_CHATMACRO7 },
 	{"chatmacro8", (int *) &chat_macros[8], (int) HUSTR_CHATMACRO8 },
 	{"chatmacro9", (int *) &chat_macros[9], (int) HUSTR_CHATMACRO9 }
+#endif
 };
 
 int numdefaults;
@@ -412,6 +414,13 @@ void M_SaveDefaults (void)
 
 	for (i=0 ; i<numdefaults ; i++)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		if (defaults[i].scantranslate)
+			v = defaults[i].untranslated;
+		else
+			v = *defaults[i].location;
+		fprintf (f,"%s\t\t%i\n",defaults[i].name,v);
+#else
 #ifdef __WATCOMC__
 		if (defaults[i].scantranslate)
 			defaults[i].location = &defaults[i].untranslated;
@@ -425,6 +434,7 @@ void M_SaveDefaults (void)
 			fprintf (f,"%s\t\t\"%s\"\n",defaults[i].name,
 			  * (char **) (defaults[i].location));
 		}
+#endif
 	}
 
 	fclose (f);
@@ -440,10 +450,12 @@ void M_SaveDefaults (void)
 */
 
 extern byte scantokey[128];
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 extern char *basedefault;
 #else
 extern char basedefault[];
+#endif
 #endif
 
 void M_LoadDefaults (void)
@@ -451,10 +463,15 @@ void M_LoadDefaults (void)
 	int     i, len;
 	FILE    *f;
 	char    def[80];
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	char        strparm[10];
+	int     parm;
+#else
 	char        strparm[100];
 	char    *newstring;
 	int     parm;
 	boolean     isstring;
+#endif
 
 //
 // set everything to base values
@@ -462,6 +479,10 @@ void M_LoadDefaults (void)
 	numdefaults = sizeof(defaults)/sizeof(defaults[0]);
 	for (i=0 ; i<numdefaults ; i++)
 		*defaults[i].location = defaults[i].defaultvalue;
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	mkdir("c:\\doomdata");
+#endif
 
 //
 // check for a custom default file
@@ -473,7 +494,11 @@ void M_LoadDefaults (void)
 		printf("	default file: %s\n", defaultfile);
 	}
 	else
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		defaultfile = "c:\\doomdata\\default.cfg";
+#else
 		defaultfile = basedefault;
+#endif
 
 //
 // read the file in, overriding any set defaults
@@ -483,9 +508,14 @@ void M_LoadDefaults (void)
 	{
 		while (!feof(f))
 		{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+			fscanf (f, "%79s %9s\n", def, strparm);
+#else
 			isstring = false;
 			if (fscanf (f, "%79s %[^\n]\n", def, strparm) == 2)
+#endif
 			{
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 			  if (strparm[0] == '"')
 			  {
 				// get a string default
@@ -495,18 +525,24 @@ void M_LoadDefaults (void)
 				strparm[len-1] = 0;
 				strcpy(newstring, strparm+1);
 			  }
-			  else if (strparm[0] == '0' && strparm[1] == 'x')
+			  else
+#endif
+			  if (strparm[0] == '0' && strparm[1] == 'x')
 				  sscanf(strparm+2, "%x", &parm);
 			  else
 				  sscanf(strparm, "%i", &parm);
 			  for (i=0 ; i<numdefaults ; i++)
 				  if (!strcmp(def, defaults[i].name))
 				  {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+					*defaults[i].location = parm;
+#else
 					  if (!isstring)
 						*defaults[i].location = parm;
 					  else
 						*defaults[i].location =
 						  (int) newstring;
+#endif
 					  break;
 				  }
 			}

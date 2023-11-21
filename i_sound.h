@@ -28,7 +28,9 @@ typedef enum
   snd_PC,
   snd_Adlib,
   snd_SB,
+#if (APPVER_DOOMREV >= AV_DR_DM12)
   snd_PAS,
+#endif
   snd_GUS,
   snd_MPU,
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)

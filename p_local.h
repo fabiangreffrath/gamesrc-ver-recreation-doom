@@ -225,7 +225,9 @@ extern line_t *ceilingline;
 
 boolean P_CheckPosition (mobj_t *thing, fixed_t x, fixed_t y);
 boolean P_TryMove (mobj_t *thing, fixed_t x, fixed_t y);
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 boolean P_TeleportMove (mobj_t *thing, fixed_t x, fixed_t y);
+#endif
 void	P_SlideMove (mobj_t *mo);
 boolean P_CheckSight (mobj_t *t1, mobj_t *t2);
 void 	P_UseLines (player_t *player);

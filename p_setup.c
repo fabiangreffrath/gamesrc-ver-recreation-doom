@@ -58,6 +58,11 @@ byte		*rejectmatrix;			// for fast sight rejection
 mapthing_t	deathmatchstarts[10], *deathmatch_p;
 mapthing_t	playerstarts[MAXPLAYERS];
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+fixed_t sintable[256];
+fixed_t costable[256];
+#endif
+
 /*
 =================
 =
@@ -573,7 +578,9 @@ void P_SetupLevel (int episode, int map, int playermask, skill_t skill)
 		players[i].killcount = players[i].secretcount 
 		= players[i].itemcount = 0;
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	players[consoleplayer].viewz = 1; // will be set by player think
+#endif
 	
 	S_Start ();			// make sure all sounds are stopped before Z_FreeTags
 	
@@ -590,6 +597,10 @@ else
 	
 	// W_Profile ();
 	P_InitThinkers ();
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	leveltime = 0;
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	// if working with a devlopment map, reload it
@@ -619,7 +630,9 @@ else
 	
 	lumpnum = W_GetNumForName (lumpname);
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	leveltime = 0;
+#endif
 	
 // note: most of this ordering is important	
 	P_LoadBlockMap (lumpnum+ML_BLOCKMAP);
@@ -635,7 +648,9 @@ else
 	rejectmatrix = W_CacheLumpNum (lumpnum+ML_REJECT,PU_LEVEL);
 	P_GroupLines ();
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	bodyqueslot = 0;
+#endif
 	deathmatch_p = deathmatchstarts;
 	P_LoadThings (lumpnum+ML_THINGS);
 
@@ -690,6 +705,15 @@ else
 
 void P_Init (void)
 {	
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	int i;
+	for (i = 0; i < 256; i++)
+	{
+		float ang = i * PI * 2.0 / 256.0;
+		sintable[i] = FRACUNIT * sin(ang);
+		costable[i] = FRACUNIT * cos(ang);
+	}
+#endif
 	P_InitSwitchList ();
 	P_InitPicAnims ();
 	R_InitSprites (sprnames);

@@ -26,6 +26,7 @@
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10;
 extern int _wp11, _wp12, _wp13, _wp14, _wp15, _wp16, _wp17, _wp18, _wp19;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 /*
 ===============
 =
@@ -57,6 +58,7 @@ void I_ShutdownTimer (void)
 	TSM_DelService(tsm_ID);
 	TSM_Remove();
 }
+#endif
 
 /*
  *
@@ -71,7 +73,9 @@ const char *dnames[] = {"None",
 			"PC_Speaker",
 			"Adlib",
 			"Sound_Blaster",
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 			"ProAudio_Spectrum16",
+#endif
 			"Gravis_Ultrasound",
 			"MPU",
 			//"AWE32"
@@ -88,6 +92,13 @@ const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
   'M', 'M', 'S', 'S', 'S'};
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+musicinfo_t *snd_mus = NULL;
+musicinfo_t *snd_mus2 = NULL;
+musiccache_t muscache[NUMMUSIC];
+sfxcache_t sfxcache[NUMSFX];
+#endif
+
 int snd_DesiredMusicDevice, snd_DesiredSfxDevice;
 int snd_MusicDevice,    // current music card # (index to dmxCodes)
 	snd_SfxDevice,      // current sfx card # (index to dmxCodes)
@@ -100,6 +111,245 @@ int     snd_Mport;                              // midi variables
 
 extern boolean  snd_MusicAvail, // whether music is available
 		snd_SfxAvail;   // whether sfx are available
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+void I_PauseSong(void)
+{
+	if (snd_mus)
+		MUS_PauseSong(snd_mus->cache->handle);
+}
+
+void I_ResumeSong(void)
+{
+	if (snd_mus)
+		MUS_ResumeSong(snd_mus->cache->handle);
+}
+
+void I_SetMusicVolume(int volume)
+{
+  MUS_SetMasterVolume(volume);
+}
+
+void I_SetSfxVolume(int volume)
+{
+  snd_MaxVolume = volume;
+}
+
+void I_SetMasterVolume(int volume)
+{
+	I_SetMusicVolume(volume);
+	I_SetSfxVolume(volume);
+}
+
+void I_GetMusicLumpNum(musicinfo_t *mus)
+{
+	char namebuf[9];
+	int i;
+	musiccache_t *cache;
+	sprintf(namebuf, "d_%s", mus->name);
+
+	i = mus - S_music;
+	cache = &muscache[i];
+	mus->cache = cache;
+	cache->lumpnum = W_GetNumForName(namebuf);
+	cache->handle = -1;
+}
+
+void I_StopSong(void)
+{
+	musiccache_t *cache;
+	if (snd_mus2)
+	{
+		cache = snd_mus2->cache;
+		if (MUS_QrySongPlaying(cache->handle))
+		{
+			if (MUS_StopSong(cache->handle) < 0)
+				fprintf(stderr, "could not stop song\n");
+		}
+		if (MUS_UnregisterSong(cache->handle) < 0)
+			fprintf(stderr, "could not un-register song\n");
+		cache->handle = -1;
+		snd_mus2 = NULL;
+	}
+	if (snd_mus)
+	{
+		cache = snd_mus->cache;
+		if (cache->handle != -1)
+		{
+			if (MUS_QrySongPlaying(cache->handle))
+			{
+				if (MUS_FadeOutSong(cache->handle, 1000) < 0)
+					fprintf(stderr, "could not fadeoutsong\n");
+			}
+		}
+		snd_mus2 = snd_mus;
+	}
+	snd_mus = NULL;
+}
+
+void I_RegisterSong(musicinfo_t *mus)
+{
+	musiccache_t* cache;
+	if (!mus->cache)
+		I_GetMusicLumpNum(mus);
+	cache = mus->cache;
+
+	if (cache->handle == -1)
+	{
+		cache->data = W_CacheLumpNum(cache->lumpnum, PU_MUSIC);
+		cache->handle = MUS_RegisterSong(cache->data);
+		if (cache->handle < 0)
+			fprintf(stderr, "could not register song\n");
+	}
+}
+
+void I_StartSongNoLoop(musicinfo_t *mus)
+{
+	musiccache_t* cache;
+	I_StopSong();
+	I_RegisterSong(mus);
+	cache = mus->cache;
+	if (MUS_ChainSong(cache->handle, -1) < 0)
+		fprintf(stderr, "could not chain song\n");
+
+	if (MUS_PlaySong(cache->handle, snd_MaxVolume) < 0)
+	{
+		fprintf(stderr, "interesting- no music\n");
+		return;
+	}
+	snd_mus = mus;
+}
+
+void I_StartSongLoop(musicinfo_t *mus)
+{
+	musiccache_t* cache;
+	if (snd_mus == mus)
+		return;
+	I_StopSong();
+	I_RegisterSong(mus);
+	cache = mus->cache;
+	if (MUS_ChainSong(cache->handle, cache->handle) < 0)
+		fprintf(stderr, "could not chain song\n");
+
+	if (MUS_PlaySong(cache->handle, snd_MaxVolume) < 0)
+	{
+		fprintf(stderr, "interesting- no music\n");
+		return;
+	}
+	snd_mus = mus;
+}
+
+void I_StartSong(musicinfo_t *mus, boolean looping)
+{
+	musiccache_t* cache;
+	musiccache_t* cache2;
+	if (mus == snd_mus)
+		return;
+	if (snd_mus2 && snd_mus2 != snd_mus)
+	{
+		cache = snd_mus2->cache;
+		if (MUS_UnregisterSong(cache->handle) < 0)
+			fprintf(stderr, "could not un-register song\n");
+		cache->handle = -1;
+	}
+	I_RegisterSong(mus);
+	cache = mus->cache;
+	if (looping)
+	{
+		if (MUS_ChainSong(cache->handle, cache->handle) < 0)
+			fprintf(stderr, "could not chain song\n");
+	}
+	else
+	{
+		if (MUS_ChainSong(cache->handle, -1) < 0)
+			fprintf(stderr, "could not unchain song\n");
+	}
+
+	if (snd_mus)
+	{
+		cache2 = snd_mus->cache;
+		if (cache2->handle != -1 && MUS_QrySongPlaying(cache2->handle))
+			MUS_StopSong(cache2->handle);
+		snd_mus2 = snd_mus;
+	}
+	else
+	{
+		if (MUS_PlaySong(cache->handle, snd_MaxVolume) < 0)
+			fprintf(stderr, "interesting- no music\n");
+	}
+	if (MUS_PlaySong(cache->handle, snd_MaxVolume) < 0)
+		fprintf(stderr, "interesting- no music\n");
+	snd_mus = mus;
+}
+
+void I_GetSfxLumpNum(sfxinfo_t *sfx)
+{
+	char namebuf[9];
+	int i;
+	sfxcache_t *cache;
+
+	namebuf[0] = 'd';
+
+	if (sfx->link)
+		sfx = sfx->link;
+
+	i = sfx - S_sfx;
+	cache = &sfxcache[i];
+	sfx->cache = cache;
+
+	strcpy(&namebuf[2], sfx->name);
+	namebuf[1] = snd_prefixen[snd_SfxDevice];
+
+	cache->lumpnum = W_GetNumForName(namebuf);
+	cache->data = NULL;
+}
+
+void I_StartSound(channel_t *channel, int vol, int sep, int pitch, int priority)
+{
+	sfxcache_t *cache;
+	int i;
+
+	cache = channel->sfxinfo->cache;
+	if (cache->lumpnum != -1)
+	{
+		cache->data = W_CacheLumpNum(cache->lumpnum, PU_STATIC);
+		if (!cache->data)
+			I_Error("could not cache sound lump");
+		i = channel->sfxinfo - S_sfx;
+		// hacks out certain PC sounds
+		if (snd_SfxDevice == snd_PC
+			&& ((i >= sfx_posact && i <= sfx_dmact)
+				|| i == sfx_dmpain
+				|| i == sfx_popain
+				|| i == sfx_sawidl))
+		{
+			channel->handle = -1;
+			return;
+		}
+		channel->handle = SFX_PlayPatch(cache->data, sep, pitch, vol, priority);
+	}
+	else
+		fprintf(stderr, "Bad lump number for sound\n");
+}
+
+void I_StopSound(channel_t *channel)
+{
+	if (channel->handle != -1 && SFX_Playing(channel->handle))
+		SFX_StopPatch(channel->handle);
+}
+
+int I_SoundIsPlaying(channel_t *channel)
+{
+	return SFX_Playing(channel->handle);
+}
+
+void I_UpdateSoundParams(channel_t *channel, int vol, int sep)
+{
+	if (SFX_Playing(channel->handle))
+		SFX_SetOrigin(channel->handle, sep, vol);
+}
+
+#else
 
 void I_PauseSong(int handle)
 {
@@ -257,6 +507,8 @@ void I_UpdateSoundParams(int handle, int vol, int sep, int pitch)
 }
 #endif
 
+#endif
+
 /*
  *
  *                                                      SOUND STARTUP STUFF
@@ -290,7 +542,11 @@ void I_sndArbitrateCards(void)
   if (M_CheckParm("-nomusic")) snd_MusicDevice = snd_none;
 
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  if (snd_MusicDevice == snd_SB)
+#else
   if (snd_MusicDevice == snd_SB || snd_MusicDevice == snd_PAS)
+#endif
 	snd_MusicDevice = snd_Adlib;
   if (snd_MusicDevice > snd_MPU)
 	snd_MusicDevice = snd_MPU;
@@ -340,11 +596,20 @@ void I_sndArbitrateCards(void)
   if (gus)
   {
 	if (devparm)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "GUS\n");
+#else
 	  printf("GUS\n");
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	fprintf(stderr, "GUS1\n");
 #endif
-	if (GF1_Detect()) printf("Dude.  The GUS ain't responding.\n");
+	if (GF1_Detect())
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		fprintf(stderr, "Dude.  The GUS ain't responding.\n");
+#else
+		printf("Dude.  The GUS ain't responding.\n");
+#endif
 	else
 	{
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
@@ -354,7 +619,9 @@ void I_sndArbitrateCards(void)
 	  else
 #endif
 	    dmxlump = W_GetNumForName("dmxgus");
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	  GF1_SetMap(W_CacheLumpNum(dmxlump, PU_CACHE), lumpinfo[dmxlump].size);
+#endif
 	}
 
   }
@@ -362,19 +629,31 @@ void I_sndArbitrateCards(void)
   {
 	if(devparm)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "cfg p=0x%x, i=%d, d=%d\n",
+#else
 	  printf("cfg p=0x%x, i=%d, d=%d\n",
+#endif
 	  snd_SBport, snd_SBirq, snd_SBdma);
 	}
 	if (SB_Detect(&snd_SBport, &snd_SBirq, &snd_SBdma, 0))
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "SB isn't responding at p=0x%x, i=%d, d=%d\n",
+#else
 	  printf("SB isn't responding at p=0x%x, i=%d, d=%d\n",
+#endif
 	  snd_SBport, snd_SBirq, snd_SBdma);
 	}
 	else SB_SetCard(snd_SBport, snd_SBirq, snd_SBdma);
 
 	if(devparm)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "SB_Detect returned p=0x%x,i=%d,d=%d\n",
+#else
 	  printf("SB_Detect returned p=0x%x,i=%d,d=%d\n",
+#endif
 	  snd_SBport, snd_SBirq, snd_SBdma);
 	}
   }
@@ -382,9 +661,17 @@ void I_sndArbitrateCards(void)
   if (adlib)
   {
 	if(devparm)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "Adlib\n");
+#else
 	  printf("Adlib\n");
+#endif
 	if (AL_Detect(&wait,0))
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "Dude.  The Adlib isn't responding.\n");
+#else
 	  printf("Dude.  The Adlib isn't responding.\n");
+#endif
 	else
 		AL_SetCard(wait, W_CacheLumpName("genmidi", PU_STATIC));
   }
@@ -392,12 +679,24 @@ void I_sndArbitrateCards(void)
   if (midi)
   {
 	if (devparm)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "Midi\n");
+#else
 	  printf("Midi\n");
+#endif
 	if (devparm)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "cfg p=0x%x\n", snd_Mport);
+#else
 	  printf("cfg p=0x%x\n", snd_Mport);
+#endif
 
 	if (MPU_Detect(&snd_Mport, &i))
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	  fprintf(stderr, "The MPU-401 isn't reponding @ p=0x%x.\n", snd_Mport);
+#else
 	  printf("The MPU-401 isn't reponding @ p=0x%x.\n", snd_Mport);
+#endif
 	else MPU_SetCard(snd_Mport);
   }
 
@@ -410,14 +709,20 @@ void I_StartupSound (void)
   int rc, i;
 
   if (devparm)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	fprintf(stderr, "I_StartupSound: forking sound daemon.\n");
+#else
 	printf("I_StartupSound: Hope you hear a pop.\n");
+#endif
 
   // initialize dmxCodes[]
   dmxCodes[0] = 0;
   dmxCodes[snd_PC] = AHW_PC_SPEAKER;
   dmxCodes[snd_Adlib] = AHW_ADLIB;
   dmxCodes[snd_SB] = AHW_SOUND_BLASTER;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
   dmxCodes[snd_PAS] = AHW_MEDIA_VISION;
+#endif
   dmxCodes[snd_GUS] = AHW_ULTRA_SOUND;
   dmxCodes[snd_MPU] = AHW_MPU_401;
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
@@ -439,24 +744,48 @@ void I_StartupSound (void)
 
   if (devparm)
   {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	printf("Music device #%d & dmxCode=%d\n", snd_MusicDevice,
+	  dmxCodes[snd_MusicDevice]);
+	printf("Sfx device #%d & dmxCode=%d\n", snd_SfxDevice,
+	  dmxCodes[snd_SfxDevice]);
+#else
 	printf("  Music device #%d & dmxCode=%d\n", snd_MusicDevice,
 	  dmxCodes[snd_MusicDevice]);
 	printf("  Sfx device #%d & dmxCode=%d\n", snd_SfxDevice,
 	  dmxCodes[snd_SfxDevice]);
+#endif
   }
 
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV >= AV_DR_DM12 && APPVER_DOOMREV < AV_DR_DM1666P)
   // inits sound library timer stuff
   I_StartupTimer();
 #endif
 
   // inits DMX sound library
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  if (snd_MusicDevice != snd_none || snd_SfxDevice != snd_none)
+  {
+	fprintf(stderr, "calling DMX_Init\n");
+	rc = DMX_Init(SND_TICRATE, SND_MAXSONGS, dmxCodes[snd_MusicDevice],
+		dmxCodes[snd_SfxDevice]);
+  }
+  else
+	  rc = 0;
+
+  snd_MusicAvail = ((dmxCodes[snd_MusicDevice] & rc) != 0) != 0;
+  snd_SfxAvail = ((dmxCodes[snd_SfxDevice] & rc) != 0) != 0;
+
+  if (devparm)
+	printf("DMX_Init() returned %d\n", rc);
+#else
   printf("  calling DMX_Init\n");
   rc = DMX_Init(SND_TICRATE, SND_MAXSONGS, dmxCodes[snd_MusicDevice],
 	dmxCodes[snd_SfxDevice]);
 
   if (devparm)
 	printf("  DMX_Init() returned %d\n", rc);
+#endif
 
 }
 
@@ -471,6 +800,9 @@ void I_ShutdownSound (void)
 	extern volatile int ticcount;
 	for (s=ticcount + 30; s != ticcount ; );
   }
+#endif
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  if (snd_MusicAvail || snd_SfxAvail)
 #endif
   DMX_DeInit();
 }

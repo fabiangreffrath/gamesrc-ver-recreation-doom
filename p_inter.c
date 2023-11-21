@@ -61,7 +61,11 @@ boolean P_GiveAmmo (player_t *player, ammotype_t ammo, int num)
 		num *= clipammo[ammo];
 	else
 		num = clipammo[ammo]/2;
-	if (gameskill == sk_baby || gameskill == sk_nightmare)
+	if (gameskill == sk_baby
+#if (APPVER_DOOMREV >= AV_DR_DM12)
+		|| gameskill == sk_nightmare
+#endif
+		)
 		num <<= 1;			// give double ammo in trainer mode, you'll need in nightmare
 		
 	oldammo = player->ammo[ammo];
@@ -733,7 +737,9 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 	int			saved;
 	player_t	*player;
 	fixed_t		thrust;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	int			temp;
+#endif
 		
 	if ( !(target->flags & MF_SHOOTABLE) )
 		return;						// shouldn't happen...
@@ -789,7 +795,11 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 			damage = target->health - 1;
 		}
 
-		if ( damage < 1000 && ((player->cheats&CF_GODMODE)
+		if (
+#if (APPVER_DOOMREV >= AV_DR_DM12)
+			damage < 1000 &&
+#endif
+			((player->cheats&CF_GODMODE)
 			|| player->powers[pw_invulnerability] ) )
 		{
 			return;
@@ -814,13 +824,17 @@ void P_DamageMobj (mobj_t *target, mobj_t *inflictor, mobj_t *source, int damage
 			player->health = 0;
 		player->attacker = source;
 		player->damagecount += damage;	// add damage after armor / invuln
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 		if (player->damagecount > 100)
 			player->damagecount = 100;	// teleport stomp does 10k points...
-	
+#endif
+
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 		temp = damage < 100 ? damage : 100;
 
 		if (player == &players[consoleplayer])
 			I_Tactile (40,10,40+temp*2);
+#endif
 	}
 
 //

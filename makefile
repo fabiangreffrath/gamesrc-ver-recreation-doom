@@ -23,13 +23,19 @@
 #
 # --------------------------------------------------------------------------
 
+!ifeq appver_exedef DM10
+CCOPTS = /dAPPVER_EXEDEF=$(appver_exedef) /omaxet /zp1 /ei /j /zq
+!else
 CCOPTS = /dAPPVER_EXEDEF=$(appver_exedef) /omaxet /zp1 /4r /ei /j /zq
+!endif
 
 !ifeq appver_exedef DM18FR
 GAMEVEROPTS = /DFRENCH
 !endif
 
-!ifeq appver_exedef DM12
+!ifeq appver_exedef DM10
+DMXVER=
+!else ifeq appver_exedef DM12
 DMXVER=rap10
 !else ifeq appver_exedef DM1666P
 DMXVER=dmx34af1
@@ -68,7 +74,6 @@ GLOBOBJS = &
  tables.obj &
  f_finale.obj &
  d_main.obj &
- d_net.obj &
  g_game.obj &
  m_menu.obj &
  m_misc.obj &
@@ -110,12 +115,23 @@ GLOBOBJS = &
  sounds.obj &
  dutils.obj
  
-!ifeq appver_exedef DM12
+!ifeq appver_exedef DM10
 INFOOBJS = &
+ i_pcnet.obj &
+ states.obj &
+ mobjinfo.obj
+!else ifeq appver_exedef DM12
+INFOOBJS = &
+ tables.obj &
+ d_net.obj &
+ p_sight.obj &
  states.obj &
  mobjinfo.obj
 !else
 INFOOBJS = &
+ tables.obj &
+ d_net.obj &
+ p_sight.obj &
  info.obj
 !endif
 
@@ -125,7 +141,9 @@ $(appver_exedef)\newdoom.exe : $(GLOBOBJS) $(INFOOBJS)
 !ifeq use_apodmx 1
  copy ..\..\audiolib\origlibs\109\AUDIO_WF.LIB .
 !endif
-!ifeq appver_exedef DM12
+!ifeq appver_exedef DM10
+ call ..\linkhl10.bat $(DMXLIBS)
+!else ifeq appver_exedef DM12
  call ..\linkhl12.bat $(DMXLIBS)
 !else
  call ..\linkhlpr.bat $(DMXLIBS)

@@ -536,7 +536,11 @@ void WI_updateDeathmatchStats(void)
     {
       if (playeringame[i])
       {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	for (i=0 ; i<MAXPLAYERS ; i++)
+#else
 	for (j=0 ; j<MAXPLAYERS ; j++)
+#endif
 	  if (playeringame[j])
 	    dm_frags[i][j] = plrs[i].frags[j];
 	dm_totals[i] = WI_fragSum(i);
@@ -697,7 +701,11 @@ void WI_initNetgameStats(void)
   {
     if (!playeringame[i])
       continue;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+    cnt_kills[i] = cnt_items[i] = cnt_secret[i] = cnt_frags[i] = -1;
+#else
     cnt_kills[i] = cnt_items[i] = cnt_secret[i] = cnt_frags[i] = 0;
+#endif
     dofrags += WI_fragSum(i);
   }
   dofrags = !!dofrags;
@@ -1315,6 +1323,18 @@ switch (state)
 
 void WI_initVariables(wbstartstruct_t *wbstartstruct)
 {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  acceleratestage = 0;
+  wbs = wbstartstruct;
+  cnt = bcnt = 0;
+  firstrefresh = 1;
+  me = wbs->pnum;
+  plrs = wbs->plyr;
+  if (!wbs->maxkills) wbs->maxkills = 1;
+  if (!wbs->maxitems) wbs->maxitems = 1;
+  if (!wbs->maxsecret) wbs->maxsecret = 1;
+  if (wbs->epsd > 2) wbs->epsd -= 3;
+#else
   wbs = wbstartstruct;
 
 #ifdef RANGECHECKING
@@ -1336,6 +1356,7 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
   RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
   RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
 #endif
+
   acceleratestage = 0;
   cnt = bcnt = 0;
   firstrefresh = 1;
@@ -1347,16 +1368,31 @@ void WI_initVariables(wbstartstruct_t *wbstartstruct)
 #if (APPVER_DOOMREV < AV_DR_DM19UP)
   if (wbs->epsd > 2) wbs->epsd -= 3;
 #endif
+#endif
 }
 
 void WI_Start(wbstartstruct_t *wbstartstruct)
 {
   WI_initVariables(wbstartstruct);
   WI_loadData();
+#if (APPVER_DOOMREV < AV_DR_DM12)
+  if (wbs->last != -1)
+  {
+      if (deathmatch)
+          WI_initDeathmatchStats();
+      else if (netgame)
+          WI_initNetgameStats();
+      else
+          WI_initStats();
+  }
+  else
+      WI_initShowNextLoc();
+#else
   if (deathmatch)
     WI_initDeathmatchStats();
   else if (netgame)
     WI_initNetgameStats();
   else
     WI_initStats();
+#endif
 }

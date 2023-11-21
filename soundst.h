@@ -46,6 +46,20 @@
 #define NA				0
 #define S_NUMCHANNELS		2
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+typedef struct
+{
+	int handle; // music handle once registered
+	int lumpnum; // lump number of music
+	void *data; // music data
+} musiccache_t;
+
+typedef struct
+{
+	char *name; // up to 6-character name
+	musiccache_t *cache;
+} musicinfo_t;
+#else
 typedef struct
 {
 	char *name; // up to 6-character name
@@ -53,7 +67,37 @@ typedef struct
 	void *data; // music data
 	int handle; // music handle once registered
 } musicinfo_t;
+#endif
 
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+
+typedef struct
+{
+	int lumpnum; // lump number of sfx
+	void *data; // sound data
+} sfxcache_t;
+
+typedef struct sfxinfo_s
+{
+	char *name; // up to 6-character name
+	int singularity; // Sfx singularity (only one at a time)
+	int priority; // Sfx priority
+	struct sfxinfo_s *link; // referenced sound if a link
+	int pitch; // pitch if a link
+	int volume; // volume if a link
+	sfxcache_t *cache;
+} sfxinfo_t;
+
+typedef struct
+{
+	sfxinfo_t *sfxinfo; // sound information (if null, channel avail.)
+	void *origin; // origin of sound
+	int f_8;
+	int handle; // handle of the sound being played
+} channel_t;
+
+#else
 typedef struct sfxinfo_s
 {
 	char *name; // up to 6-character name
@@ -73,6 +117,7 @@ typedef struct
 	void *origin; // origin of sound
 	int handle; // handle of the sound being played
 } channel_t;
+#endif
 
 
 
@@ -122,6 +167,24 @@ void S_Init(int,int);
 #define FREQ_NORM		0x80
 #define FREQ_HIGH		0xff
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+void I_PauseSong(void);
+void I_ResumeSong(void);
+void I_SetMusicVolume(int volume);
+void I_SetSfxVolume(int volume);
+void I_SetMasterVolume(int volume);
+void I_GetMusicLumpNum(musicinfo_t *mus);
+void I_StopSong(void);
+void I_RegisterSong(musicinfo_t *mus);
+void I_StartSongNoLoop(musicinfo_t *mus);
+void I_StartSongLoop(musicinfo_t *mus);
+void I_StartSong(musicinfo_t *mus, boolean looping);
+void I_GetSfxLumpNum(sfxinfo_t *sfx);
+void I_StartSound(channel_t *channel, int vol, int sep, int pitch, int priority);
+void I_StopSound(channel_t *channel);
+int I_SoundIsPlaying(channel_t *channel);
+void I_UpdateSoundParams(channel_t *channel, int vol, int sep);
+#else
 
 void I_SetMusicVolume(int volume);
 void I_SetSfxVolume(int volume);
@@ -184,6 +247,7 @@ void I_StopSound(int handle);
 // Called by S_*()'s to see if a channel is still playing.
 // Returns 0 if no longer playing, 1 if playing.
 int I_SoundIsPlaying(int handle);
+#endif
 
 
 // the complete set of sound effects

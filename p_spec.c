@@ -762,18 +762,18 @@ void P_PlayerInSpecialSector(player_t *player)
 	{
 		case 5:		// HELLSLIME DAMAGE
 			if (!player->powers[pw_ironfeet])
-				if (!(leveltime&0x1f))
+				if (!(pleveltime&0x1f))
 					P_DamageMobj (player->mo, NULL, NULL, 10);
 			break;
 		case 7:		// NUKAGE DAMAGE
 			if (!player->powers[pw_ironfeet])
-				if (!(leveltime&0x1f))
+				if (!(pleveltime&0x1f))
 					P_DamageMobj (player->mo, NULL, NULL, 5);
 			break;
 		case 16:	// SUPER HELLSLIME DAMAGE
 		case 4:		// STROBE HURT
 			if (!player->powers[pw_ironfeet] || (P_Random()<5) )
-				if (!(leveltime&0x1f))
+				if (!(pleveltime&0x1f))
 					P_DamageMobj (player->mo, NULL, NULL, 20);
 			break;
 			
@@ -784,7 +784,7 @@ void P_PlayerInSpecialSector(player_t *player)
 		case 11:	// EXIT SUPER DAMAGE! (for E1M8 finale)
 			player->cheats &= ~CF_GODMODE;
 
-			if (!(leveltime&0x1f))
+			if (!(pleveltime&0x1f))
 				P_DamageMobj (player->mo, NULL, NULL, 20);
 
 			if (player->health <= 10)
@@ -837,7 +837,7 @@ void P_UpdateSpecials (void)
 	{
 		for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
 		{
-			pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
+			pic = anim->basepic + ( (pleveltime/anim->speed + i)%anim->numpics );
 			if (anim->istexture)
 				texturetranslation[i] = pic;
 			else

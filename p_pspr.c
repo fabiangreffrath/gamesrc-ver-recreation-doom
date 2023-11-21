@@ -175,17 +175,24 @@ fixed_t	swingx, swingy;
 void P_CalcSwing (player_t *player)
 {
 	fixed_t	swing;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	int		angle;
+#endif
 
 // OPTIMIZE: tablify this
 
 	swing = player->bob;
-
+	
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	swingx = FixedMul ( swing, sintable[(gametic * 3) & 255]);
+	swingy = -FixedMul ( swing, sintable[(gametic * 3 + 128) & 255]);
+#else
 	angle = (FINEANGLES/70*leveltime)&FINEMASK;
 	swingx = FixedMul ( swing, finesine[angle]);
 
 	angle = (FINEANGLES/70*leveltime+FINEANGLES/2)&FINEMASK;
 	swingy = -FixedMul ( swingx, finesine[angle]);
+#endif
 }
 
 /*
@@ -370,10 +377,17 @@ void A_WeaponReady (player_t *player, pspdef_t *psp)
 //
 // bob the weapon based on movement speed
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	angle = (4*gametic)&255;
+	psp->sx = FRACUNIT + FixedMul (player->bob, costable[angle]);
+	angle &= 127;
+	psp->sy = WEAPONTOP + FixedMul (player->bob, sintable[angle]);
+#else
 	angle = (128*leveltime)&FINEMASK;
 	psp->sx = FRACUNIT + FixedMul (player->bob, finecosine[angle]);
 	angle &= FINEANGLES/2-1;
 	psp->sy = WEAPONTOP + FixedMul (player->bob, finesine[angle]);
+#endif
 }
 
 

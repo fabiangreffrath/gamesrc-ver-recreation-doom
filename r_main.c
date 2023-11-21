@@ -64,9 +64,11 @@ angle_t		xtoviewangle[SCREENWIDTH+1];
 
 // the finetangentgent[angle+FINEANGLES/4] table holds the fixed_t tangent
 // values for view angles, ranging from MININT to 0 to MAXINT.
-// fixed_t		finetangent[FINEANGLES/2];
+#if (APPVER_DOOMREV < AV_DR_DM12)
+fixed_t		finetangent[FINEANGLES/2];
 
-// fixed_t		finesine[5*FINEANGLES/4];
+fixed_t		finesine[5*FINEANGLES/4];
+#endif
 fixed_t		*finecosine = &finesine[FINEANGLES/4];
 
 
@@ -215,7 +217,11 @@ int	R_PointOnSegSide (fixed_t x, fixed_t y, seg_t *line)
 #define	DBITS		(FRACBITS-SLOPEBITS)
 
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int	tantoangle[SLOPERANGE+1];
+#else
 extern	int	tantoangle[SLOPERANGE+1];		// get from tables.c
+#endif
 
 // int	tantoangle[SLOPERANGE+1];
 
@@ -319,8 +325,7 @@ fixed_t	R_PointToDist (fixed_t x, fixed_t y)
 
 void R_InitPointToAngle (void)
 {
-// now getting from tables.c
-#if 0
+#if (APPVER_DOOMREV < AV_DR_DM12)
 	int	i;
 	long	t;
 	float	f;
@@ -402,8 +407,7 @@ fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
 
 void R_InitTables (void)
 {
-// now getting from tables.c
-#if 0
+#if (APPVER_DOOMREV < AV_DR_DM12)
 	int		i;
 	float		a, fv;
 	int			t;
@@ -786,11 +790,17 @@ void R_RenderPlayerView (player_t *player)
 	R_ClearDrawSegs ();
 	R_ClearPlanes ();
 	R_ClearSprites ();
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	NetUpdate ();					// check for new console commands
+#endif
 	R_RenderBSPNode (numnodes-1);	// the head node is the last node output
 	NetUpdate ();					// check for new console commands
 	R_DrawPlanes ();
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	NetUpdate ();					// check for new console commands
+#endif
 	R_DrawMasked ();
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	NetUpdate ();					// check for new console commands
+#endif
 }

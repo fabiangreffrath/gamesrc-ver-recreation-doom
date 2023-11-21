@@ -72,8 +72,10 @@ boolean tnt;
 #endif
 
 boolean devparm;            // started game with -devparm
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 boolean nomonsters;			// checkparm of -nomonsters
 boolean respawnparm;			// checkparm of -respawn
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 boolean fastparm;				// checkparm of -fastparm
 #endif
@@ -95,7 +97,9 @@ extern  boolean	inhelpscreens;
 skill_t startskill;
 int startepisode;
 int startmap;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 boolean autostart;
+#endif
 
 FILE *debugfile;
 
@@ -180,6 +184,465 @@ void D_ProcessEvents (void)
 		G_Responder(ev);
 	}
 }
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+
+#define	PL_DRONE	0x80				// bit flag in doomdata->player
+
+int numnetnodes;
+int nodeingame[MAXNETNODES];
+int nettics[MAXNETNODES];
+ticcmd_t localcmds[BACKUPTICS];
+ticcmd_t netcmds[MAXPLAYERS][BACKUPTICS];
+
+doomdata_t netbuffer;
+
+int gametime;
+int maketic;
+
+int int_632C8;
+
+int netnode;
+
+
+void SendPacket (void);
+void GetPackets (void);
+int GetPacket (void);
+void InitNetwork (void);
+
+extern int remotenetid;
+extern int localnetid;
+
+
+/*
+===============
+=
+= TryRunTics
+=
+===============
+*/
+
+void TryRunTics (void)
+{
+	int i;
+	int lowtic;
+	int entertic;
+
+	entertic = I_GetTime ();
+
+	do
+	{
+		NetUpdate ();
+		GetPackets ();
+
+		lowtic = MAXINT;
+		for (i=0 ; i<numnetnodes ; i++)
+			if (nodeingame[i] && nettics[i] < lowtic)
+				lowtic = nettics[i];
+
+		if (lowtic < gametic)
+			I_Error("TryRunTics: lowtic < gametic");
+
+		// don't stay in here forever -- give the menu a chance to work
+		if (I_GetTime () - entertic >= 20)
+		{
+			M_Ticker ();
+			return;
+		}
+
+	} while (lowtic == gametic);
+
+	if (netgame && lowtic == maketic && !drone)
+	{
+		int_632C8++;
+		if (int_632C8 > 4)
+		{
+			int_632C8 = 0;
+			gametime--;
+		}
+	}
+	else
+		int_632C8 = 0;
+
+	do
+	{
+		if (advancedemo)
+			D_DoAdvanceDemo ();
+		M_Ticker ();
+		G_Ticker ();
+		gametic++;
+		for (i = 0; i < numnetnodes; i++)
+			if (nodeingame[i])
+			{
+				if (nettics[i] < gametic)
+					I_Error("Run an improper tic");
+				if (nettics[i] == gametic)
+					break;
+			}
+	} while (i == numnetnodes);
+}
+
+/*
+=============
+=
+= NetUpdate
+=
+= Builds ticcmds for console player
+= sends out a packet
+=============
+*/
+
+void NetUpdate (void)
+{
+	int             nowtime;
+	int             newtics;
+
+	if (singletics)
+		return;         // singletic update is syncronous
+	
+//
+// drone packets
+//
+	if (drone)
+	{
+		I_StartTic ();
+		D_ProcessEvents( );
+
+		netbuffer.player = (drone << 7) | (consoleplayer << 5) | netnode;
+		netbuffer.tic = gametic + 8;
+		SendPacket ();
+		return;
+	}
+
+//
+// check time
+//
+	nowtime = I_GetTime ();
+	newtics = nowtime - gametime;
+	if (newtics <= 0)                       // nothing new to update
+		return;
+
+	gametime = nowtime;
+
+	while (newtics-- > 0)
+	{
+		I_StartTic ();
+		D_ProcessEvents ();
+
+		if (maketic - gametic >= 8)
+			break;
+		G_BuildTiccmd (&localcmds[maketic & (BACKUPTICS-1)]);
+		maketic++;
+	}
+
+//
+// send the packet to the other nodes
+//
+	netbuffer.player = (drone << 7) | (consoleplayer << 5) | netnode;
+	netbuffer.tic = maketic;
+	memcpy(netbuffer.cmds, localcmds, sizeof(localcmds));
+	SendPacket ();
+}
+
+
+/*
+===================
+=
+= GetPackets
+=
+===================
+*/
+
+char    exitmsg[80];
+
+void GetPackets (void)
+{
+	int		netdrone;
+	int		netconsole;
+	int		netnode;
+
+	while (GetPacket ())
+	{
+		netdrone = netbuffer.player & PL_DRONE;
+		netconsole = (netbuffer.player >> 5) & 3;
+		netnode = netbuffer.player & 31;
+		
+		//
+		// check for exiting the game
+		//
+		if (netbuffer.tic == -1)
+		{
+			if (!nodeingame[netnode])
+				continue;
+			nodeingame[netnode] = 0;
+			if (!netdrone)
+			{
+				playeringame[netconsole] = false;
+				strcpy (exitmsg, "Player 1 left the game");
+				exitmsg[7] += netconsole;
+				players[consoleplayer].message = exitmsg;
+			}
+			continue;
+		}
+
+		if (nettics[netnode] > netbuffer.tic)
+			continue;
+		if (netbuffer.tic > gametic + BACKUPTICS)
+			I_Error("GetPackets: netbuffer.tic > gametic + BACKUPTICS");
+		nettics[netnode] = netbuffer.tic;
+		if (!netdrone)
+			memcpy(netcmds[netconsole], netbuffer.cmds, sizeof(netcmds[netconsole]));
+	}
+}
+
+/*
+===================
+=
+= D_CheckNetGame
+=
+= Works out player numbers among the net participants
+===================
+*/
+
+extern	int			viewangleoffset;
+
+void D_CheckNetGame (void)
+{
+	int v88[32];
+	int v108[32];
+	int i;
+	int j;
+	int console;
+	int numplayers;
+	int nodes;
+	int dr;
+	event_t *ev;
+
+	i = M_CheckParm("-net");
+	if (!i || i > myargc - 2)
+	{
+		playeringame[0] = true;
+		nodeingame[0] = true;
+		netgame = false;
+		deathmatch = false;
+		displayplayer = 0;
+		consoleplayer = 0;
+		numnetnodes = 1;
+		return;
+	}
+
+	numnetnodes = myargv[i + 1][0] - '0';
+	if (numnetnodes < 1 || numnetnodes > 32)
+		I_Error("Invalid parameter: -net %s", myargv[i]);
+
+	viewangleoffset = 0;
+	consoleplayer = 0;
+	drone = false;
+	netgame = true;
+	printf("I_InitNetwork: Initializing network for %i node game.\n", numnetnodes);
+
+	i = M_CheckParm("-drone");
+	if (i && i < myargc - 1)
+	{
+		drone = true;
+		dr = myargv[i + 1][0] - '0';
+		displayplayer = dr;
+		consoleplayer = dr;
+		if (dr < 0 || dr >= numnetnodes)
+			I_Error("Invalid parameter: -watch %s", myargv[i]);
+
+		if (M_CheckParm("-right"))
+			viewangleoffset = -ANG90;
+		if (M_CheckParm("-left"))
+			viewangleoffset = ANG90;
+	}
+	else if (M_CheckParm("-right"))
+	{
+		drone = true;
+		displayplayer = 0;
+		consoleplayer = 0;
+		viewangleoffset = -ANG90;
+	}
+	else if (M_CheckParm("-left"))
+	{
+		drone = true;
+		displayplayer = 0;
+		consoleplayer = 0;
+		viewangleoffset = ANG90;
+	}
+
+	if (M_CheckParm("-deathmatch"))
+	{
+		printf("DEATHMATCH network mode enabled.\n");
+		deathmatch = true;
+	}
+	else
+		deathmatch = false;
+
+	memset(playeringame, 0, sizeof(playeringame));
+
+	InitNetwork();
+
+	nodes = 0;
+	numplayers = 0;
+
+	printf("Attempting to find all players for net play. Press ESC to exit.\n");
+	printf("looking for player...");
+
+	do
+	{
+		I_StartTic();
+		for ( ; eventtail != eventhead ; eventtail = (++eventtail)&(MAXEVENTS-1) )
+		{
+			ev = &events[eventtail];
+			if (ev->type == ev_keydown && ev->data1 == KEY_ESCAPE)
+				I_Error ("Network game synchronization aborted.");
+		}
+
+		while (GetPacket())
+		{
+			if (netbuffer.tic > 16)
+			{
+				I_Error ("\n===========================================================================\n"
+				"Can't start a network game on this port, one is in progress.\n"
+				"You can specify an alternate port with the -port parameter\n"
+				"===========================================================================\n");
+			}
+
+			for (i = 0; i < nodes; i++)
+			{
+				if (remotenetid == v88[i])
+					break;
+			}
+
+			if (i == nodes)
+				continue;
+
+			if (netbuffer.player & PL_DRONE)
+			{
+				printf("found a drone for player %i\n", (netbuffer.player >> 5) & 3);
+			}
+			else
+			{
+				printf("found a player!\n");
+				playeringame[numplayers++] = true;
+			}
+
+			for (i = 0; i < nodes; i++)
+			{
+				if (v88[i] > remotenetid)
+					break;
+			}
+			for (j = nodes; j > i; j--)
+			{
+				v88[j] = v88[j - 1];
+				v108[j] = v108[j - 1];
+			}
+			v88[i] = remotenetid;
+			v108[i] = netbuffer.player;
+			nodeingame[nodes++] = true;
+
+			if (i == 0 && netbuffer.tic == 0)
+			{
+				startepisode = netbuffer.cmds[0].forwardmove;
+				startmap = netbuffer.cmds[0].sidemove;
+				startskill = netbuffer.cmds[0].angleturn;
+				deathmatch = netbuffer.cmds[0].buttons;
+				if (netbuffer.cmds[0].consistancy != VERSION)
+				{
+					I_Error("===========================================================================\n"
+						"    All of the network players are not running the same VERSION of DOOM\n"
+						"===========================================================================\n");
+				}
+			}
+
+			if (nodes < numnetnodes)
+				printf("looking for player...");
+		}
+
+		I_WaitVBL(1);
+
+		netbuffer.player = (drone << 7) + (consoleplayer << 5);
+		netbuffer.tic = 0;
+		netbuffer.cmds[0].forwardmove = startepisode;
+		netbuffer.cmds[0].sidemove = startmap;
+		netbuffer.cmds[0].angleturn = startskill;
+		netbuffer.cmds[0].buttons = deathmatch;
+		netbuffer.cmds[0].consistancy = VERSION;
+
+		SendPacket();
+	} while (nodes < numnetnodes);
+
+	console = 0;
+
+	for (i = 0; i < numnetnodes; i++)
+	{
+		if (v108[i] & PL_DRONE)
+		{
+			dr = (v108[i] >> 5) & 3;
+			if (dr >= numplayers)
+				I_Error("A drone asked for player %i in a %i player game\n", dr, numplayers);
+
+			if (v88[i] == localnetid)
+			{
+				netnode = i;
+				displayplayer = dr;
+				consoleplayer = dr;
+			}
+		}
+		else
+		{
+			if (v88[i] == localnetid)
+			{
+				netnode = i;
+				displayplayer = console;
+				consoleplayer = console;
+			}
+
+			console++;
+		}
+	}
+
+	if (console != numplayers)
+		I_Error("Counted players != numplayers");
+
+	if (!drone)
+	{
+		printf("Console is player %i.\n", consoleplayer);
+	}
+	else if (viewangleoffset == ANG90)
+	{
+		printf("Left side drone for player %i.\n", displayplayer);
+	}
+	else if (viewangleoffset == ANG270)
+	{
+		printf("Right side drone for player %i.\n", displayplayer);
+	}
+	else
+	{
+		printf("Forward drone for player %i.\n", displayplayer);
+	}
+}
+
+void D_QuitNetGame(void)
+{
+	int i;
+
+	if (!netgame || !usergame || consoleplayer == -1)
+		return;
+
+	netbuffer.player = (drone << 7) | (consoleplayer << 5) | netnode;
+	netbuffer.tic = -1;
+
+	for (i = 0; i < 10; i++)
+	{
+		SendPacket();
+		I_WaitVBL(1);
+	}
+}
+
+
+#endif
 
 /*
 ================
@@ -384,6 +847,9 @@ void D_Display (void)
 
 void D_DoomLoop (void)
 {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	I_InitGraphics();
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	if (demorecording)
 		G_BeginRecording ();
@@ -398,7 +864,9 @@ void D_DoomLoop (void)
 #endif
 		debugfile = fopen (filename,"w");
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	I_InitGraphics ();
+#endif
 	while (1)
 	{
 		// frame syncronous IO operations
@@ -409,7 +877,11 @@ void D_DoomLoop (void)
 		{
 			I_StartTic ();
 			D_ProcessEvents ();
+#if (APPVER_DOOMREV < AV_DR_DM12)
+			G_BuildTiccmd (&netcmds[consoleplayer][maketic&(BACKUPTICS-1)]);
+#else
 			G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
+#endif
 			if (advancedemo)
 				D_DoAdvanceDemo ();
 			M_Ticker ();
@@ -570,7 +1042,9 @@ void D_DoAdvanceDemo (void)
 
 void D_StartTitle (void)
 {
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	gameaction = ga_nothing;
+#endif
 	demosequence = -1;
 	D_AdvanceDemo ();
 }
@@ -580,10 +1054,10 @@ void D_StartTitle (void)
 void tprintf(char *msg, int fgcolor, int bgcolor)
 {
 	union REGS regs;
+	int i;
 	byte attr;
 	int x;
 	int y;
-	int i;
 
 	attr = (bgcolor << 4) | fgcolor;
 	regs.h.ah = 3;
@@ -596,9 +1070,9 @@ void tprintf(char *msg, int fgcolor, int bgcolor)
 	{
 		regs.h.ah = 9;
 		regs.h.al = msg[i];
-		regs.w.cx = 1;
 		regs.h.bl = attr;
 		regs.h.bh = 0;
+		regs.w.cx = 1;
 		int386(0x10, &regs, &regs);
 		if (++x > 79)
 			x = 0;
@@ -723,8 +1197,14 @@ void D_CheckRecordFrom (void)
 ===============
 */
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+char *wadfiles[MAXWADFILES] = { "doom1.wad" };
+#else
 char *wadfiles[MAXWADFILES] = { "doom.wad" };
+#endif
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 char *basedefault = "default.cfg"; // default file
+#endif
 #endif
 
 void D_AddFile(char *file)
@@ -1015,6 +1495,9 @@ void D_DoomMain (void)
 	union REGS regs;
 	int p;
 	char file[256];
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	boolean autostart;
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	FindResponseFile ();
@@ -1116,11 +1599,19 @@ void D_DoomMain (void)
 
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 #define title file
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	sprintf (title,
+			 "                        "
+			 "DOOM Operating System v%4.2f"
+			 "                         ",
+			 VERSION/100.0);
+#else
 	sprintf (title,
 			 "                        "
 			 "DOOM Operating System v%i.%i"
 			 "                         ",
 			 VERSION/100,VERSION%100);
+#endif
 #endif
 
 	tprintf (title, FGCOLOR, BGCOLOR);
@@ -1135,8 +1626,10 @@ void D_DoomMain (void)
 	setbuf(stdout, NULL);
 	modifiedgame = false;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	nomonsters = M_CheckParm("-nomonsters");
 	respawnparm = M_CheckParm("-respawn");
+#endif
 	devparm = M_CheckParm("-devparm");
 #endif
 	
@@ -1146,8 +1639,12 @@ void D_DoomMain (void)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 	if (devparm)
 	{
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		printf ("Relocated address of D_DoomMain: 0x%p.\n", (int)D_DoomMain);
+#else
 		extern char __begtext;
 		printf ("program loaded at: 0x%p\n", &__begtext - 3);
+#endif
 	}
 #endif
 
@@ -1251,7 +1748,7 @@ void D_DoomMain (void)
 	startmap = 1;
 	autostart = false;
 
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV >= AV_DR_DM12 && APPVER_DOOMREV < AV_DR_DM1666P)
 	if (M_CheckParm("-deathmatch"))
 		deathmatch = true;
 #endif
@@ -1316,7 +1813,11 @@ void D_DoomMain (void)
 	M_LoadDefaults ();              // load before initing other systems
 	
 	printf ("Z_Init: Init zone memory allocation daemon. \n");
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	Z_Init (I_GetHeapSize());
+#else
 	Z_Init ();
+#endif
 	
 	printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
@@ -1393,12 +1894,14 @@ void D_DoomMain (void)
 	if (W_CheckNumForName("E2M1") != -1)
 	{
 		printf("\tcommercial version.\n");
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 		printf (
 			"===========================================================================\n"
 			"             This version is NOT SHAREWARE, do not distribute!\n"
 			"         Please report software piracy to the SPA: 1-800-388-PIR8\n"
 			"===========================================================================\n"
 		);
+#endif
 		shareware = false;
 	}
 	else

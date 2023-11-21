@@ -442,6 +442,49 @@ void P_NewChaseDir (mobj_t *actor)
 
 boolean P_LookForPlayers(mobj_t *actor, boolean allaround)
 {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	int			c;
+	int			stop;
+	int va;
+	player_t	*player;
+	sector_t	*sector;
+	angle_t		an;
+	fixed_t		dist;
+
+	sector = actor->subsector->sector;
+	c = P_Random() & 3;
+	stop = c;
+	va = 1;
+	for (; c != stop || va; c = (c+1)&3, va = 0)
+	{
+		if (!playeringame[c])
+			continue;
+
+		player = &players[c];
+		if (player->health <= 0)
+			continue;		// dead
+		if (!P_CheckSight (actor, player->mo))
+			continue;		// out of sight
+			
+		if (!allaround)
+		{
+			an = R_PointToAngle2 (actor->x, actor->y, 
+			player->mo->x, player->mo->y) - actor->angle;
+			if (an > ANG90 && an < ANG270)
+			{
+				dist = P_AproxDistance (player->mo->x - actor->x,
+					player->mo->y - actor->y);
+				// if real close, react anyway
+				if (dist > MELEERANGE)
+					continue;		// behind back
+			}
+		}
+
+		actor->target = player->mo;
+		return true;
+	}
+	return false;
+#else
 	int			c;
 	int			stop;
 	player_t	*player;
@@ -484,6 +527,7 @@ boolean P_LookForPlayers(mobj_t *actor, boolean allaround)
 		return true;
 	}
 	return false;
+#endif
 }
 
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
@@ -660,10 +704,12 @@ void A_Chase (mobj_t *actor)
 	if (actor->flags & MF_JUSTATTACKED)
 	{
 		actor->flags &= ~MF_JUSTATTACKED;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 		if (gameskill != sk_nightmare)
 #else
 		if (gameskill != sk_nightmare && !fastparm)
+#endif
 #endif
 			P_NewChaseDir (actor);
 		return;
@@ -685,7 +731,9 @@ void A_Chase (mobj_t *actor)
 //
 	if (actor->info->missilestate)
 	{
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		if (actor->movecount)
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
 		if (gameskill < sk_nightmare && actor->movecount)
 #else
 		if (gameskill < sk_nightmare && !fastparm && actor->movecount)

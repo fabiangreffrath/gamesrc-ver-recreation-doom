@@ -36,6 +36,9 @@ int	EV_Teleport( line_t *line, int side, mobj_t *thing )
 	thinker_t	*thinker;
 	sector_t	*sector;
 	fixed_t		oldx, oldy, oldz;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	int ret;
+#endif
 	
 	if (thing->flags & MF_MISSILE)
 		return 0;			// don't teleport missiles
@@ -63,13 +66,24 @@ int	EV_Teleport( line_t *line, int side, mobj_t *thing )
 				oldx = thing->x;
 				oldy = thing->y;
 				oldz = thing->z;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+				thing->flags |= MF_TELEPORT;
+				ret = P_TryMove(thing, m->x, m->y);
+				thing->flags &= ~MF_TELEPORT;
+				if (!ret)
+					return 0;
+#else
 				if (!P_TeleportMove (thing, m->x, m->y))
 					return 0;
+#endif
 #if (APPVER_DOOMREV != AV_DR_DM19F)
 				thing->z = thing->floorz;	//fixme: not needed?
 #endif
 				if (thing->player)
 					thing->player->viewz = thing->z+thing->player->viewheight;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+				thing->z = thing->floorz;
+#endif
 // spawn teleport fog at source and destination
 				fog = P_SpawnMobj (oldx, oldy, oldz, MT_TFOG);
 				S_StartSound (fog, sfx_telept);

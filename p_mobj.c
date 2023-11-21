@@ -105,7 +105,9 @@ void P_XYMovement (mobj_t *mo)
 {
 	fixed_t		ptryx, ptryy;
 	player_t	*player;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	fixed_t		xmove, ymove;
+#endif
 
 	if (!mo->momx && !mo->momy)
 	{
@@ -128,6 +130,29 @@ void P_XYMovement (mobj_t *mo)
 		mo->momy = MAXMOVE;
 	else if (mo->momy < -MAXMOVE)
 		mo->momy = -MAXMOVE;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	ptryx = mo->x + mo->momx;
+	ptryy = mo->y + mo->momy;
+	if (!P_TryMove(mo, ptryx, ptryy))
+	{	// blocked move
+		if (mo->player)
+		{	// try to slide along it
+			P_SlideMove (mo);
+		}
+		else if (mo->flags & MF_MISSILE)
+		{	// explode a missile
+			if(ceilingline && ceilingline->backsector
+				&& ceilingline->backsector->ceilingpic == skyflatnum)
+			{	// hack to prevent missiles exploding against the sky
+				P_RemoveMobj (mo);
+				return;
+			}
+			P_ExplodeMissile(mo);
+		}
+		else
+			mo->momx = mo->momy = 0;
+	}
+#else
 	xmove = mo->momx;
 	ymove = mo->momy;
 	do
@@ -165,6 +190,7 @@ void P_XYMovement (mobj_t *mo)
 				mo->momx = mo->momy = 0;
 		}
 	} while (xmove || ymove);
+#endif
 
 //
 // slow down
@@ -320,6 +346,7 @@ void P_ZMovement (mobj_t *mo)
 }
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 /*
 ================
 =
@@ -372,6 +399,7 @@ void P_NightmareRespawn (mobj_t *mobj)
 // remove the old monster
 	P_RemoveMobj (mobj);
 }
+#endif
 
 /*
 ================
@@ -414,6 +442,7 @@ void P_MobjThinker (mobj_t *mobj)
 			if (!P_SetMobjState (mobj, mobj->state->nextstate))
 				return;		// freed itself
 	}
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	else
 	{	// check for nightmare respawn
 		if (! (mobj->flags & MF_COUNTKILL) )
@@ -429,6 +458,7 @@ void P_MobjThinker (mobj_t *mobj)
 			return;
 		P_NightmareRespawn (mobj);
 	}
+#endif
 
 }
 
@@ -458,9 +488,13 @@ mobj_t *P_SpawnMobj (fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
     mobj->height = info->height;
     mobj->flags = info->flags;
     mobj->health = info->spawnhealth;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (gameskill != sk_nightmare)
+#endif
 		mobj->reactiontime = info->reactiontime;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	mobj->lastlook = P_Random () % MAXPLAYERS;
+#endif
 
 // do not set the state with P_SetMobjState, because action routines can't
 // be called yet
@@ -690,8 +724,10 @@ void P_SpawnMapThing (mapthing_t *mthing)
 		
 	if (gameskill == sk_baby)
 		bit = 1;
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	else if (gameskill == sk_nightmare)
 		bit = 4;
+#endif
 	else
 		bit = 1<<(gameskill-1);
 	if (!(mthing->options & bit) )
@@ -711,7 +747,8 @@ void P_SpawnMapThing (mapthing_t *mthing)
 // don't spawn keycards and players in deathmatch
 	if (deathmatch && mobjinfo[i].flags & MF_NOTDMATCH)
 		return;
-		
+
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 // don't spawn any monsters if -nomonsters
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 	if (nomonsters && (mobjinfo[i].flags & MF_COUNTKILL) )
@@ -719,6 +756,7 @@ void P_SpawnMapThing (mapthing_t *mthing)
 	if (nomonsters && ( i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)) )
 #endif
 		return;
+#endif
 		
 	
 // spawn it
@@ -730,7 +768,9 @@ void P_SpawnMapThing (mapthing_t *mthing)
 	else
 		z = ONFLOORZ;
 	mobj = P_SpawnMobj (x,y,z, i);
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	mobj->spawnpoint = *mthing;
+#endif
 	if (mobj->tics > 0)
 		mobj->tics = 1 + (P_Random () % mobj->tics);
 	if (mobj->flags & MF_COUNTKILL)
