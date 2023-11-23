@@ -9,7 +9,6 @@ option static
 debug all
 libpath %WATCOM%\lib386
 libpath %WATCOM%\lib386\dos
-lib noemu387.lib
 format os2 le
 name newdoom
 
