@@ -408,8 +408,8 @@ extern	int			viewangleoffset;
 
 void D_CheckNetGame (void)
 {
-	int v88[32];
-	int v108[32];
+	int netids[32];
+	int netplayer[32];
 	int i;
 	int j;
 	int console;
@@ -445,10 +445,8 @@ void D_CheckNetGame (void)
 	if (i && i < myargc - 1)
 	{
 		drone = true;
-		dr = myargv[i + 1][0] - '0';
-		displayplayer = dr;
-		consoleplayer = dr;
-		if (dr < 0 || dr >= numnetnodes)
+		consoleplayer = displayplayer = myargv[i + 1][0] - '0';
+		if (displayplayer < 0 || displayplayer >= numnetnodes)
 			I_Error("Invalid parameter: -watch %s", myargv[i]);
 
 		if (M_CheckParm("-right"))
@@ -483,11 +481,11 @@ void D_CheckNetGame (void)
 
 	InitNetwork();
 
-	nodes = 0;
-	numplayers = 0;
-
 	printf("Attempting to find all players for net play. Press ESC to exit.\n");
 	printf("looking for player...");
+
+	nodes = 0;
+	numplayers = 0;
 
 	do
 	{
@@ -511,7 +509,7 @@ void D_CheckNetGame (void)
 
 			for (i = 0; i < nodes; i++)
 			{
-				if (remotenetid == v88[i])
+				if (remotenetid == netids[i])
 					break;
 			}
 
@@ -530,16 +528,16 @@ void D_CheckNetGame (void)
 
 			for (i = 0; i < nodes; i++)
 			{
-				if (v88[i] > remotenetid)
+				if (netids[i] > remotenetid)
 					break;
 			}
 			for (j = nodes; j > i; j--)
 			{
-				v88[j] = v88[j - 1];
-				v108[j] = v108[j - 1];
+				netids[j] = netids[j - 1];
+				netplayer[j] = netplayer[j - 1];
 			}
-			v88[i] = remotenetid;
-			v108[i] = netbuffer.player;
+			netids[j] = remotenetid;
+			netplayer[j] = netbuffer.player;
 			nodeingame[nodes++] = true;
 
 			if (i == 0 && netbuffer.tic == 0)
@@ -577,13 +575,13 @@ void D_CheckNetGame (void)
 
 	for (i = 0; i < numnetnodes; i++)
 	{
-		if (v108[i] & PL_DRONE)
+		if (netplayer[i] & PL_DRONE)
 		{
-			dr = (v108[i] >> 5) & 3;
+			dr = (netplayer[i] >> 5) & 3;
 			if (dr >= numplayers)
 				I_Error("A drone asked for player %i in a %i player game\n", dr, numplayers);
 
-			if (v88[i] == localnetid)
+			if (netids[i] == localnetid)
 			{
 				netnode = i;
 				displayplayer = dr;
@@ -592,7 +590,7 @@ void D_CheckNetGame (void)
 		}
 		else
 		{
-			if (v88[i] == localnetid)
+			if (netids[i] == localnetid)
 			{
 				netnode = i;
 				displayplayer = console;
