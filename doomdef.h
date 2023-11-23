@@ -582,9 +582,11 @@ extern	doomdata_t		*netbuffer;		// points inside doomcom
 
 #define MAXEVENTS 64
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern event_t events[MAXEVENTS];
 extern int eventhead;
 extern int eventtail;
+#endif
 
 extern fixed_t finesine[5*FINEANGLES/4];
 extern fixed_t *finecosine;
@@ -678,7 +680,11 @@ extern	ticcmd_t	netcmds[MAXPLAYERS][BACKUPTICS];
 extern int ticdup;
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define	MAXNETNODES		32
+#else
 #define	MAXNETNODES		8
+#endif
 extern	ticcmd_t		localcmds[BACKUPTICS];
 extern int rndindex;
 extern int gametic, maketic;

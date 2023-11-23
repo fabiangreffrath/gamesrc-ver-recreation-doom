@@ -100,10 +100,16 @@ sfxcache_t sfxcache[NUMSFX];
 #endif
 
 int snd_DesiredMusicDevice, snd_DesiredSfxDevice;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int snd_MusicDevice,    // current music card # (index to dmxCodes)
+	snd_SfxDevice,      // current sfx card # (index to dmxCodes)
+	snd_MaxVolume;      // maximum volume for sound
+#else
 int snd_MusicDevice,    // current music card # (index to dmxCodes)
 	snd_SfxDevice,      // current sfx card # (index to dmxCodes)
 	snd_MaxVolume,      // maximum volume for sound
 	snd_MusicVolume;    // maximum volume for music
+#endif
 int dmxCodes[NUM_SCARDS]; // the dmx code for a given card
 
 int     snd_SBport, snd_SBirq, snd_SBdma;       // sound blaster variables

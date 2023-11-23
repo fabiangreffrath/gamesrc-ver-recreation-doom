@@ -73,8 +73,7 @@ typedef struct
 
 #define NUMPACKETS      10              // max outstanding packets before loss
 
-int ipx_cs;
-int ipx_ip;
+int ipx_ptr[2];
 
 localadr_t *localadr;
 
@@ -105,8 +104,8 @@ void ListenForPacket(ECB *ecb)
     dpmiregs.esi = (unsigned)(ecb) & 15;
     dpmiregs.es = (unsigned)(ecb) >> 4;
     dpmiregs.ebx = 4;
-    dpmiregs.ip = ipx_ip;
-    dpmiregs.cs = ipx_cs;
+    dpmiregs.ip = ipx_ptr[0];
+    dpmiregs.cs = ipx_ptr[1];
     DPMIInt(0x7a);
     if (dpmiregs.eax & 0xff)
         I_Error("ListenForPacket: 0x%x", dpmiregs.eax & 0xff);
@@ -119,8 +118,8 @@ void GetLocalAddress(void)
     dpmiregs.esi = (unsigned)(localadr) & 15;
     dpmiregs.es = (unsigned)(localadr) >> 4;
     dpmiregs.ebx = 9;
-    dpmiregs.ip = ipx_ip;
-    dpmiregs.cs = ipx_cs;
+    dpmiregs.ip = ipx_ptr[0];
+    dpmiregs.cs = ipx_ptr[1];
     DPMIInt(0x7a);
     if (dpmiregs.eax & 0xff)
         I_Error("Get inet addr: 0x%x", dpmiregs.eax & 0xff);
@@ -145,8 +144,8 @@ void InitNetwork(void)
     if ((dpmiregs.eax & 0xff) != 0xff)
         I_Error("IPX not detected\n");
 
-    ipx_ip = dpmiregs.edi & 0xffff;
-    ipx_cs = dpmiregs.es;
+    ipx_ptr[0] = dpmiregs.edi & 0xffff;
+    ipx_ptr[1] = dpmiregs.es;
 
     packets = I_AllocLow(sizeof(packet_t) * NUMPACKETS);
     i = M_CheckParm("-port");
@@ -236,8 +235,8 @@ void SendPacket (void)
     dpmiregs.esi = (unsigned)(&packets[0]) & 15;
     dpmiregs.es = (unsigned)(&packets[0]) >> 4;
     dpmiregs.ebx = 3;
-    dpmiregs.ip = ipx_ip;
-    dpmiregs.cs = ipx_cs;
+    dpmiregs.ip = ipx_ptr[0];
+    dpmiregs.cs = ipx_ptr[1];
     DPMIInt(0x7a);
     if (dpmiregs.eax & 0xff)
         I_Error("SendPacket: 0x%x", dpmiregs.eax & 0xff);

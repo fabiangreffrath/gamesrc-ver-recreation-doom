@@ -639,6 +639,8 @@ void D_QuitNetGame(void)
 	}
 }
 
+char unkbuffer[256];
+
 
 #endif
 

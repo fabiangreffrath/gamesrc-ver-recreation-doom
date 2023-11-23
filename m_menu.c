@@ -418,11 +418,17 @@ menu_t  ReadDef1 =
 	0
 };
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+// hack
+#define rdthsempty2 rdthsempty1
+#define read2_end read1_end
+#else
 enum
 {
 	rdthsempty2,
 	read2_end
 } read_e2;
+#endif
 
 menuitem_t ReadMenu2[]=
 {

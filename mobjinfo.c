@@ -776,7 +776,11 @@ sfx_None,		// deathsound
 100,		// mass
 0,		// damage
 sfx_None,		// activesound
+#if (APPVER_DOOMREV < AV_DR_DM12)
+MF_SPECIAL		// flags
+#else
 MF_SPECIAL|MF_NOTDMATCH		// flags
+#endif
  },
 
 {		// MT_MISC8
@@ -801,7 +805,11 @@ sfx_None,		// deathsound
 100,		// mass
 0,		// damage
 sfx_None,		// activesound
+#if (APPVER_DOOMREV < AV_DR_DM12)
+MF_SPECIAL		// flags
+#else
 MF_SPECIAL|MF_NOTDMATCH		// flags
+#endif
  },
 
 {		// MT_MISC9
@@ -826,7 +834,11 @@ sfx_None,		// deathsound
 100,		// mass
 0,		// damage
 sfx_None,		// activesound
+#if (APPVER_DOOMREV < AV_DR_DM12)
+MF_SPECIAL		// flags
+#else
 MF_SPECIAL|MF_NOTDMATCH		// flags
+#endif
  },
 
 {		// MT_MISC10
@@ -1001,7 +1013,11 @@ sfx_None,		// deathsound
 100,		// mass
 0,		// damage
 sfx_None,		// activesound
+#if (APPVER_DOOMREV < AV_DR_DM12)
+MF_SPECIAL|MF_COUNTITEM		// flags
+#else
 MF_SPECIAL		// flags
+#endif
  },
 
 {		// MT_MISC15

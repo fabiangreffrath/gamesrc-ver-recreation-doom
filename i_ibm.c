@@ -994,9 +994,7 @@ void I_ReadMouse (void)
 ============================================================================
 */
 
-#if (APPVER_DOOMREV < AV_DR_DM12)
-int joyx, joyy;
-#else
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 int     joyxl, joyxh, joyyl, joyyh;
 
 boolean WaitJoyButton (void)
@@ -1070,8 +1068,8 @@ void I_StartupJoystick (void)
 	}
 #if (APPVER_DOOMREV < AV_DR_DM12)
 	joystickpresent = true;
-	joyx = joystickx;
-	joyy = joysticky;
+	basejoyx = joystickx;
+	basejoyy = joysticky;
 	printf ("joystick found\n");
 #else
 	printf ("joystick found\n");
@@ -1124,15 +1122,15 @@ void I_JoystickEvents (void)
 	ev.data1 =  ((inp(0x201) >> 4)&15)^15;
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
-	if (joyx - joyx / 4 > joystickx)
+	if (basejoyx - basejoyx / 4 > joystickx)
 		ev.data2 = -1;
-	else if (joyx + joyx / 4 < joystickx)
+	else if (basejoyx + basejoyx / 4 < joystickx)
 		ev.data2 = 1;
 	else
 		ev.data2 = 0;
-	if (joyy - joyy / 4 > joysticky)
+	if (basejoyy - basejoyy / 4 > joysticky)
 		ev.data3 = -1;
-	else if (joyy + joyy / 4 < joysticky)
+	else if (basejoyy + basejoyy / 4 < joysticky)
 		ev.data3 = 1;
 	else
 		ev.data3 = 0;

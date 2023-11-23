@@ -22,7 +22,7 @@
 #if (APPVER_DOOMREV < AV_DR_DM12)
 static channel_t *channels; // the set of channels available
 static int snd_SfxVolume;
-static boolean mus_paused;	// whether songs are mus_paused
+static boolean mus_paused = false;	// whether songs are mus_paused
 int numChannels; // number of channels available
 boolean snd_SfxAvail, snd_MusicAvail;
 boolean snd_SfxEnable, snd_MusicEnable;

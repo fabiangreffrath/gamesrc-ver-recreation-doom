@@ -1132,6 +1132,9 @@ int cpars[32] =
 };
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+int g_unkvar;
+#endif
 
 /*
 ====================
