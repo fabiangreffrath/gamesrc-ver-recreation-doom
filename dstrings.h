@@ -329,14 +329,26 @@
 //	AM_map.C
 //
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define AMSTR_FOLLOWON	"Follow mode ON"
+#define AMSTR_FOLLOWOFF	"Follow mode OFF"
+
+#define AMSTR_GRIDON	"grid ON"
+#define AMSTR_GRIDOFF	"grid OFF"
+#else
 #define AMSTR_FOLLOWON	"Follow Mode ON"
 #define AMSTR_FOLLOWOFF	"Follow Mode OFF"
 
 #define AMSTR_GRIDON	"Grid ON"
 #define AMSTR_GRIDOFF	"Grid OFF"
+#endif
 
 #define AMSTR_MARKEDSPOT	"Marked Spot"
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define AMSTR_MARKSCLEARED	"All marks cleared"
+#else
 #define AMSTR_MARKSCLEARED	"All Marks Cleared"
+#endif
 
 //
 //	ST_stuff.C
@@ -344,14 +356,26 @@
 
 #define STSTR_MUS		"Music Change"
 #define STSTR_NOMUS		"IMPOSSIBLE SELECTION"
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define STSTR_DQDON		"Degreelessness mode ON"
+#define STSTR_DQDOFF	"Degreelessness mode OFF"
+
+#define STSTR_KFAADDED	"Very Happy Ammo ADDED"
+#else
 #define STSTR_DQDON		"Degreelessness Mode On"
 #define STSTR_DQDOFF	"Degreelessness Mode Off"
 
 #define STSTR_KFAADDED	"Very Happy Ammo Added"
+#endif
 #define STSTR_FAADDED	"Ammo (no keys) Added"
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define STSTR_NCON		"No Clipping mode ON"
+#define STSTR_NCOFF		"No Clipping mode OFF"
+#else
 #define STSTR_NCON		"No Clipping Mode ON"
 #define STSTR_NCOFF		"No Clipping Mode OFF"
+#endif
 
 #define STSTR_BEHOLD	"inVuln, Str, Inviso, Rad, Allmap, or Lite-amp"
 #if (APPVER_DOOMREV < AV_DR_DM12)
@@ -360,8 +384,13 @@
 #define STSTR_BEHOLDX	"Power-up Toggled"
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define STSTR_CHOPPERS	"doesn't suck - GM"
+#define STSTR_CLEV		"changing level"
+#else
 #define STSTR_CHOPPERS	"... doesn't suck - GM"
 #define STSTR_CLEV		"Changing Level..."
+#endif
 
 //
 //	F_Finale.C

@@ -56,7 +56,9 @@ musicinfo_t S_music[] =
 	{ "intro", 0 },
 	{ "bunny", 0 },
 	{ "victor", 0 },
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	{ "introa", 0 },
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	{ "runnin", 0 },
 	{ "stalks", 0 },

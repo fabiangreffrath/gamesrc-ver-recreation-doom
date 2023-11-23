@@ -119,7 +119,11 @@ extern byte *destview, *destscreen;	// PC direct to screen pointers
 #if APPVER_CHEX
 #define	SAVEGAMENAME "chexsav"
 #else
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define	SAVEGAMENAME "c:\\doomdata\\doomsav"
+#else
 #define	SAVEGAMENAME "doomsav"
+#endif
 #endif
 
 /*

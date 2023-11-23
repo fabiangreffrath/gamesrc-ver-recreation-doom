@@ -579,7 +579,7 @@ void D_CheckNetGame (void)
 		{
 			dr = (netplayer[i] >> 5) & 3;
 			if (dr >= numplayers)
-				I_Error("A drone asked for player %i in a %i player game\n", dr, numplayers);
+				I_Error("A drone asked for player %i in a %i player game", dr, numplayers);
 
 			if (netids[i] == localnetid)
 			{
@@ -1197,6 +1197,7 @@ void D_CheckRecordFrom (void)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 #if (APPVER_DOOMREV < AV_DR_DM12)
 char *wadfiles[MAXWADFILES] = { "doom1.wad" };
+char *basewart = "E1M1.wad";
 #else
 char *wadfiles[MAXWADFILES] = { "doom.wad" };
 #endif

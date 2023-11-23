@@ -72,6 +72,7 @@ boolean messageNeedsInput;
 
 void (*messageRoutine)(int response);
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 char gammamsg[5][26] =
 {
 	GAMMALVL0,
@@ -80,6 +81,7 @@ char gammamsg[5][26] =
 	GAMMALVL3,
 	GAMMALVL4
 };
+#endif
 
 char endmsg[8][80] =
 {

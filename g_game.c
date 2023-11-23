@@ -134,7 +134,7 @@ int             joybspeed;
 #if (APPVER_DOOMREV < AV_DR_DM12)
 fixed_t         forwardmove[2] = {0xc800, 0x19000};
 fixed_t         sidemove[2] = {0xc000, 0x14000};
-fixed_t         angleturn[3] = {0x2800000, 0x5000000, 0x1400000};     // + slow turn
+fixed_t         angleturn[4] = {0x2800000, 0x5000000, 0x1400000};     // + slow turn
 #else
 fixed_t         forwardmove[2] = {0x19, 0x32};
 fixed_t         sidemove[2] = {0x18, 0x28};

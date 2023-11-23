@@ -22,6 +22,7 @@ extern int _wp10, _wp11, _wp12;
 #include "HU_lib.h"
 #include "HU_stuff.h"
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 char *chat_macros[] =
 {
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
@@ -48,6 +49,7 @@ char *chat_macros[] =
 	HUSTR_CHATMACRO9
 #endif
 };
+#endif
 
 char *player_names[] =
 {
