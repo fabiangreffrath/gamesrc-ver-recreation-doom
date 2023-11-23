@@ -300,7 +300,9 @@ int WI_drawNum (int x, int y, int n, int digits)
         x -= SHORT(num[0]->width);
         
         V_DrawPatch(x, y, FB, num[ v ]);
+#if (APPVER_DOOMREV >= AV_DR_DM12)
         if (digits)
+#endif
             digits--;
     }
     return x;

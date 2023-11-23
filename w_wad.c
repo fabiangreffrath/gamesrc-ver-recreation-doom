@@ -324,8 +324,10 @@ void W_Reload (void)
 */
 
 void W_InitMultipleFiles (char **filenames)
-{	
+{
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 	int		size;
+#endif
 	
 //
 // open all the files, load headers, and count lumps
@@ -342,13 +344,15 @@ void W_InitMultipleFiles (char **filenames)
 //
 // set up caching
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	lumpcache = calloc (numlumps, 4);
+#else
 	size = numlumps * sizeof(*lumpcache);
 	lumpcache = malloc (size);
-#if (APPVER_DOOMREV >= AV_DR_DM12)
 	if (!lumpcache)
 		I_Error ("Couldn't allocate lumpcache");
-#endif
 	memset (lumpcache,0, size);
+#endif
 }
 
 

@@ -1733,6 +1733,7 @@ void A_BossDeath (mobj_t *mo)
 #endif // APPVER_DOOMREV
 	}
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 //
 // make sure there is a player alive for victory
 //
@@ -1742,6 +1743,7 @@ void A_BossDeath (mobj_t *mo)
     
 	if (i==MAXPLAYERS)
 		return;	// no one left alive, so do not end game
+#endif
     
 //
 // scan the remaining thinkers to see if all bosses are dead

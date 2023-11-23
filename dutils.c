@@ -251,7 +251,12 @@ int wipe_initMelt(int width, int height, int ticks)
   y[0] = -(M_Random()%16);
   for (i=1;i<width;i++)
   {
+#if (APPVER_DOOMREV < AV_DR_DM12)
+    r = M_Random()%3;
+    r = (r == 1) * -1 + (r == 2);
+#else
     r = (M_Random()%3) - 1;
+#endif
     y[i] = y[i-1] + r;
     if (y[i] > 0) y[i] = 0;
     else if (y[i] == -16) y[i] = -15;
