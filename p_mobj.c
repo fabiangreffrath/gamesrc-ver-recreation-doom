@@ -33,7 +33,9 @@ void P_SpawnMapThing (mapthing_t *mthing);
 = Returns true if the mobj is still present
 ===============
 */
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 int test;
+#endif
 
 boolean P_SetMobjState (mobj_t *mobj, statenum_t state)
 {

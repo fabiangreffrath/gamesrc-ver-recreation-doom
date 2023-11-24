@@ -51,7 +51,11 @@
 #define	FGCOLOR		8
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5;
+#else
 extern int _wp1, _wp2, _wp3, _wp4;
+#endif
 
 #define MAXWADFILES 20
 #if (APPVER_DOOMREV >= AV_DR_DM1666P)
@@ -115,7 +119,9 @@ char basedefault[1024]; // default file
 #endif
 
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 void D_CheckNetGame(void);
+#endif
 void D_ProcessEvents(void);
 void G_BuildTiccmd(ticcmd_t *cmd);
 void D_DoAdvanceDemo(void);
@@ -123,6 +129,37 @@ void D_PageDrawer (void);
 void D_AdvanceDemo (void);
 void F_Drawer(void);
 boolean F_Responder(event_t *ev);
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+
+#define	PL_DRONE	0x80				// bit flag in doomdata->player
+
+int nodeingame[MAXNETNODES];
+int nettics[MAXNETNODES];
+ticcmd_t localcmds[BACKUPTICS];
+ticcmd_t netcmds[MAXPLAYERS][BACKUPTICS];
+
+doomdata_t netbuffer;
+
+#define netnode netnode_eaj
+
+int netnode;
+
+#define int_632C8 int_632C8_eai
+
+int int_632C8;
+
+int gametime;
+int maketic;
+
+int numnetnodes;
+
+
+void SendPacket(void);
+void GetPackets(void);
+int GetPacket(void);
+void InitNetwork(void);
+#endif
 
 /*
 ===============================================================================
@@ -186,32 +223,6 @@ void D_ProcessEvents (void)
 }
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
-
-#define	PL_DRONE	0x80				// bit flag in doomdata->player
-
-int numnetnodes;
-int nodeingame[MAXNETNODES];
-int nettics[MAXNETNODES];
-ticcmd_t localcmds[BACKUPTICS];
-ticcmd_t netcmds[MAXPLAYERS][BACKUPTICS];
-
-doomdata_t netbuffer;
-
-int gametime;
-int maketic;
-
-int int_632C8;
-
-int netnode;
-
-
-void SendPacket (void);
-void GetPackets (void);
-int GetPacket (void);
-void InitNetwork (void);
-
-extern int remotenetid;
-extern int localnetid;
 
 
 /*
@@ -481,11 +492,11 @@ void D_CheckNetGame (void)
 
 	InitNetwork();
 
-	printf("Attempting to find all players for net play. Press ESC to exit.\n");
-	printf("looking for player...");
-
 	nodes = 0;
 	numplayers = 0;
+
+	printf("Attempting to find all players for net play. Press ESC to exit.\n");
+	printf("looking for player...");
 
 	do
 	{
@@ -560,8 +571,8 @@ void D_CheckNetGame (void)
 
 		I_WaitVBL(1);
 
-		netbuffer.player = (drone << 7) + (consoleplayer << 5);
 		netbuffer.tic = 0;
+		netbuffer.player = (drone << 7) + (consoleplayer << 5);
 		netbuffer.cmds[0].forwardmove = startepisode;
 		netbuffer.cmds[0].sidemove = startmap;
 		netbuffer.cmds[0].angleturn = startskill;
@@ -1000,8 +1011,12 @@ void D_DoAdvanceDemo (void)
 			G_DeferedPlayDemo ("demo2");
 			break;
 		case 4:
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			pagetic = 200;
 			gamestate = GS_DEMOSCREEN;
-#if (APPVER_DOOMREV >= AV_DR_DM1666P)
+			pagename = "HELP2";
+#else
+			gamestate = GS_DEMOSCREEN;
 			if ( commercial )
 			{
 				pagetic = 35 * 11;
@@ -1009,7 +1024,6 @@ void D_DoAdvanceDemo (void)
 				S_StartMusic(mus_dm2ttl);
 			}
 			else
-#endif
 			{
 				pagetic = 200;
 #if (APPVER_DOOMREV < AV_DR_DM19U)
@@ -1018,6 +1032,7 @@ void D_DoAdvanceDemo (void)
 				pagename = "CREDIT";
 #endif
 			}
+#endif
 			break;
 		case 5:
 			G_DeferedPlayDemo ("demo3");
@@ -1079,8 +1094,8 @@ void tprintf(char *msg, int fgcolor, int bgcolor)
 
 		regs.h.ah = 2;
 		regs.h.bh = 0;
-		regs.h.dl = x;
 		regs.h.dh = y;
+		regs.h.dl = x;
 		int386(0x10, &regs, &regs);
 	}
 }

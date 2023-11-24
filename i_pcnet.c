@@ -73,18 +73,18 @@ typedef struct
 
 #define NUMPACKETS      10              // max outstanding packets before loss
 
-int ipx_ptr[2];
+unsigned int ipx_ptr[2];
 
 localadr_t *localadr;
 
 packet_t *packets;
 
-int localnetid;
-int remotenetid;
-
 int socketid = 0x869c;
 
 boolean gotpacket;
+
+int localnetid;
+int remotenetid;
 
 int OpenSocket(short a1)
 {
@@ -158,7 +158,7 @@ void InitNetwork(void)
 //
 // allocate a socket for sending and receiving
 //
-    id = OpenSocket ( ((socketid&255)<<8) + (socketid>>8) );
+    id = OpenSocket ( (socketid>>8) + ((socketid&255)<<8) );
 
     GetLocalAddress();
 

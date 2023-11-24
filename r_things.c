@@ -64,7 +64,11 @@ short	screenheightarray[SCREENWIDTH];
 spritedef_t		*sprites;
 int				numsprites;
 
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+spriteframe_t	sprtemp[26];
+#else
 spriteframe_t	sprtemp[29];
+#endif
 int				maxframe;
 char			*spritename;
 

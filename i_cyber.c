@@ -264,9 +264,9 @@ void I_ReadCyberCmd (ticcmd_t *cmd)
 	else
 	{
 		if (cyberstat->x < -7900)
-			cmd->angleturn = 0x280000;
+			cmd->angleturn = 0x2800000;
 		else if (cyberstat->x > 7900)
-			cmd->angleturn = -0x280000;
+			cmd->angleturn = -0x2800000;
 		else
 			cmd->angleturn = -delta*0xa000;
 

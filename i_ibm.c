@@ -25,7 +25,17 @@
 #include "DoomDef.h"
 #include "R_local.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+extern int _wp7, _wp8, _wp9, _wp10, _wp11, _wp12;
+extern int _wp13, _wp14, _wp15;
+//extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+//extern int _wp7, _wp8, _wp9, _wp10, _wp11, _wp12;
+//extern int _wp13, _wp14, _wp15, _wp16, _wp17, _wp18;
+//extern int _wp19, _wp20, _wp21, _wp22, _wp23, _wp24;
+#else
 extern int _wp1, _wp2;
+#endif
 
 #define DPMI_INT 0x31
 //#define NOKBD
@@ -672,16 +682,22 @@ void   I_StartTic (void)
 
 		// extended keyboard shift key bullshit
 #if (APPVER_DOOMREV < AV_DR_DM12)
-		if ( (k&0x7f)==KEY_RSHIFT )
+		if ( (k&0x7f)==SC_LSHIFT )
+		{
+			if ( kbdtail < kbdhead && keyboardque[kbdtail&(KBDQUESIZE-1)]==0xe0 )
+				continue;
+			k &= 0x80;
+			k |= SC_RSHIFT;
+		}
 #else
 		if ( (k&0x7f)==SC_LSHIFT || (k&0x7f)==SC_RSHIFT )
-#endif
 		{
 			if ( keyboardque[(kbdtail-2)&(KBDQUESIZE-1)]==0xe0 )
 				continue;
 			k &= 0x80;
 			k |= SC_RSHIFT;
 		}
+#endif
 
 		if (k==0xe0)
 			continue;               // special / pause keys
@@ -818,6 +834,8 @@ void I_ShutdownTimer (void)
 	TSM_DelService(tsm_ID);
 	TSM_Remove();
 }
+
+extern int __wp1, __wp2, __wp3;
 #endif
 
 /*

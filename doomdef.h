@@ -512,8 +512,6 @@ typedef struct
 	ticcmd_t	cmds[BACKUPTICS];
 } doomdata_t;
 
-extern doomdata_t netbuffer;
-
 #else
 
 #define		BACKUPTICS		12		// CHANGED FROM 12 !?!?
@@ -601,7 +599,9 @@ extern boolean paused;
 
 extern boolean usergame;
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern int _dp1, _dp2, _dp3, _dp4, _dp5, _dp6, _dp7; // align for d_main.c
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM12)
 extern boolean nomonsters; // checkparm of -nomonsters
@@ -626,9 +626,11 @@ extern boolean tnt;
 
 extern boolean devparm; // started game with -devparm
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern int _gp1, _gp2, _gp3, _gp4, _gp5, _gp6, _gp7, _gp8; // align for g_game.c
 extern int _gp9, _gp10, _gp11, _gp12, _gp13, _gp14, _gp15, _gp16; // align for g_game.c
 extern int _gp17, _gp18; // align for g_game.c
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM18FR)
 extern int _gp19;
@@ -690,6 +692,13 @@ extern int rndindex;
 extern int gametic, maketic;
 extern	int        	nettics[MAXNETNODES];
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern doomdata_t netbuffer;
+
+extern int localnetid;
+extern int remotenetid;
+#endif
+
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 #define SAVEGAMESIZE 0x20000
 #else
@@ -721,9 +730,11 @@ extern byte *screens[4]; // off screen work buffer, from V_video.c
 extern byte *screens[5]; // off screen work buffer, from V_video.c
 #endif
 
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern int _dp8, _dp9, _dp10, _dp11; // align for d_main.c
+#endif
 
-#if (APPVER_DOOMREV < AV_DR_DM18FR)
+#if (APPVER_DOOMREV >= AV_DR_DM12 && APPVER_DOOMREV < AV_DR_DM18FR)
 extern int _dp12;
 #endif
 
@@ -746,10 +757,10 @@ extern char basedefault[1024];
 extern FILE *debugfile;
 #if (APPVER_DOOMREV >= AV_DR_DM12)
 extern int bodyqueslot;
-#endif
 extern skill_t startskill;
 extern int startepisode;
 extern int startmap;
+#endif
 #if (APPVER_DOOMREV >= AV_DR_DM12)
 extern boolean autostart;
 #endif

@@ -24,7 +24,11 @@
 #include "P_local.h"
 #include "soundst.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2;
+#else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10, _wp11, _wp12, _wp13, _wp14, _wp15;
+#endif
 
 boolean G_CheckDemoStatus (void);
 void G_ReadDemoTiccmd (ticcmd_t *cmd);
@@ -1133,7 +1137,7 @@ int cpars[32] =
 #endif
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
-int g_unkvar;
+int g_unkvar_ggg;
 #endif
 
 /*
@@ -1878,6 +1882,10 @@ void G_BeginRecording(void)
 =
 ===================
 */
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int __wp1, __wp2, __wp3;
+#endif
 
 char    *defdemoname;
 

@@ -23,8 +23,12 @@
 #include "sounds.h"
 #include "i_sound.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+#else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10;
 extern int _wp11, _wp12, _wp13, _wp14, _wp15, _wp16, _wp17, _wp18, _wp19;
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM12)
 /*
@@ -82,7 +86,9 @@ const char *dnames[] = {"None",
 			};
 #endif
 
-#if (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+const char snd_prefixen[] = { '\0', 'P', 'A', 'S', 'S', 'M' };
+#elif (APPVER_DOOMREV < AV_DR_DM1666P)
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M' };
 #elif (APPVER_DOOMREV < AV_DR_DM18)
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
@@ -90,13 +96,6 @@ const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
 #else
 const char snd_prefixen[] = { 'P', 'P', 'A', 'S', 'S', 'S', 'M',
   'M', 'M', 'S', 'S', 'S'};
-#endif
-
-#if (APPVER_DOOMREV < AV_DR_DM12)
-musicinfo_t *snd_mus = NULL;
-musicinfo_t *snd_mus2 = NULL;
-musiccache_t muscache[NUMMUSIC];
-sfxcache_t sfxcache[NUMSFX];
 #endif
 
 int snd_DesiredMusicDevice, snd_DesiredSfxDevice;
@@ -111,6 +110,13 @@ int snd_MusicDevice,    // current music card # (index to dmxCodes)
 	snd_MusicVolume;    // maximum volume for music
 #endif
 int dmxCodes[NUM_SCARDS]; // the dmx code for a given card
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+musicinfo_t *snd_mus = NULL;
+musicinfo_t *snd_mus2 = NULL;
+sfxcache_t sfxlump[NUMSFX];
+musiccache_t muslump[NUMMUSIC];
+#endif
 
 int     snd_SBport, snd_SBirq, snd_SBdma;       // sound blaster variables
 int     snd_Mport;                              // midi variables
@@ -155,7 +161,7 @@ void I_GetMusicLumpNum(musicinfo_t *mus)
 	sprintf(namebuf, "d_%s", mus->name);
 
 	i = mus - S_music;
-	cache = &muscache[i];
+	cache = &muslump[i];
 	mus->cache = cache;
 	cache->lumpnum = W_GetNumForName(namebuf);
 	cache->handle = -1;
@@ -300,7 +306,7 @@ void I_GetSfxLumpNum(sfxinfo_t *sfx)
 		sfx = sfx->link;
 
 	i = sfx - S_sfx;
-	cache = &sfxcache[i];
+	cache = &sfxlump[i];
 	sfx->cache = cache;
 
 	strcpy(&namebuf[2], sfx->name);
