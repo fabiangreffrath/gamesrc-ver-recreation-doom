@@ -289,9 +289,9 @@ void WI_drawAnimatedBack(void)
 int WI_drawNum (int x, int y, int n, int digits)
 {
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
-    int vdi;
     int digits2 = digits;
     int v;
+    int vdi;
 
     if (n < 0)
         return -1;
@@ -300,11 +300,11 @@ int WI_drawNum (int x, int y, int n, int digits)
     while (n / vdi != 0 || vdi == 1 || (digits2 && digits))
     {
         v = (n / vdi) % 10;
-        vdi *= 10;
 
         x -= SHORT(num[0]->width);
         
         V_DrawPatch(x, y, FB, num[ v ]);
+        vdi *= 10;
 #if (APPVER_DOOMREV >= AV_DR_DM12)
         if (digits)
 #endif
