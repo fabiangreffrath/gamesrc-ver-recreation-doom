@@ -93,7 +93,7 @@ void P_CalcHeight (player_t *player)
 	}
 		
 #if (APPVER_DOOMREV < AV_DR_DM12)
-	angle = (12*leveltime)&255;
+	angle = (12*gametic)&255;
 	bob = FixedMul ( player->bob/2, sintable[angle]);
 #else
 	angle = (FINEANGLES/20*leveltime)&FINEMASK;

@@ -361,7 +361,11 @@ boolean P_UseSpecialLine ( mobj_t *thing, line_t *line, int side)
 				P_ChangeSwitchTexture(line,0);
 			break;
 		case 49:		// Ceiling Crush And Raise
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+			if (EV_DoCeiling(line,lowerAndCrush))
+#else
 			if (EV_DoCeiling(line,crushAndRaise))
+#endif
 				P_ChangeSwitchTexture(line,0);
 			break;
 		case 50:		// Close Door

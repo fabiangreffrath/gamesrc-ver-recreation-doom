@@ -265,6 +265,10 @@ extern	angle_t		clipangle;
 extern	int			viewangletox[FINEANGLES/2];
 extern	angle_t		xtoviewangle[SCREENWIDTH+1];
 extern	fixed_t		finetangent[FINEANGLES/2];
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern fixed_t finesine[5*FINEANGLES/4];
+extern fixed_t *finecosine;
+#endif
 
 extern	fixed_t		rw_distance;
 extern	angle_t		rw_normalangle;

@@ -590,11 +590,13 @@ extern int eventhead;
 extern int eventtail;
 #endif
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _dp1, _dp2, _dp3, _dp4;
+#endif
+
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 extern fixed_t finesine[5*FINEANGLES/4];
 extern fixed_t *finecosine;
-#if (APPVER_DOOMREV < AV_DR_DM12)
-extern fixed_t sintable[256];
-extern fixed_t costable[256];
 #endif
 
 extern gameaction_t gameaction;
@@ -767,6 +769,10 @@ extern int startmap;
 #endif
 #if (APPVER_DOOMREV >= AV_DR_DM12)
 extern boolean autostart;
+#endif
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern fixed_t sintable[256];
+extern fixed_t costable[256];
 #endif
 
 /*

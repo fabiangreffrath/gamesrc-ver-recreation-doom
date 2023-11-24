@@ -52,7 +52,7 @@
 #endif
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
-extern int _wp1, _wp2, _wp3, _wp4, _wp5;
+extern int _wp1, _wp2, _wp3;
 #else
 extern int _wp1, _wp2, _wp3, _wp4;
 #endif

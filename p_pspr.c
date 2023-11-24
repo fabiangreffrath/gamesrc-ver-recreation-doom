@@ -184,7 +184,7 @@ void P_CalcSwing (player_t *player)
 #if (APPVER_DOOMREV < AV_DR_DM12)
 	angle = (3*gametic)&255;
 	swingx = FixedMul ( swing, sintable[angle]);
-	angle = (3*gametic * 3 + 128)&255;
+	angle = (3*gametic + 128)&255;
 	swingy = -FixedMul ( swingx, sintable[angle]);
 #else
 	angle = (FINEANGLES/70*leveltime)&FINEMASK;

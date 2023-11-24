@@ -18,12 +18,20 @@
 // P_map.c
 
 #include "DoomDef.h"
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4;
+#else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10, _wp11, _wp12, _wp13, _wp14, _wp15;
 extern int _wp16, _wp17, _wp18, _wp19, _wp20;
+#endif
 #include "P_local.h"
 #include "soundst.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp21, _wp22, _wp23, _wp24, _wp25, _wp26, _wp27, _wp28, _wp29, _wp30, _wp31, _wp32, _wp33, _wp34;
+#else
 extern int _wp21, _wp22, _wp23, _wp24, _wp25, _wp26, _wp27, _wp28, _wp29, _wp30, _wp31, _wp32, _wp33, _wp34, _wp35, _wp36;
+#endif
 
 /*
 ===============================================================================
@@ -782,9 +790,13 @@ stairstep:
 
 ==============================================================================
 */
+extern int __wp1, __wp2;
 
 fixed_t		sightzstart;			// eye z of looker
 fixed_t		topslope, bottomslope;	// slopes to top and bottom of target
+
+#define sightcounts_0 sightcounts_0_lopf
+#define sightcounts_1 sightcounts_1_lopg
 
 int			sightcounts_0, sightcounts_1;
 

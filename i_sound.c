@@ -24,7 +24,7 @@
 #include "i_sound.h"
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
-extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+extern int _wp1, _wp2, _wp3, _wp4;
 #else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10;
 extern int _wp11, _wp12, _wp13, _wp14, _wp15, _wp16, _wp17, _wp18, _wp19;

@@ -731,7 +731,11 @@ void P_Ticker (void)
 //
 // pause if in menu and at least one tic has been run
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if ( !netgame && menuactive && !demoplayback && players[consoleplayer].viewz != 0)
+#else
 	if ( !netgame && menuactive && !demoplayback && players[consoleplayer].viewz != 1)
+#endif
 		return;
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
