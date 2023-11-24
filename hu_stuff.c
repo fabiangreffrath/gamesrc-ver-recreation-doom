@@ -626,9 +626,11 @@ char HU_dequeueChatChar(void)
 
 boolean HU_Responder(event_t *ev)
 {
-
+	
+#if (APPVER_DOOMREV >= AV_DR_DM12)
   static char lastmessage[HU_MAXLINELENGTH+1];
   char *macromessage;
+#endif
   boolean eatkey = false;
   static boolean shiftdown = false;
 #if (APPVER_DOOMREV >= AV_DR_DM12)

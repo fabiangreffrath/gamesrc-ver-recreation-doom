@@ -17,9 +17,14 @@
 
 // WI_stuff.c
 #include "DoomDef.h"
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9;
+extern int _wp10, _wp11, _wp12, _wp13, _wp14;
+#else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9;
 extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15, _wp16, _wp17;
 extern int _wp18;
+#endif
 #include "WI_stuff.h"
 #include "wi_data.h"
 
@@ -1096,8 +1101,10 @@ void WI_loadData(void)
   if (wbs->epsd == 3)
     strcpy(name,"INTERPIC");
 #endif
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+  bg = W_CacheLumpName(name, PU_STATIC);    // background
+#else
   bg = W_CacheLumpName(name, PU_CACHE);    // background
-#if (APPVER_DOOMREV >= AV_DR_DM1666P)
   V_DrawPatch(0, 0, 1, bg);
 #endif
 // unsigned char *pic = screens[1];

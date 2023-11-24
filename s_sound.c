@@ -20,12 +20,14 @@
 #include "soundst.h"
 
 #if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+extern int _wp7, _wp8, _wp9;
 static channel_t *channels; // the set of channels available
 static int snd_SfxVolume;
 static boolean mus_paused = false;	// whether songs are mus_paused
+boolean snd_MusicAvail, snd_SfxAvail;
+boolean snd_MusicEnable, snd_SfxEnable;
 int numChannels; // number of channels available
-boolean snd_SfxAvail, snd_MusicAvail;
-boolean snd_SfxEnable, snd_MusicEnable;
 
 //
 // S_getChannel :
@@ -116,7 +118,7 @@ void S_SetSfxVolume(int volume)
 {
   if (volume < 0 || volume > 127)
     I_Error("Attempt to set sfx volume at %d", volume);
-  snd_SfxEnable = volume != 0 && snd_MusicAvail;
+  snd_SfxEnable = volume != 0 && snd_SfxAvail;
   snd_SfxVolume = volume;
 }
 
@@ -330,7 +332,7 @@ void S_StartMusic(int m_id)
 {
     if (!snd_MusicEnable)
         return;
-    if ((m_id < mus_e1m1) || (m_id >= NUMMUSIC))
+    if ((m_id < mus_e1m1) || (m_id > NUMMUSIC))
         I_Error("Bad music #: %d", m_id);
     I_StartSong(&S_music[m_id], false);
 }
@@ -339,7 +341,7 @@ void S_ChangeMusic(int musicnum, int looping)
 {
     if (!snd_MusicEnable)
         return;
-    if ((musicnum < mus_e1m1) || (musicnum >= NUMMUSIC))
+    if ((musicnum < mus_e1m1) || (musicnum > NUMMUSIC))
         I_Error("Bad music #: %d", musicnum);
     I_StartSong(&S_music[musicnum], looping);
 }
@@ -394,9 +396,8 @@ void S_Start(void)
       I_StopSound(&channels[cnum]);
   
   // start new music for the level
-  mnum = mus_e1m1 + (gameepisode-1)*9 + gamemap-1;
   
-  S_ChangeMusic(mnum, true);
+  S_ChangeMusic(mus_e1m1 + (gameepisode-1)*9 + gamemap-1, true);
 }
 
 #else
