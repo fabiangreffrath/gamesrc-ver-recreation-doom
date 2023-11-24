@@ -729,11 +729,19 @@ void A_Chase (mobj_t *actor)
 //
 // check for missile attack
 //
+#if (APPVER_DOOMREV < AV_DR_DM12)
+	if (!actor->movecount && actor->info->missilestate
+		&& P_CheckMissileRange(actor))
+	{
+		P_SetMobjState (actor, actor->info->missilestate);
+		actor->flags |= MF_JUSTATTACKED;
+		return;
+	}
+#else
 	if (actor->info->missilestate)
 	{
-#if (APPVER_DOOMREV < AV_DR_DM12)
 		if (actor->movecount)
-#elif (APPVER_DOOMREV < AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
 		if (gameskill < sk_nightmare && actor->movecount)
 #else
 		if (gameskill < sk_nightmare && !fastparm && actor->movecount)
@@ -748,6 +756,7 @@ void A_Chase (mobj_t *actor)
 		return;
 	}
 nomissile:
+#endif
 
 //
 // possibly choose another target

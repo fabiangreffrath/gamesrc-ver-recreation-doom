@@ -1561,6 +1561,10 @@ void G_DoSaveGame(void)
 ====================
 */
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int ___wp1;
+#endif
+
 skill_t d_skill;
 int     d_episode;
 int     d_map;
@@ -1882,10 +1886,6 @@ void G_BeginRecording(void)
 =
 ===================
 */
-
-#if (APPVER_DOOMREV < AV_DR_DM12)
-extern int __wp1, __wp2, __wp3;
-#endif
 
 char    *defdemoname;
 

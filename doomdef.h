@@ -186,7 +186,7 @@ typedef struct
 {
 	int         forwardmove;            // *2048 for move
 	int         sidemove;                       // *2048 for move
-	int         angleturn;                      // <<16 for angle delta
+	unsigned int         angleturn;                      // <<16 for angle delta
 	int         chatchar;
 	int         buttons;
 	int         consistancy;            // checks for net game
@@ -213,7 +213,11 @@ typedef struct
 #define BT_SPECIAL		128			// game events, not really buttons
 #define	BTS_SAVEMASK	(4+8+16)
 #define	BTS_SAVESHIFT	2
+#if (APPVER_DOOMREV < AV_DR_DM12)
+#define	BT_SPECIALMASK	127
+#else
 #define	BT_SPECIALMASK	3
+#endif
 #define	BTS_PAUSE		1			// pause the game
 #define	BTS_SAVEGAME	2			// save the game at each console
 // savegame slot numbers occupy the second byte of buttons

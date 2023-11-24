@@ -27,7 +27,13 @@
 #include "HU_stuff.h"
 #include "soundst.h"
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+extern int _wp7, _wp8, _wp9, _wp10, _wp11, _wp12;
+extern int _wp13, _wp14, _wp15, _wp16;
+#else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9, _wp10, _wp11;
+#endif
 
 extern patch_t *hu_font[HU_FONTSIZE];
 extern boolean message_dontfuckwithme;
@@ -71,6 +77,27 @@ int messageLastMenuActive;
 boolean messageNeedsInput;     
 
 void (*messageRoutine)(int response);
+
+
+#if (APPVER_DOOMREV < AV_DR_DM12)
+// we are going to be entering a savegame string
+int saveStringEnter;
+int saveSlot; // which slot to save in
+int saveCharIndex; // which char we're editing
+// old save description before edit
+char saveOldString[SAVESTRINGSIZE];
+
+boolean inhelpscreens;
+boolean menuactive;
+
+#define SKULLXOFF -32
+#define LINEHEIGHT 16
+
+extern boolean sendpause;
+char savegamestrings[10][SAVESTRINGSIZE];
+
+char endstring[160];
+#endif
 
 #if (APPVER_DOOMREV >= AV_DR_DM12)
 char gammamsg[5][26] =
@@ -129,6 +156,8 @@ char endmsg2[8][80] =
 };
 #endif
 
+
+#if (APPVER_DOOMREV >= AV_DR_DM12)
 // we are going to be entering a savegame string
 int saveStringEnter;              
 int saveSlot; // which slot to save in
@@ -146,6 +175,7 @@ extern boolean sendpause;
 char savegamestrings[10][SAVESTRINGSIZE];
 
 char endstring[160];
+#endif
 
 
 //
@@ -1276,7 +1306,11 @@ int M_StringWidth(char *string)
 	for (i = 0;i < strlen(string);i++)
 	{
 		c = toupper(string[i]) - HU_FONTSTART;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		if (c < 0 || c > HU_FONTSIZE)
+#else
 		if (c < 0 || c >= HU_FONTSIZE)
+#endif
 			w += 4;
 		else
 			w += SHORT (hu_font[c]->width);
@@ -1334,7 +1368,11 @@ void M_WriteText(int x, int y, char *string)
 		}
 		
 		c = toupper(c) - HU_FONTSTART;
+#if (APPVER_DOOMREV < AV_DR_DM12)
+		if (c < 0 || c> HU_FONTSIZE)
+#else
 		if (c < 0 || c>= HU_FONTSIZE)
+#endif
 		{
 			cx += 4;
 			continue;

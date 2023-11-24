@@ -320,8 +320,8 @@ int EV_DoDoor(line_t *line, vldoor_e type)
 		}
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 		door->type = type;
-		door->topwait = VDOORWAIT;
 		door->speed = VDOORSPEED;
+		door->topwait = VDOORWAIT;
 #endif
 	}
 	return(retcode);
@@ -376,7 +376,7 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			if(!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
 			{
 #if (APPVER_DOOMREV < AV_DR_DM12)
-				if (line->special == 26)
+				if (line->special == 27)
 					player->message = "You need a yellow keycard to open this door";
 				else
 					player->message = "You need a yellow skull to open this door";
@@ -396,7 +396,7 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			if(!player->cards[it_redcard] && !player->cards[it_redskull])
 			{
 #if (APPVER_DOOMREV < AV_DR_DM12)
-				if (line->special == 26)
+				if (line->special == 28)
 					player->message = "You need a red keycard to open this door";
 				else
 					player->message = "You need a red skull to open this door";
@@ -469,8 +469,10 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 	door->thinker.function = T_VerticalDoor;
 	door->sector = sec;
 	door->direction = 1;
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 	door->speed = VDOORSPEED;
 	door->topwait = VDOORWAIT;
+#endif
 	switch(line->special)
 	{
 		case 1:
@@ -498,6 +500,10 @@ void EV_VerticalDoor(line_t *line, mobj_t *thing)
 			break;
 #endif
 	}
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
+	door->speed = VDOORSPEED;
+	door->topwait = VDOORWAIT;
+#endif
 	
 	//
 	// find the top and bottom of the movement range

@@ -24,8 +24,14 @@
 #include "AM_data.h"
 #include <stdio.h>
 
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+extern int _wp7, _wp8, _wp9, _wp10, _wp11, _wp12;
+extern int _wp13, _wp14, _wp15, _wp16, _wp17;
+#else
 extern int _wp1, _wp2, _wp3, _wp4, _wp5, _wp6, _wp7, _wp8, _wp9;
 extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15, _wp16;
+#endif
 
 static int cheating = 0;
 static int grid = 0;
@@ -47,6 +53,10 @@ static fixed_t ftom_zoommul; // how far the window zooms in each tic (fb coords)
 
 static fixed_t m_x, m_y;   // LL x,y where the window is on the map (map coords)
 static fixed_t m_x2, m_y2; // UR x,y where the window is on the map (map coords)
+#if (APPVER_DOOMREV < AV_DR_DM12)
+extern int __wp1, __wp2, __wp3, __wp4, __wp5, __wp6;
+extern int __wp7;
+#endif
 
 // width/height of window on map (map coords)
 static fixed_t m_w, m_h;

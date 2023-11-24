@@ -786,7 +786,7 @@ stairstep:
 fixed_t		sightzstart;			// eye z of looker
 fixed_t		topslope, bottomslope;	// slopes to top and bottom of target
 
-int			sightcounts[2];
+int			sightcounts_0, sightcounts_1;
 
 boolean P_SightReject (subsector_t *t1, subsector_t *t2)
 {
@@ -804,10 +804,10 @@ boolean P_SightReject (subsector_t *t1, subsector_t *t2)
 	
 	if (rejectmatrix[bytenum]&bitnum)
 	{
-sightcounts[0]++;
+sightcounts_0++;
 		return false;		// can't possibly be connected
 	}
-sightcounts[1]++;
+sightcounts_1++;
 	return true;
 }
 

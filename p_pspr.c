@@ -175,17 +175,17 @@ fixed_t	swingx, swingy;
 void P_CalcSwing (player_t *player)
 {
 	fixed_t	swing;
-#if (APPVER_DOOMREV >= AV_DR_DM12)
 	int		angle;
-#endif
 
 // OPTIMIZE: tablify this
 
 	swing = player->bob;
 	
 #if (APPVER_DOOMREV < AV_DR_DM12)
-	swingx = FixedMul ( swing, sintable[(gametic * 3) & 255]);
-	swingy = -FixedMul ( swing, sintable[(gametic * 3 + 128) & 255]);
+	angle = (3*gametic)&255;
+	swingx = FixedMul ( swing, sintable[angle]);
+	angle = (3*gametic * 3 + 128)&255;
+	swingy = -FixedMul ( swingx, sintable[angle]);
 #else
 	angle = (FINEANGLES/70*leveltime)&FINEMASK;
 	swingx = FixedMul ( swing, finesine[angle]);
