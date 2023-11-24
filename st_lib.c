@@ -53,8 +53,8 @@ void STlib_drawNum (st_number_t *n, boolean refresh)
   int numdigits;
   int d1;
   int d2;
-  int oldnum;
   int num;
+  int oldnum;
   int w;
   int h;
   int x;
@@ -63,8 +63,8 @@ void STlib_drawNum (st_number_t *n, boolean refresh)
 
   numdigits = n->width;
 
-  oldnum = n->oldnum;
   num = *n->num;
+  oldnum = n->oldnum;
     
   w = SHORT(n->p[0]->width);
   h = SHORT(n->p[0]->height);
