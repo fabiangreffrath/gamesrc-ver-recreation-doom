@@ -1128,7 +1128,7 @@ int pars[4][10] =
 	{0,90,45,90,150,90,90,165,30,135}
 };
 
-#if (APPVER_DOOMREV >= AV_DR_DM1666E)
+#if (APPVER_DOOMREV >= AV_DR_DM1666P)
 // DOOM II Par Times
 int cpars[32] =
 {
