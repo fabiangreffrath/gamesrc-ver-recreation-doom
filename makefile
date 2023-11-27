@@ -34,9 +34,9 @@ GAMEVEROPTS = /DFRENCH
 !endif
 
 !ifeq appver_exedef DM10
-DMXVER=
+DMXVER=dmx_dm10
 !else ifeq appver_exedef DM12
-DMXVER=rap10
+DMXVER=dmx_d12r
 !else ifeq appver_exedef DM1666P
 DMXVER=dmx34af1
 !else ifeq appver_exedef DM1666E
