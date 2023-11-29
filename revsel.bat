@@ -24,7 +24,7 @@ echo code generation, along with TASM 3.1.
 echo.
 echo %MSG%
 set MSG=
-choice /C:123456789AaBbCcDdEe0 /N
+choice /S /C:123456789AaBbCcDdEe0 /N
 echo.
 
 if ERRORLEVEL 20 goto end
