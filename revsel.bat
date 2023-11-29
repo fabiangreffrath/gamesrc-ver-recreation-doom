@@ -2,45 +2,50 @@
 if "%MSG%" == "" goto error
 set CHOICE=
 cls
-echo [1] Doom II prototype v1.666
-echo [2] Doom Shareware / Doom II early v1.666
-echo [3] Doom v1.666
-echo [4] Doom II v1.7
-echo [5] Doom II v1.7a
-echo [6] Doom II French v1.8
-echo [7] Doom / Doom II v1.8
-echo [8] Doom / Doom II v1.9
-echo [9] Doom v1.9 Special Edition prototype exe
-echo [A] The Ultimate Doom
-echo [B] Final Doom
-echo [C] Final Doom, later id Anthology revision
-echo [D] Chex Quest
+echo [1] Doom Shareware v0.99/v1.0
+echo [2] Doom II prototype v1.666
+echo [3] Doom Shareware / Doom II early v1.666
+echo [4] Doom v1.666
+echo [5] Doom II v1.7
+echo [6] Doom II v1.7a
+echo [7] Doom II French v1.8
+echo [8] Doom / Doom II v1.8
+echo [9] Doom / Doom II v1.9
+echo [A] Doom v1.9 Special Edition prototype exe
+echo [B] The Ultimate Doom
+echo [C] Final Doom
+echo [D] Final Doom, later id Anthology revision
+echo [E] Chex Quest
 echo.
 echo [0] Cancel and quit
 echo.
-echo * Watcom 9.5b should be used for a more accurate code generation,
-echo along with TASM 3.1.
+echo * Watcom 9.5b (v1.666+) or 9.5a (v1.0) should be used for a more accurate
+echo code generation, along with TASM 3.1.
 echo.
 echo %MSG%
 set MSG=
-choice /C:123456789AaBbCcDd0 /N
+choice /C:123456789AaBbCcDdEe0 /N
 echo.
 
-if ERRORLEVEL 18 goto end
-if ERRORLEVEL 16 goto CHEX
-if ERRORLEVEL 14 goto DM19F2
-if ERRORLEVEL 12 goto DM19F
-if ERRORLEVEL 10 goto DM19U
-if ERRORLEVEL 9 goto DM19UP
-if ERRORLEVEL 8 goto DM19
-if ERRORLEVEL 7 goto DM18
-if ERRORLEVEL 6 goto DM18FR
-if ERRORLEVEL 5 goto DM17A
-if ERRORLEVEL 4 goto DM17
-if ERRORLEVEL 3 goto DM1666
-if ERRORLEVEL 2 goto DM1666E
-if ERRORLEVEL 1 goto DM1666P
+if ERRORLEVEL 20 goto end
+if ERRORLEVEL 18 goto CHEX
+if ERRORLEVEL 16 goto DM19F2
+if ERRORLEVEL 14 goto DM19F
+if ERRORLEVEL 12 goto DM19U
+if ERRORLEVEL 10 goto DM19UP
+if ERRORLEVEL 9 goto DM19
+if ERRORLEVEL 8 goto DM18
+if ERRORLEVEL 7 goto DM18FR
+if ERRORLEVEL 6 goto DM17A
+if ERRORLEVEL 5 goto DM17
+if ERRORLEVEL 4 goto DM1666
+if ERRORLEVEL 3 goto DM1666E
+if ERRORLEVEL 2 goto DM1666P
+if ERRORLEVEL 1 goto DM10
 
+:DM10
+set CHOICE=DM10
+goto end
 :DM1666P
 set CHOICE=DM1666P
 goto end
