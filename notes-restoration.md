@@ -21,6 +21,7 @@ With the right tools, this codebase can be used
 for reproducing the executables coming from the following
 original releases of Doom, with a few caveats:
 
+- Doom Shareware v0.99/v1.0
 - Doom II prototype v1.666.
 - Doom Shareware / Doom II early v1.666.
 - Doom v1.666.
@@ -41,6 +42,7 @@ You shall *not* call "wmake" as-is. Instead, use DOBUILD.BAT.
 List of releases by directory names
 -----------------------------------
 
+- DM10: Doom Shareware v0.99/v1.0
 - DM1666P: Doom II prototype v1.666.
 - DM1666E: Doom Shareware / Doom II early v1.666.
 - DM1666: Doom v1.666.
@@ -60,6 +62,7 @@ Technical details of the original EXEs (rather than any recreated one)
 
 |     Version     | N. bytes |               MD5                |  CRC-32  |
 |-----------------|----------|----------------------------------|----------|
+| Shareware 1.0   |  523221  | 2d9fc43f9d6643b90dff343526ee1d0e | 0bd4317a |
 | Prototype 1.666 |  686921  | b9c24975cb0c064a7c4f39c1d0b999ae | 3c2562f3 |
 | Doom II 1.666   |  687001  | 22e3fc7854f030df977d26faf1e342be | 5f7ede6f |
 | Doom 1.666      |  687001  | be2d05789beb3b56692a2ccd83f8c510 | 084677c4 |
@@ -148,7 +151,8 @@ Building any of the EXEs
 
 Required tools:
 
-- For all game versions: Watcom C 9.5b and no other version in the 9.5 series.
+- For Doom Shareware v1.0: Watcom C 9.5a and no other version in the 9.5 series.
+- For Doom II prototype v1.666 and later: Watcom C 9.5b and no other version in the 9.5 series.
 - For all game versions: Turbo Assembler 3.1.
 
 Additionally:
