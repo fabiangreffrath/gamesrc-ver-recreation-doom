@@ -177,7 +177,7 @@ void R_RenderMaskedSegRange (drawseg_t *ds, int x1, int x2)
 ================
 */
 
-#if (APPVER_DOOMREV << AV_DR_DM1666P)
+#if (APPVER_DOOMREV < AV_DR_DM1666P)
 #define HEIGHTBITS      16
 #else
 #define HEIGHTBITS      12

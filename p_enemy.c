@@ -740,7 +740,6 @@ void A_Chase (mobj_t *actor)
 #else
 	if (actor->info->missilestate)
 	{
-		if (actor->movecount)
 #if (APPVER_DOOMREV < AV_DR_DM1666P)
 		if (gameskill < sk_nightmare && actor->movecount)
 #else
