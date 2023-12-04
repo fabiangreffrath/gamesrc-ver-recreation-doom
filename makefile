@@ -35,8 +35,10 @@ GAMEVEROPTS = /DFRENCH
 
 !ifeq appver_exedef DM10
 DMXVER=dmx_dm10
+DMX_OLDAPI=1
 !else ifeq appver_exedef DM12
 DMXVER=dmx_d12r
+DMX_OLDAPI=1
 !else ifeq appver_exedef DM1666P
 DMXVER=dmx34af1
 !else ifeq appver_exedef DM1666E
@@ -54,15 +56,26 @@ DMXVER=dmx37
 !endif
 
 !ifeq use_apodmx 1
-DMXINC = /i=..\apodmx
-DMXLIBS = file ..\..\apodmx\apodmx.lib file audio_wf.lib
-!else ifeq DMXVER dmx37
+
+!ifeq DMX_OLDAPI 1
+DMXINC = /i=..\apodmx\oldapi
+DMXLIBS = file ..\..\apodmx\oldapi\apodmx.lib file audio_wf.lib
+!else
+DMXINC = /i=..\apodmx\newapi
+DMXLIBS = file ..\..\apodmx\newapi\apodmx.lib file audio_wf.lib
+!endif
+
+!else # DMX/APODMX
+
+!ifeq DMXVER dmx37
 DMXINC = /i=..\dmx\$(DMXVER)\inc
 DMXLIBS = file ..\..\dmx\$(DMXVER)\lib\dmx_r.lib
 !else
 DMXINC = /i=..\dmx\$(DMXVER)\inc
 DMXLIBS = file ..\..\dmx\$(DMXVER)\lib\dmx.lib
 !endif
+
+!endif # DMX/APODMX
 
 GLOBOBJS = &
  i_main.obj &
