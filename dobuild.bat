@@ -18,16 +18,16 @@ echo Alternatively, run "DOBUILD.BAT USE_APODMX" to use APODMX instead.
 goto end
 
 :apodmx
-if not exist ..\apodmx\apodmx.lib goto apodmxerror
+REM if not exist ..\apodmx\apodmx.lib goto apodmxerror
 REM AUDIO_WF.LIB is copied as a workaround for too long path
 set USE_APODMX=1
 goto task
 
-:apodmxerror
-echo Can't recreate Doom EXE, you need the APODMX headers
-echo and the APODMX.LIB file under ..\apodmx ready, as well
-echo as ..\audiolib\origexes\109\AUDIO_WF.LIB.
-goto end
+REM :apodmxerror
+REM echo Can't recreate Doom EXE, you need the APODMX headers
+REM echo and the APODMX.LIB file under ..\apodmx ready, as well
+REM echo as ..\audiolib\origexes\109\AUDIO_WF.LIB.
+REM goto end
 
 :task
 REM Since environment variables may actually impact the compiler output,
